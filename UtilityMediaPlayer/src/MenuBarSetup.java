@@ -11,11 +11,17 @@ import javax.swing.KeyStroke;
 
 //class that allows menuBars tabs to be attached to a given menuBar
 public class MenuBarSetup {
+	
+	/**
+	 * TODO
+	 * 1. create parameter to each attach function to take in a variable array of actionListeners and attach them in order to all the menu items
+	 * 2. create a validation check method for attaching actionlisteners to menu items
+	 */
 
 	/**creates the fileMenu tab and attaches it to input
 	 * @param menuBar the JMenuBar that the function will attach the file menu section to
 	 */
-	public static JMenuBar attachFileMenu(JMenuBar menuBar){
+	public static JMenuBar attachFileMenu(JMenuBar menuBar, MainFrame mainframe){
 		//temporary loading spaces on creation
 		JMenu menu, submenu;
 		JMenuItem menuItem;
@@ -35,6 +41,11 @@ public class MenuBarSetup {
         		KeyEvent.VK_O, ActionEvent.CTRL_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Opens a file explorer to find file location");
+        /**
+         * TODO demo
+         * change listener to not be coupled
+         */
+        menuItem.addActionListener(mainframe.new openFile());
         menu.add(menuItem);
         
         //OpenMultipleFiles
@@ -44,6 +55,11 @@ public class MenuBarSetup {
         		KeyEvent.VK_M, ActionEvent.CTRL_MASK ));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Opens multiple files from explorer");
+        /**
+         * TODO demo
+         * change listener to not be coupled
+         */
+        menuItem.addActionListener(mainframe.new openMultipleFiles());
         menu.add(menuItem);
         
         //SaveFile
@@ -53,6 +69,20 @@ public class MenuBarSetup {
         		KeyEvent.VK_S, ActionEvent.CTRL_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Opens a file explorer to save loaded file into the local space");
+        /**
+         * TODO demo
+         * change listener to not be coupled
+         */
+        menuItem.addActionListener(mainframe.new openSaveFile());
+        menu.add(menuItem);
+        
+      //ConvertFile
+        menuItem = new JMenuItem("Convert File",
+                KeyEvent.VK_C);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"Allows a current loaded file to be converted to another format");
         menu.add(menuItem);
         
         //AddToPlaylist
@@ -113,7 +143,7 @@ public class MenuBarSetup {
 		
 		//View Tab
         menu = new JMenu("View");
-        menu.setMnemonic(KeyEvent.VK_W);
+        menu.setMnemonic(KeyEvent.VK_V);
         menu.getAccessibleContext().setAccessibleDescription(
                 "GUI View options");
         menuBar.add(menu);
@@ -129,9 +159,9 @@ public class MenuBarSetup {
         
       //SwapScreens
         menuItem = new JMenuItem("Swap Screens",
-                KeyEvent.VK_C);
+                KeyEvent.VK_W);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+        		KeyEvent.VK_W, ActionEvent.CTRL_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Swaps Left Window location with Right Window location");
         menu.add(menuItem);
@@ -191,7 +221,7 @@ public class MenuBarSetup {
 		
 		//Video Tab
         menu = new JMenu("Video");
-        menu.setMnemonic(KeyEvent.VK_V);
+        menu.setMnemonic(KeyEvent.VK_E);
         menu.getAccessibleContext().setAccessibleDescription(
                 "GUI View options");
         menuBar.add(menu);
@@ -365,6 +395,185 @@ public class MenuBarSetup {
 		
 		return menuBar;
 	}
+	
+	public static JMenuBar attachAudioMenu(JMenuBar menuBar){
+		//temporary loading spaces on creation
+		JMenu menu, submenu;
+		JMenuItem menuItem;
+		JCheckBoxMenuItem cbMenuItem;
+		JRadioButtonMenuItem rbMenuItem;
+		
+		
+		
+		//Audio Tab
+        menu = new JMenu("Audio");
+        menu.setMnemonic(KeyEvent.VK_A);
+        menu.getAccessibleContext().setAccessibleDescription(
+                "GUI Audio options");
+        menuBar.add(menu);
+        
+      //Mute
+        cbMenuItem = new JCheckBoxMenuItem("Mute");
+        cbMenuItem.setMnemonic(KeyEvent.VK_M);
+        cbMenuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_4, ActionEvent.ALT_MASK));
+        cbMenuItem.getAccessibleContext().setAccessibleDescription(
+        		"Mutes audio player");
+        menu.add(cbMenuItem);
+        
+        
+        //Increase Volume
+        menuItem = new JMenuItem("Increase Volume");
+        menuItem.setMnemonic(KeyEvent.VK_I);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_5, ActionEvent.ALT_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"Raises volume level of audio player");
+        menu.add(menuItem);
+        
+        //Decrease Volume
+        menuItem = new JMenuItem("Decrease Volume");
+        menuItem.setMnemonic(KeyEvent.VK_D);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_6, ActionEvent.ALT_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"Lowers volume level of audio player");
+        menu.add(menuItem);
+        
+        menu.addSeparator();
+        
+        //AudioClip
+        menuItem = new JMenuItem("Create Audio Clip");
+        menuItem.setMnemonic(KeyEvent.VK_C);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_7, ActionEvent.ALT_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"Save a portion of the Audio Clip from a given point to a set endpoint");
+        menu.add(menuItem);
+        
+        menu.addSeparator();
+        
+        
+        /**
+         * Stereo output
+         */
+        submenu = new JMenu("Stereo Mode");
+        submenu.setMnemonic(KeyEvent.VK_S);
+
+        //Stereo
+
+        ButtonGroup group3 = new ButtonGroup();
+        
+        rbMenuItem = new JRadioButtonMenuItem("Stereo");
+        rbMenuItem.setSelected(true);
+        group3.add(rbMenuItem);
+        submenu.add(rbMenuItem);
+        
+        rbMenuItem = new JRadioButtonMenuItem("Left");
+        group3.add(rbMenuItem);
+        submenu.add(rbMenuItem);
+        
+        rbMenuItem = new JRadioButtonMenuItem("Right");
+        group3.add(rbMenuItem);
+        submenu.add(rbMenuItem);
+        
+        rbMenuItem = new JRadioButtonMenuItem("Reverse Stereo");
+        group3.add(rbMenuItem);
+        submenu.add(rbMenuItem);
+        
+        //add to menu
+        menu.add(submenu);
+		
+		return menuBar;
+	}
+	
+	public static JMenuBar attachImageMenu(JMenuBar menuBar){
+		//temporary loading spaces on creation
+		JMenu menu, submenu;
+		JMenuItem menuItem;
+		JCheckBoxMenuItem cbMenuItem;
+		JRadioButtonMenuItem rbMenuItem;
+		
+		
+		
+		//Audio Tab
+        menu = new JMenu("Image");
+        menu.setMnemonic(KeyEvent.VK_I);
+        menu.getAccessibleContext().setAccessibleDescription(
+                "GUI Image options");
+        menuBar.add(menu);
+        
+      //Mute
+        cbMenuItem = new JCheckBoxMenuItem("Duplicate");
+        cbMenuItem.setMnemonic(KeyEvent.VK_M);
+        cbMenuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_8, ActionEvent.ALT_MASK));
+        cbMenuItem.getAccessibleContext().setAccessibleDescription(
+        		"Mutes audio player");
+        menu.add(cbMenuItem);
+        
+        
+        //Colormode submenu
+        submenu = new JMenu("Mode");
+        submenu.setMnemonic(KeyEvent.VK_M);
+        
+        ButtonGroup group = new ButtonGroup();
+        
+        rbMenuItem = new JRadioButtonMenuItem("RGB");
+        rbMenuItem.setSelected(true);
+        group.add(rbMenuItem);
+        submenu.add(rbMenuItem);
+        
+        rbMenuItem = new JRadioButtonMenuItem("Grayscale");
+        group.add(rbMenuItem);
+        submenu.add(rbMenuItem);
+        
+        menu.add(submenu);
+        
+        
+        //Transform submenu
+        submenu = new JMenu("Transform");
+        submenu.setMnemonic(KeyEvent.VK_T);
+        
+        menuItem = new JMenuItem("Flip Horizontally");
+        submenu.add(menuItem);
+        
+        menuItem = new JMenuItem("Flip Vertically");
+        submenu.add(menuItem);
+        
+        submenu.addSeparator();
+        
+        menuItem = new JMenuItem("Rotate Clockwise 90°");
+        submenu.add(menuItem);
+        
+        menuItem = new JMenuItem("Rotate Counter-Clockwise 90°");
+        submenu.add(menuItem);
+        
+        
+        menu.add(submenu);
+        
+        menu.addSeparator();
+        
+        
+        
+      	//Image Properties
+        menuItem = new JMenuItem("Image Properties",
+                KeyEvent.VK_R);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_R, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"Opens window with help document/info");
+        menu.add(menuItem);
+        
+        
+        
+       
+        menu.add(menuItem);
+		
+		return menuBar;
+	}
+	
+	
 	
 	/**creates the helpMenu tab and attaches it to input
 	 * @param menuBar the JMenuBar that the function will attach the help menu section to
