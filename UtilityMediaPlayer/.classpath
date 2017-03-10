@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
@@ -19,3 +20,24 @@
 	<classpathentry kind="lib" path="C:/Users/Danny/Documents/Schoolwork/Spring 2017/Software Engineering/Project Libraries/slf4j-1.7.24/slf4j-simple-1.7.24.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
+=======
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="jars/jna-4.1.0.jar"/>
+	<classpathentry kind="lib" path="jars/jna-platform-4.1.0.jar"/>
+	<classpathentry kind="lib" path="jars/slf4j-api-1.7.10.jar"/>
+	<classpathentry kind="lib" path="jars/vlcj-3.10.1-javadoc.jar"/>
+	<classpathentry kind="lib" path="jars/vlcj-3.10.1-sources.jar"/>
+	<classpathentry kind="lib" path="jars/vlcj-3.10.1-test-sources.jar"/>
+	<classpathentry kind="lib" path="jars/vlcj-3.10.1-tests.jar"/>
+	<classpathentry kind="lib" path="jars/vlcj-3.10.1.jar" sourcepath="jars/vlcj-3.10.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/UtilityMediaPlayer/jars/vlcj-3.10.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="jars/slf4j-simple-1.7.24.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
+>>>>>>> a2442436974a98d4edc2210acdda9301eb37b0b2
