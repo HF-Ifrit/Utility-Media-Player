@@ -157,11 +157,17 @@ public class VideoPlayer implements Player
 		return tSlider;
 	}
 	
+	
+	@Override
+	public void open(String fileName)
+	{
+		openVideo();
+	}
+	
 	/**
 	 * Reveals the video player and plays its selected media if one has already been selected
 	 */
-	@Override
-	public void open()
+	public void openVideo()
 	{
 		frame.setContentPane(contentPane);
 		frame.setVisible(true);
@@ -245,7 +251,31 @@ public class VideoPlayer implements Player
 	{
 		//Testing stuff
 		VideoPlayer v = new VideoPlayer("media libraries/video/kaius_presentation.mp4");
-		v.open();
+		v.openVideo();
+	}
+
+	@Override
+	public void volumeChange() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void alternatePlayback() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void skipPlayback() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void changePosition() {
+		// TODO Auto-generated method stub
+		
 	}	
 }
 
