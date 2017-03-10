@@ -15,6 +15,7 @@ public class VideoPlayer implements Player
 	private final JFrame frame;
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	private final EmbeddedMediaPlayer player;
+	private long videoDuration;
 	
 	private JPanel contentPane;
 	private JButton resumeButton;
@@ -22,9 +23,12 @@ public class VideoPlayer implements Player
 	private JButton	skipButton;
 	private JButton	stopButton;
 	private JSlider volumeSlider;
+	private JSlider timeSlider;
 	
 	public VideoPlayer()
 	{
+		videoDuration  = 0;
+		
 		new NativeDiscovery().discover();
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		
@@ -35,17 +39,18 @@ public class VideoPlayer implements Player
 		JPanel controlsPane = new JPanel();
 		resumeButton = createPlayPauseButton();
 		controlsPane.add(resumeButton);
-		rewindButton = new JButton("Rewind");
-		controlsPane.add(rewindButton);
-		skipButton = new JButton("Skip");
-		controlsPane.add(skipButton);
+//		rewindButton = new JButton("Rewind");
+//		controlsPane.add(rewindButton);
+//		skipButton = new JButton("Skip");
+//		controlsPane.add(skipButton);
 		stopButton = createStopButton();
 		controlsPane.add(stopButton);
 		contentPane.add(controlsPane, BorderLayout.SOUTH);
 		
+
 		volumeSlider = createVolumeSlider();
+		timeSlider = createTimeSlider(0);
 		contentPane.add(volumeSlider, BorderLayout.EAST);
-		//TODO put volume slider and time slider into a grid layout, and then put that layout in the East content pane BorderLayout
 		
 		
 		
@@ -69,7 +74,7 @@ public class VideoPlayer implements Player
 	public VideoPlayer(String filePath)
 	{
 		this();
-		player.prepareMedia(filePath);
+		loadVideo(filePath);
 	}
 	
 	/**
@@ -115,7 +120,7 @@ public class VideoPlayer implements Player
 	
 	/**
 	 * Generates a volume slider
-	 * @return A slider that controls the volume of the video playback
+	 * @return A JSlider that controls the volume of the video playback
 	 */
 	private JSlider createVolumeSlider()
 	{
@@ -132,6 +137,25 @@ public class VideoPlayer implements Player
 		return vSlider;
 	}
 	
+	/**
+	 * Generates a time seeker slide bar
+	 * @return A JSlider that keeps track of the time in the playback
+	 */
+	private JSlider createTimeSlider(int videoTime)
+	{
+		JSlider tSlider = new JSlider(0, videoTime);
+		tSlider.addChangeListener(new ChangeListener()
+				{
+					@Override
+					public void stateChanged(ChangeEvent e)
+					{
+						System.out.println(tSlider.getValue());
+						seekVideo(tSlider.getValue());
+					}
+				});
+		
+		return tSlider;
+	}
 	
 	/**
 	 * Reveals the video player and plays its selected media if one has already been selected
@@ -184,6 +208,9 @@ public class VideoPlayer implements Player
 	public void loadVideo(String filePath)
 	{
 		player.prepareMedia(filePath);
+		player.parseMedia();
+		videoDuration = player.getMediaMeta().getLength() / 1000;
+		timeSlider.setMaximum((int)videoDuration);
 	}
 	
 	/**
