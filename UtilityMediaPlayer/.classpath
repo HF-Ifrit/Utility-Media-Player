@@ -9,7 +9,11 @@
 	<classpathentry kind="lib" path="jars/vlcj-3.10.1-sources.jar"/>
 	<classpathentry kind="lib" path="jars/vlcj-3.10.1-test-sources.jar"/>
 	<classpathentry kind="lib" path="jars/vlcj-3.10.1-tests.jar"/>
-	<classpathentry kind="lib" path="jars/vlcj-3.10.1.jar"/>
+	<classpathentry kind="lib" path="jars/vlcj-3.10.1.jar" sourcepath="jars/vlcj-3.10.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/UtilityMediaPlayer/jars/vlcj-3.10.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="jars/slf4j-simple-1.7.24.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
