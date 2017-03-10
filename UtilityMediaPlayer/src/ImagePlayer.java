@@ -11,9 +11,8 @@
  public class ImagePlayer extends Application {
  
      @Override public void start(Stage stage) {
-         Image image = new Image("image.png");
+         Image image = new Image("gif.gif");
  
-         // simple displays ImageView the image as is
          ImageView i = new ImageView();
          i.setImage(image);
          
