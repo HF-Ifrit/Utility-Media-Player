@@ -45,7 +45,7 @@ public class MusicPlayer extends Application {
 				}
 				else {
 					System.out.println("PLAY THAT FUCKIN TRAACK");
-					open("C:/Users/Danny/workspace/UtilityMediaPlayer/media libraries/test.mp3");
+					open("media libraries/test.mp3");
 					songLoaded = true;
 				}
 			}
