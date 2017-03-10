@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.io.*;
 
-public class VideoPlayer 
+public class VideoPlayer implements Player
 {
 	private final JFrame frame;
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
@@ -41,6 +41,7 @@ public class VideoPlayer
 	/**
 	 * Reveals the video player and plays its selected media
 	 */
+	@Override
 	public void open()
 	{
 		frame.setContentPane(mediaPlayerComponent);
