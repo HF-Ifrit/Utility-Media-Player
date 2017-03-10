@@ -3,6 +3,10 @@ import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.player.media.Media;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 
@@ -12,8 +16,40 @@ public class VideoPlayer implements Player
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	private final EmbeddedMediaPlayer player;
 	
+	private JPanel contentPane;
+	private JButton resumeButton;
+	private JButton rewindButton;
+	private JButton	skipButton;
+	private JButton	stopButton;
+	private JSlider volumeSlider;
+	
 	public VideoPlayer()
 	{
+		new NativeDiscovery().discover();
+		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+		
+		contentPane = new JPanel();
+		contentPane.setLayout(new BorderLayout());
+		contentPane.add(mediaPlayerComponent, BorderLayout.CENTER);
+
+		JPanel controlsPane = new JPanel();
+		resumeButton = createPlayPauseButton();
+		controlsPane.add(resumeButton);
+		rewindButton = new JButton("Rewind");
+		controlsPane.add(rewindButton);
+		skipButton = new JButton("Skip");
+		controlsPane.add(skipButton);
+		stopButton = createStopButton();
+		controlsPane.add(stopButton);
+		contentPane.add(controlsPane, BorderLayout.SOUTH);
+		
+		volumeSlider = createVolumeSlider();
+		contentPane.add(volumeSlider, BorderLayout.EAST);
+		//TODO put volume slider and time slider into a grid layout, and then put that layout in the East content pane BorderLayout
+		
+		
+		
+		
 		frame = new JFrame("Video Player");
 		frame.setBounds(100, 100, 600, 400);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -26,10 +62,8 @@ public class VideoPlayer implements Player
 						System.exit(0);
 					}
 				});
-		new NativeDiscovery().discover();
-		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
+
 		player = mediaPlayerComponent.getMediaPlayer();
-		
 	}
 	
 	public VideoPlayer(String filePath)
@@ -39,12 +73,73 @@ public class VideoPlayer implements Player
 	}
 	
 	/**
-	 * Reveals the video player and plays its selected media
+	 * Generates a Stop Button control
+	 * @return A button that can stop video playback
+	 */
+	private JButton createStopButton()
+	{
+		JButton stop = new JButton("Stop");
+		stop.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				stopVideo();
+			}
+		});
+		
+		return stop;
+	}
+	
+	/**
+	 * Generates a Play/Pause button
+	 * @return A button that can pause and resume video playback
+	 */
+	private JButton createPlayPauseButton()
+	{
+		JButton playPause = new JButton("Play/Pause");
+		playPause.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if(player.isPlaying())
+					pauseVideo();
+				else
+					playVideo();
+			}
+		});
+		
+		return playPause;
+	}
+	
+	/**
+	 * Generates a volume slider
+	 * @return A slider that controls the volume of the video playback
+	 */
+	private JSlider createVolumeSlider()
+	{
+		JSlider vSlider = new JSlider();
+		vSlider.addChangeListener(new ChangeListener() 
+			{
+				@Override
+				public void stateChanged(ChangeEvent e) 
+				{
+					changeVolume(vSlider.getValue());	
+				}
+			});
+		
+		return vSlider;
+	}
+	
+	
+	/**
+	 * Reveals the video player and plays its selected media if one has already been selected
 	 */
 	@Override
 	public void open()
 	{
-		frame.setContentPane(mediaPlayerComponent);
+		frame.setContentPane(contentPane);
 		frame.setVisible(true);
 		SwingUtilities.invokeLater(new Runnable()
 				{
@@ -55,9 +150,7 @@ public class VideoPlayer implements Player
 					}
 				});
 		
-		if(player.isPlayable())
-			playVideo();
-		
+		playVideo();
 	}
 	
 	/**
@@ -74,7 +167,6 @@ public class VideoPlayer implements Player
 	public void pauseVideo()
 	{
 		player.pause();
-		
 	}
 	
 	/**
@@ -127,15 +219,6 @@ public class VideoPlayer implements Player
 		//Testing stuff
 		VideoPlayer v = new VideoPlayer("media libraries/video/kaius_presentation.mp4");
 		v.open();
-		
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			Thread.currentThread().interrupt();
-		}
-		
-		v.pauseVideo();
 	}	
 }
 
