@@ -168,11 +168,11 @@ public class MusicPlayer extends Application implements Player {
 		alternatePlayback(player);
 	}
 	
-	public void volumeChange() {
+	public void volumeChange(int newVolume) {
 		volumeChange(player);
 	}
 	
-	public void changePosition() {
+	public void changePosition(long playbackPosition) {
 		changePosition(player);
 	}
 	

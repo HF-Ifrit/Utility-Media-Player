@@ -2,16 +2,25 @@ import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 import uk.co.caprica.vlcj.player.media.Media;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
+import java.sql.Date;
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class VideoPlayer implements Player
 {
+	private static final ArrayList<String> SUPPORTED_IMAGE_FORMATS = new ArrayList<String>(Arrays.asList("jpg", "png", "jpeg"));
+	
 	private final JFrame frame;
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	private final EmbeddedMediaPlayer player;
@@ -25,6 +34,7 @@ public class VideoPlayer implements Player
 	private JSlider volumeSlider;
 	private JSlider timeSlider;
 	
+	private JButton captureButton;
 	public VideoPlayer()
 	{
 		videoDuration  = 0;
@@ -45,15 +55,25 @@ public class VideoPlayer implements Player
 //		controlsPane.add(skipButton);
 		stopButton = createStopButton();
 		controlsPane.add(stopButton);
+		
+		//TODO Capture button for testing purposes; Remove when done
+		captureButton = new JButton("Capture");
+		captureButton.addActionListener(new ActionListener() 
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				captureScreen("PNG");
+			}
+		});
+		
+		controlsPane.add(captureButton);
 		contentPane.add(controlsPane, BorderLayout.SOUTH);
 		
 
 		volumeSlider = createVolumeSlider();
 		timeSlider = createTimeSlider(0);
 		contentPane.add(volumeSlider, BorderLayout.EAST);
-		
-		
-		
 		
 		frame = new JFrame("Video Player");
 		frame.setBounds(100, 100, 600, 400);
@@ -92,7 +112,6 @@ public class VideoPlayer implements Player
 				stopVideo();
 			}
 		});
-		
 		return stop;
 	}
 	
@@ -161,13 +180,23 @@ public class VideoPlayer implements Player
 	@Override
 	public void open(String fileName)
 	{
-		openVideo();
+		openVideo(fileName);
 	}
 	
 	/**
-	 * Reveals the video player and plays its selected media if one has already been selected
+	 * Opens the video player and plays its selected media if one has already been selected
 	 */
-	public void openVideo()
+	public void openVideo(String fileName)
+	{
+		loadVideo(fileName);
+		showPlayer();
+		playVideo();
+	}
+	
+	/**
+	 * Reveals the video player frame
+	 */
+	private void showPlayer()
 	{
 		frame.setContentPane(contentPane);
 		frame.setVisible(true);
@@ -179,8 +208,32 @@ public class VideoPlayer implements Player
 						new VideoPlayer();
 					}
 				});
-		
-		playVideo();
+	}
+	
+	/**
+	 * Takes a screenshot of the currently playing video if the playback is paused
+	 * @param format Image format to save the image as
+	 */
+	private void captureScreen(String format)
+	{
+		if(!player.isPlaying() && SUPPORTED_IMAGE_FORMATS.contains(format.toLowerCase()))
+		{
+			try
+			{
+				long currentTime = System.currentTimeMillis();
+				String fileName = "capture" + currentTime + "." + format;
+				
+				BufferedImage playerImage = player.getSnapshot();
+				ImageIO.write(playerImage, format, new File("media libraries/image/", fileName));
+				System.out.println("Screenshot saved in media libraries/image/" + fileName);
+			}
+			catch(IOException ex)
+			{
+				System.err.println(ex);
+			}
+		}
+		else
+			System.out.println("Video must be paused before screenshotting!");
 	}
 	
 	/**
@@ -251,29 +304,32 @@ public class VideoPlayer implements Player
 	{
 		//Testing stuff
 		VideoPlayer v = new VideoPlayer("media libraries/video/kaius_presentation.mp4");
-		v.openVideo();
+		v.showPlayer();
 	}
 
 	@Override
-	public void volumeChange() {
+	public void volumeChange(int newVolume) 
+	{
+		changeVolume(newVolume);
+	}
+
+	@Override
+	public void alternatePlayback() 
+	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void alternatePlayback() {
+	public void skipPlayback() 
+	{
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void skipPlayback() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void changePosition() {
+	public void changePosition(long playbackPosition) 
+	{
 		// TODO Auto-generated method stub
 		
 	}	
