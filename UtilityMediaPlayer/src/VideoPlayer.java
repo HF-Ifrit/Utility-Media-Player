@@ -37,6 +37,11 @@ public class VideoPlayer implements Player
 	private JSlider timeSlider;
 	private JButton captureButton;
 	
+	enum VideoFormat {
+   	 WEBM,
+   	 MP4
+    }
+	
 	//Constructors
 	public VideoPlayer()
 	{
