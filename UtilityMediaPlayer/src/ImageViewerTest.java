@@ -1,5 +1,11 @@
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,6 +27,7 @@ public class ImageViewerTest {
 	
 	String workingDir = System.getProperty("user.dir");
 	String fileSep = System.getProperty("file.separator");
+	String outputPath = workingDir + fileSep + "output";
 	
 	String imagePath;
 	String gifPath;
@@ -136,13 +143,30 @@ public class ImageViewerTest {
 	@Test
 	public void gifToMP4BadFormat() {
 		testViewer.open(imagePath);
-		assertTrue(testViewer.gifToVideo(VideoPlayer.VideoFormat.MP4));
+		assertFalse(testViewer.gifToVideo(VideoPlayer.VideoFormat.MP4));
 	}
 
 	@Test
 	public void gifToMP4Good() {
+		File outputFile = new File(outputPath);
+		ArrayList<File> oldFiles = new ArrayList<File>(Arrays.asList(outputFile.listFiles()));
+		
 		testViewer.open(gifPath);
 		assertTrue(testViewer.gifToVideo(VideoPlayer.VideoFormat.MP4));
+		
+		ArrayList<File> newFiles = new ArrayList<File>(Arrays.asList(outputFile.listFiles()));
+		
+		//cleanup all created files by getting all that were just added to output
+		newFiles.removeAll(oldFiles);
+		assertFalse(newFiles.isEmpty());
+		
+		for(File toDelete : newFiles) {
+			try {
+				Files.delete(toDelete.toPath());
+			} catch (IOException e) {
+				fail("Could not clean up after gifToMP4Good test");
+			}
+		}
 	}
 	
 }
