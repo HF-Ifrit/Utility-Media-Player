@@ -8,7 +8,7 @@
  import javafx.scene.paint.Color;
  import javafx.stage.Stage; 
 
- public class ImagePlayer extends Application {
+ public class ImageViewer extends Application {
  
      @Override public void start(Stage stage) {
          Image image = new Image("gif.gif");
@@ -30,8 +30,37 @@
          stage.sizeToScene(); 
          stage.show(); 
      }
+     
+     enum ImageFormat {
+    	 JPG,
+    	 PNG,
+    	 GIF
+     }
 
      public static void main(String[] args) {
          Application.launch(args);
      }
+     
+     
+     ImageViewer() {
+    	 
+     }
+     
+     boolean open(String filename) {
+    	 
+     }
+     
+     Scene getScene() {
+    	 
+     }
+     
+     boolean rotateImage(boolean clockwise) {
+    	 
+     }
+     
+     boolean mirrorImage() {
+    	 
+     }
+     
+     boolean gifToVideo()
  }
