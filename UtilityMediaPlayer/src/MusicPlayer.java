@@ -38,6 +38,11 @@ public class MusicPlayer implements Player {
 	Label songTitle;
 	Scene mainScene;
 	
+	enum MusicFormat {
+   	 MP3,
+   	 FLAC,
+    }
+	
 	/*The method that starts when the MusicPlayer is run. Will be delegated to a controller later in development;
 	 * for now, this allows the MusicPlayer to function as a stand-alone application.(non-Javadoc)
 	 * @see javafx.application.Application#start(javafx.stage.Stage)
