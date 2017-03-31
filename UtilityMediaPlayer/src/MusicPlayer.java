@@ -25,10 +25,11 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class MusicPlayer extends Application implements Player {
+public class MusicPlayer implements Player {
 	
 	boolean songLoaded;
 	boolean isPaused;
+	boolean playing;
 	MediaPlayer player;
 	Slider volume;
 	Slider time;
@@ -41,105 +42,105 @@ public class MusicPlayer extends Application implements Player {
 	 * for now, this allows the MusicPlayer to function as a stand-alone application.(non-Javadoc)
 	 * @see javafx.application.Application#start(javafx.stage.Stage)
 	 */
-	public void start(Stage primaryStage) {
-		
-		primaryStage.setTitle("Music Player");
-		
-		player = null;
-		songLoaded = false;
-		volume = null;
-		duration = null;
-		playTime = null;
-		
-		GridPane grid = new GridPane();
-		grid.setAlignment(Pos.CENTER);
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(2,25,25,25));
-		
-		playTime = new Label();
-		playTime.setPrefWidth(130);
-		playTime.setMinWidth(50);
-		grid.add(playTime, 1, 5);
-		
-		songTitle = new Label();
-		songTitle.setPrefWidth(200);
-		songTitle.setMinWidth(50);
-		grid.add(songTitle, 0, 0);
-		
-		mainScene = new Scene(grid, 300, 300);
-		
-		//Create the play/pause button and add its event handler.
-		Button play = makeButton("Play/Pause", 0, 8, grid);
-		play.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				if (songLoaded) {
-					alternatePlayback(player);
-				}
-				else {
-					open("media libraries/test.mp3");
-					songLoaded = true;
-					duration = player.getMedia().getDuration();
-					
-				}
-			}
-		});
-		
-		//Create the volume slider and add its event handler.
-		volume = createSlider("Volume: ", null, 0, 4, grid);
-		volume.valueProperty().addListener(new InvalidationListener() {
-			public void invalidated(Observable ov) {
-				if (volume.isValueChanging()) {
-					volumeChange(player);
-				}
-			}
-		});
-		
-		
-		
-//		All of the stuff commented out here relates to the (currently non-functioning) playback slider. Will
-//		come back to at a later date.
-		
+//	public void start(Stage primaryStage) {
+//		
+//		primaryStage.setTitle("Music Player");
+//		
+//		player = null;
+//		songLoaded = false;
+//		volume = null;
+//		duration = null;
+//		playTime = null;
+//		
+//		GridPane grid = new GridPane();
+//		grid.setAlignment(Pos.CENTER);
+//		grid.setHgap(10);
+//		grid.setVgap(10);
+//		grid.setPadding(new Insets(2,25,25,25));
+//		
+//		playTime = new Label();
+//		playTime.setPrefWidth(130);
+//		playTime.setMinWidth(50);
+//		grid.add(playTime, 1, 5);
+//		
+//		songTitle = new Label();
+//		songTitle.setPrefWidth(200);
+//		songTitle.setMinWidth(50);
+//		grid.add(songTitle, 0, 0);
+//		
+//		mainScene = new Scene(grid, 300, 300);
+//		
+//		//Create the play/pause button and add its event handler.
+//		Button play = makeButton("Play/Pause", 0, 8, grid);
+//		play.setOnAction(new EventHandler<ActionEvent>() {
+//			@Override
+//			public void handle(ActionEvent event) {
+//				if (songLoaded) {
+//					alternatePlayback(player);
+//				}
+//				else {
+//					open("media libraries/test.mp3");
+//					songLoaded = true;
+//					duration = player.getMedia().getDuration();
+//					
+//				}
+//			}
+//		});
+//		
+//		//Create the volume slider and add its event handler.
+//		volume = createSlider("Volume: ", null, 0, 4, grid);
+//		volume.valueProperty().addListener(new InvalidationListener() {
+//			public void invalidated(Observable ov) {
+//				if (volume.isValueChanging()) {
+//					volumeChange(player);
+//				}
+//			}
+//		});
 		
 		//Create the time slider and add its event handler.
-		playTime = new Label("Time :");
-		time = createSlider("Time: ", playTime, 0, 6, grid);
-		time.valueProperty().addListener(new InvalidationListener() {
-			public void invalidated(Observable o) {
-				if (time.isValueChanging()) {
-					changePosition(player);
-				}
-			}
-		});
-		
-		primaryStage.setScene(mainScene);
-		primaryStage.show();
-	}
+//		playTime = new Label("Time :");
+//		time = createSlider("Time: ", playTime, 0, 6, grid);
+//		time.valueProperty().addListener(new InvalidationListener() {
+//			public void invalidated(Observable o) {
+//				if (time.isValueChanging()) {
+//					changePosition(player);
+//				}
+//			}
+//		});
+//		
+//		primaryStage.setScene(mainScene);
+//		primaryStage.show();
+//	}
 	@Override
 	/*Opens the specified music file and loads it into the player
 	 * @param fileName The name of the desired music file
 	 */
 	public boolean open(String fileName) {
-		String uri = new File(fileName).toURI().toString();	
-		Media media = new Media(uri);
-		MediaPlayer musicPlayer = new MediaPlayer(media);
-		this.player = musicPlayer;
-		player.setOnReady(new Runnable() {
-            public void run() {
-            	media.getMetadata().addListener((MapChangeListener<String, Object>) change -> {
-        		    if (change.wasAdded()) {
-        		    	setMetadata(change.getKey(), change.getValueAdded());
-        		    }
-        		});
-        		player.setVolume(1.0);
-        		duration = media.getDuration();
-        		updateValues();
-        		songLoaded = true;
-        		musicPlayer.play();	
-            }
-		});
-		return songLoaded;
+		if (fileName != null) {
+			String uri = new File(fileName).toURI().toString();	
+			Media media = new Media(uri);
+			MediaPlayer musicPlayer = new MediaPlayer(media);
+			this.player = musicPlayer;
+			player.setOnReady(new Runnable() {
+				public void run() {
+					media.getMetadata().addListener((MapChangeListener<String, Object>) change -> {
+						if (change.wasAdded()) {
+							setMetadata(change.getKey(), change.getValueAdded());
+						}
+					});
+					player.setVolume(1.0);
+        			duration = media.getDuration();
+        			updateValues();
+        			songLoaded = true;
+        			playing = true;
+        			musicPlayer.play();	
+				}
+			});
+		return songLoaded;	
+		}
+		else {
+			return false;
+		}
 	}
 		
 	
@@ -247,8 +248,13 @@ public class MusicPlayer extends Application implements Player {
 		alternatePlayback(player);
 	}
 	
-	public void volumeChange(int newVolume) {
-		volumeChange(player);
+	public void volumeChange(double newVolume) {
+		if (newVolume > 0) {
+			player.setVolume(newVolume);
+		}
+		else {
+			volumeChange(player);
+		}
 	}
 	
 	public void changePosition(long playbackPosition) {
@@ -322,40 +328,40 @@ public class MusicPlayer extends Application implements Player {
 	
 	
 	
-//	public void MusicPlayer() {
-//		player = null;
-//		songLoaded = false;
-//		volume = null;
-//		duration = null;
-//		playTime = null;
-//		
-//		GridPane grid = new GridPane();
-//		grid.setAlignment(Pos.CENTER);
-//		grid.setHgap(10);
-//		grid.setVgap(10);
-//		grid.setPadding(new Insets(2,25,25,25));
-//		
-//		time = new Slider();
-//		HBox.setHgrow(time,Priority.ALWAYS);
-//		time.setMinWidth(50);
-//		time.setMaxWidth(Double.MAX_VALUE);
-//		grid.add(time, 0, 6);
-//		
-//		
-//		playTime = new Label();
-//		playTime.setPrefWidth(130);
-//		playTime.setMinWidth(50);
-//		grid.add(playTime, 1, 5);
-//		
-//		songTitle = new Label();
-//		songTitle.setPrefWidth(200);
-//		songTitle.setMinWidth(50);
-//		grid.add(songTitle, 0, 0);
-//		
-//		mainScene = new Scene(grid, 300, 300);
-//	}
-	
-	public static void main(String[] args) {
-		launch();
+	public void MusicPlayer() {
+		player = null;
+		songLoaded = false;
+		volume = null;
+		duration = null;
+		playTime = null;
+		
+		GridPane grid = new GridPane();
+		grid.setAlignment(Pos.CENTER);
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(2,25,25,25));
+		
+		time = new Slider();
+		HBox.setHgrow(time,Priority.ALWAYS);
+		time.setMinWidth(50);
+		time.setMaxWidth(Double.MAX_VALUE);
+		grid.add(time, 0, 6);
+		
+		
+		playTime = new Label();
+		playTime.setPrefWidth(130);
+		playTime.setMinWidth(50);
+		grid.add(playTime, 1, 5);
+		
+		songTitle = new Label();
+		songTitle.setPrefWidth(200);
+		songTitle.setMinWidth(50);
+		grid.add(songTitle, 0, 0);
+		
+		mainScene = new Scene(grid, 300, 300);
 	}
+	
+//	public static void main(String[] args) {
+//		launch();
+//	}
 }
