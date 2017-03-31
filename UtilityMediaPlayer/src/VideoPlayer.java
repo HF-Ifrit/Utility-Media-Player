@@ -25,7 +25,9 @@ public class VideoPlayer implements Player
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	private final EmbeddedMediaPlayer player;
 	private long videoDuration;
+	private boolean hasMedia;
 	
+	//TODO Currently using these GUI controls for testing. Remove when finished with VideoPlayer
 	private JPanel contentPane;
 	private JButton resumeButton;
 	private JButton rewindButton;
@@ -33,8 +35,9 @@ public class VideoPlayer implements Player
 	private JButton	stopButton;
 	private JSlider volumeSlider;
 	private JSlider timeSlider;
-	
 	private JButton captureButton;
+	
+	//Constructors
 	public VideoPlayer()
 	{
 		videoDuration  = 0;
@@ -87,7 +90,8 @@ public class VideoPlayer implements Player
 						System.exit(0);
 					}
 				});
-
+		
+		hasMedia = false;
 		player = mediaPlayerComponent.getMediaPlayer();
 	}
 	
@@ -97,6 +101,8 @@ public class VideoPlayer implements Player
 		loadVideo(filePath);
 	}
 	
+	
+	//GUI control generaiton
 	/**
 	 * Generates a Stop Button control
 	 * @return A button that can stop video playback
@@ -176,7 +182,7 @@ public class VideoPlayer implements Player
 		return tSlider;
 	}
 	
-	
+	//VideoPlayer functionality implementation
 	@Override
 	public void open(String fileName)
 	{
@@ -188,15 +194,18 @@ public class VideoPlayer implements Player
 	 */
 	public void openVideo(String fileName)
 	{
+		
 		loadVideo(fileName);
-		showPlayer();
+		if(!frame.isVisible())
+			showPlayer();
+		
 		playVideo();
 	}
 	
 	/**
 	 * Reveals the video player frame
 	 */
-	private void showPlayer()
+	public void showPlayer()
 	{
 		frame.setContentPane(contentPane);
 		frame.setVisible(true);
@@ -241,7 +250,8 @@ public class VideoPlayer implements Player
 	 */
 	public void playVideo()
 	{
-		player.play();
+		if(hasVideo())
+			player.play();
 	}
 	
 	/**
@@ -263,13 +273,23 @@ public class VideoPlayer implements Player
 	/**
 	 * Assigns the video file to the video player
 	 * @param filePath The local file path of the video to be played
+	 * @return Returns true if the video from filePath was loaded into the player; False otherwise
 	 */
-	public void loadVideo(String filePath)
+	public boolean loadVideo(String filePath)
 	{
-		player.prepareMedia(filePath);
-		player.parseMedia();
-		videoDuration = player.getMediaMeta().getLength() / 1000;
-		timeSlider.setMaximum((int)videoDuration);
+		boolean loaded = false;
+		if(filePath != null)
+		{
+			if(player.isPlaying())
+			stopVideo();
+			loaded = player.prepareMedia(filePath);
+			player.parseMedia();
+			videoDuration = player.getMediaMeta().getLength() / 1000;
+			timeSlider.setMaximum((int)videoDuration);
+			hasMedia = true;
+		}
+		
+		return loaded;
 	}
 	
 	/**
@@ -291,6 +311,7 @@ public class VideoPlayer implements Player
 		player.setVolume(volumePercentage);
 	}
 	
+	//Getter-setters
 	/**
 	 * Get the JFrame of this player
 	 * @return
@@ -300,13 +321,24 @@ public class VideoPlayer implements Player
 		return frame;
 	}
 	
-	public static void main(String[] args)
+	/**
+	 * Get the media player associated with this VideoPlayer
+	 */
+	public EmbeddedMediaPlayer getPlayer()
 	{
-		//Testing stuff
-		VideoPlayer v = new VideoPlayer("media libraries/video/kaius_presentation.mp4");
-		v.showPlayer();
+		return player;
 	}
-
+	
+	//Bool conditions
+	/**
+	 * Determine if this player is loaded with a video
+	 */
+	public boolean hasVideo()
+	{
+		return hasMedia;
+	}
+	
+	//Player interface implementation
 	@Override
 	public void volumeChange(int newVolume) 
 	{
@@ -317,21 +349,29 @@ public class VideoPlayer implements Player
 	public void alternatePlayback() 
 	{
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void skipPlayback() 
 	{
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void changePosition(long playbackPosition) 
 	{
-		// TODO Auto-generated method stub
-		
+		seekVideo(playbackPosition);
 	}	
+	
+	public static void main(String[] args) throws InterruptedException
+	{
+		//Testing stuff
+		VideoPlayer v = new VideoPlayer("media libraries/video/kaius_presentation.mp4");
+		v.showPlayer();
+		v.pauseVideo();
+//		v.playVideo();
+//		Thread.sleep(2000);
+//		v.loadVideo("media libraries/video/WIN_20170227_19_51_17_Pro.mp4");
+	}
 }
 
