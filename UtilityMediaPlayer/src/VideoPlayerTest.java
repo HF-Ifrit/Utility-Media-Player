@@ -17,8 +17,7 @@ public class VideoPlayerTest
 	}
 	
 	@After
-	public void After()
-	{
+	public void After()	{
 		testPlayer.getPlayer().release();
 		testPlayer = null;
 	}
