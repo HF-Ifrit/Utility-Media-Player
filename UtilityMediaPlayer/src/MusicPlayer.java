@@ -185,6 +185,10 @@ public class MusicPlayer implements Player {
 		return true;
 	}
 	
+	public Scene getScene() {
+		return this.mainScene;
+	}
+	
 	/*Helper method that generates a Button and adds it to the grid. Used for setup.
 	 * @param buttonName The text displayed on the button
 	 * @param column The index of the column on the grid
