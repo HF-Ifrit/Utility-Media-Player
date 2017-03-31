@@ -20,9 +20,10 @@ public class VideoPlayerTest
 	public void After()
 	{
 		testPlayer.getPlayer().release();
+		testPlayer.getFrame().dispose();
 		testPlayer = null;
 	}
-	
+	 
 	
 	//Testing playVideo method
 
@@ -75,9 +76,20 @@ public class VideoPlayerTest
 		Thread.sleep(1500);
 		testPlayer.pauseVideo();
 		
-		Thread.sleep(1);
+		Thread.sleep(1000);
 		assertFalse(testPlayer.getPlayer().isPlaying());
 	}
 	
 	//Nothing should happen when trying to pause and there is no video loaded
+	@Test
+	public void testPauseNoVideo() throws InterruptedException
+	{
+		testPlayer.showPlayer();
+		testPlayer.pauseVideo();
+		
+		assertFalse(testPlayer.getPlayer().isPlaying());
+		assertFalse(testPlayer.hasVideo());
+	}
+	
+	 
 }

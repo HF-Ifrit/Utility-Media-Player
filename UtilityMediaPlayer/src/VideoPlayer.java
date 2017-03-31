@@ -133,10 +133,7 @@ public class VideoPlayer implements Player
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				if(player.isPlaying())
-					pauseVideo();
-				else
-					playVideo();
+				alternatePlayback();
 			}
 		});
 		
@@ -340,15 +337,18 @@ public class VideoPlayer implements Player
 	
 	//Player interface implementation
 	@Override
-	public void volumeChange(int newVolume) 
+	public void volumeChange(double newVolume) 
 	{
-		changeVolume(newVolume);
+		changeVolume((int)newVolume);
 	}
 
 	@Override
 	public void alternatePlayback() 
 	{
-		// TODO Auto-generated method stub
+		if(getPlayer().isPlaying())
+			pauseVideo();
+		else
+			playVideo();
 	}
 
 	@Override
@@ -369,9 +369,6 @@ public class VideoPlayer implements Player
 		VideoPlayer v = new VideoPlayer("media libraries/video/kaius_presentation.mp4");
 		v.showPlayer();
 		v.pauseVideo();
-//		v.playVideo();
-//		Thread.sleep(2000);
-//		v.loadVideo("media libraries/video/WIN_20170227_19_51_17_Pro.mp4");
 	}
 }
 
