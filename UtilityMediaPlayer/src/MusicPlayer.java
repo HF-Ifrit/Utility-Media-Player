@@ -25,7 +25,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class MusicPlayer implements Player {
+public class MusicPlayer extends Application implements Player {
 	
 	boolean songLoaded;
 	boolean isPaused;
@@ -41,64 +41,81 @@ public class MusicPlayer implements Player {
 	 * for now, this allows the MusicPlayer to function as a stand-alone application.(non-Javadoc)
 	 * @see javafx.application.Application#start(javafx.stage.Stage)
 	 */
-//	@Override
-//	public void start(Stage primaryStage) {
-//		
-//		primaryStage.setTitle("Music Player");
-//		
-//		
-//		//Create the play/pause button and add its event handler.
-//		Button play = makeButton("Play/Pause", 0, 8, grid);
-//		play.setOnAction(new EventHandler<ActionEvent>() {
-//			@Override
-//			public void handle(ActionEvent event) {
-//				if (songLoaded) {
-//					alternatePlayback(player);
-//				}
-//				else {
-//					open("media libraries/test.mp3");
-//					songLoaded = true;
-//					duration = player.getMedia().getDuration();
-//					
-//				}
-//			}
-//		});
-//		
-//		//Create the volume slider and add its event handler.
-//		volume = createSlider("Volume: ", null, 0, 4, grid);
-//		volume.valueProperty().addListener(new InvalidationListener() {
-//			public void invalidated(Observable ov) {
-//				if (volume.isValueChanging()) {
-//					volumeChange(player);
-//				}
-//			}
-//		});
-//		
-//		
+	public void start(Stage primaryStage) {
 		
-		//All of the stuff commented out here relates to the (currently non-functioning) playback slider. Will
-		//come back to at a later date.
-//		
-//		ChangeListener listener = new ChangeListener() {
-//			 public void changed(ObservableValue o, Object oldValue, Object newValue) {
-//	                updateValues();
-//			 }
-//		};
-//		 player.currentTimeProperty().addListener(listener);
+		primaryStage.setTitle("Music Player");
+		
+		player = null;
+		songLoaded = false;
+		volume = null;
+		duration = null;
+		playTime = null;
+		
+		GridPane grid = new GridPane();
+		grid.setAlignment(Pos.CENTER);
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(2,25,25,25));
+		
+		playTime = new Label();
+		playTime.setPrefWidth(130);
+		playTime.setMinWidth(50);
+		grid.add(playTime, 1, 5);
+		
+		songTitle = new Label();
+		songTitle.setPrefWidth(200);
+		songTitle.setMinWidth(50);
+		grid.add(songTitle, 0, 0);
+		
+		mainScene = new Scene(grid, 300, 300);
+		
+		//Create the play/pause button and add its event handler.
+		Button play = makeButton("Play/Pause", 0, 8, grid);
+		play.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				if (songLoaded) {
+					alternatePlayback(player);
+				}
+				else {
+					open("media libraries/test.mp3");
+					songLoaded = true;
+					duration = player.getMedia().getDuration();
+					
+				}
+			}
+		});
+		
+		//Create the volume slider and add its event handler.
+		volume = createSlider("Volume: ", null, 0, 4, grid);
+		volume.valueProperty().addListener(new InvalidationListener() {
+			public void invalidated(Observable ov) {
+				if (volume.isValueChanging()) {
+					volumeChange(player);
+				}
+			}
+		});
+		
+		
+		
+//		All of the stuff commented out here relates to the (currently non-functioning) playback slider. Will
+//		come back to at a later date.
+		
 		
 		//Create the time slider and add its event handler.
-//		playTime = new Label("Time :");
-//		time = createSlider("Time: ", playTime, 1, 6, grid);
-//		InvalidationListener listener = new InvalidationListener() {
-//			public void invalidated(Observable ov) {
-//				updateValues();
-//			}
-//		};
-//		player.currentTimeProperty().addListener(listener); 
-//		
-//		primaryStage.setScene(new Scene(grid, 300, 275));
-//		primaryStage.show();
-//	}
+		playTime = new Label("Time :");
+		time = createSlider("Time: ", playTime, 0, 6, grid);
+		time.valueProperty().addListener(new InvalidationListener() {
+			public void invalidated(Observable o) {
+				if (time.isValueChanging()) {
+					changePosition(player);
+				}
+			}
+		});
+		
+		primaryStage.setScene(mainScene);
+		primaryStage.show();
+	}
 	@Override
 	/*Opens the specified music file and loads it into the player
 	 * @param fileName The name of the desired music file
@@ -108,20 +125,25 @@ public class MusicPlayer implements Player {
 		Media media = new Media(uri);
 		MediaPlayer musicPlayer = new MediaPlayer(media);
 		this.player = musicPlayer;
-		media.getMetadata().addListener((MapChangeListener<String, Object>) change -> {
-		    if (change.wasAdded()) {
-		    	setMetadata(change.getKey(), change.getValueAdded());
-		    }
+		player.setOnReady(new Runnable() {
+            public void run() {
+            	media.getMetadata().addListener((MapChangeListener<String, Object>) change -> {
+        		    if (change.wasAdded()) {
+        		    	setMetadata(change.getKey(), change.getValueAdded());
+        		    }
+        		});
+        		player.setVolume(1.0);
+        		duration = media.getDuration();
+        		updateValues();
+        		songLoaded = true;
+        		musicPlayer.play();	
+            }
 		});
-		player.setVolume(1.0);
-		updateValues();
-		songLoaded = true;
-		duration = media.getDuration();
-		musicPlayer.play();
 		return songLoaded;
-		}
+	}
+		
 	
-	//TODO Add albume, artist, image?
+	//TODO Add album, artist, image?
 	private void setMetadata(String key, Object value) {
 		if (key.equals("title")) {
 			songTitle.setText(value.toString());
@@ -146,16 +168,73 @@ public class MusicPlayer implements Player {
 	}
 	
 	private void volumeChange(MediaPlayer musicPlayer) {
-		player.setVolume(volume.getValue());
+		player.setVolume(volume.getValue() / 100.0);
 	}
 	
 	private void changePosition(MediaPlayer musicPlayer) {
 		if (player.getMedia().getDuration() != null) {
-			player.seek(duration.multiply(time.getValue() / 100.0));
+			player.seek(duration.multiply(time.getValue() / 100));
 		}
 		updateValues();
 	}
 	
+	/*This helper method keeps the current time of the song being played updated. */
+	protected void updateValues() {
+		if (time != null && volume != null && playTime != null) {
+			Platform.runLater(new Runnable() {
+				public void run() {
+					Duration currentTime = player.getCurrentTime();
+					playTime.setText(formatTime(currentTime, duration));
+					time.setDisable(duration.isUnknown());
+					if (!time.isDisabled() && duration.greaterThan(Duration.ZERO) && !time.isValueChanging()) {
+						double dur = currentTime.toMillis();
+						double ation;
+						if (dur <= 0) {
+							ation = 0.0;
+						}
+						else {
+							ation = currentTime.divide(dur).toMillis();
+						}
+						time.setValue(ation * 100.0);
+					}
+				}
+			});
+		}
+	}
+	
+	private static String formatTime(Duration elapsed, Duration duration) {
+		int intElapsed = (int) Math.floor(elapsed.toSeconds());
+		int elapsedHours = intElapsed / (60 * 60);
+		if (elapsedHours > 0) {
+			intElapsed -= elapsedHours * 60 * 60;
+		}
+		int elapsedMinutes = intElapsed / 60;
+		int elapsedSeconds = intElapsed - elapsedHours * 60 * 60 - elapsedMinutes * 60;
+
+		if (duration.greaterThan(Duration.ZERO)) {
+			int intDuration = (int) Math.floor(duration.toSeconds());
+			int durationHours = intDuration / (60 * 60);
+			if (durationHours > 0) {
+				intDuration -= durationHours * 60 * 60;
+			}
+			int durationMinutes = intDuration / 60;
+			int durationSeconds = intDuration - durationHours * 60 * 60 - durationMinutes * 60;
+			if (durationHours > 0) {
+				return String.format("%d:%02d:%02d/%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds,
+						durationHours, durationMinutes, durationSeconds);
+			} else {
+				return String.format("%02d:%02d/%02d:%02d", elapsedMinutes, elapsedSeconds, durationMinutes,
+						durationSeconds);
+			}
+		} else {
+			if (elapsedHours > 0) {
+				return String.format("%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds);
+			} else {
+				return String.format("%02d:%02d", elapsedMinutes, elapsedSeconds);
+			}
+		}
+	}
+
 	//TODO
 	private void skipPlayback(MediaPlayer musicPlayer) {
 		int z = 1;
@@ -215,7 +294,7 @@ public class MusicPlayer implements Player {
 			label = preLabel;
 		}
 		if (name.equals("Volume: ")) { 
-			slider = new Slider(0, 1, 1);
+			slider = new Slider(0, 100, 100);
 			slider.setPrefWidth(70);
 			slider.setMaxWidth(Region.USE_PREF_SIZE);
 			slider.setMinWidth(30);
@@ -241,92 +320,42 @@ public class MusicPlayer implements Player {
 		return slider;
 	}
 	
-	/*This helper method keeps the current time of the song being played updated. */
-	protected void updateValues() {
-		if (time != null && volume != null && playTime != null) {
-			Platform.runLater(new Runnable() {
-				@SuppressWarnings("deprecation")
-				public void run() {
-					Duration currentTime = player.getCurrentTime();
-					playTime.setText(formatTime(currentTime, duration));
-					time.setDisable(duration.isUnknown());
-					if (!time.isDisabled() && duration.greaterThan(Duration.ZERO) && !time.isValueChanging()) {
-						time.setValue(currentTime.divide(duration).toMillis() * 100.0);
-					}
-				}
-			});
-		}
-	}
 	
-	private static String formatTime(Duration elapsed, Duration duration) {
-		   int intElapsed = (int)Math.floor(elapsed.toSeconds());
-		   int elapsedHours = intElapsed / (60 * 60);
-		   if (elapsedHours > 0) {
-		       intElapsed -= elapsedHours * 60 * 60;
-		   }
-		   int elapsedMinutes = intElapsed / 60;
-		   int elapsedSeconds = intElapsed - elapsedHours * 60 * 60 
-		                           - elapsedMinutes * 60;
-		 
-		   if (duration.greaterThan(Duration.ZERO)) {
-		      int intDuration = (int)Math.floor(duration.toSeconds());
-		      int durationHours = intDuration / (60 * 60);
-		      if (durationHours > 0) {
-		         intDuration -= durationHours * 60 * 60;
-		      }
-		      int durationMinutes = intDuration / 60;
-		      int durationSeconds = intDuration - durationHours * 60 * 60 - 
-		          durationMinutes * 60;
-		      if (durationHours > 0) {
-		         return String.format("%d:%02d:%02d/%d:%02d:%02d", 
-		            elapsedHours, elapsedMinutes, elapsedSeconds,
-		            durationHours, durationMinutes, durationSeconds);
-		      } else {
-		          return String.format("%02d:%02d/%02d:%02d",
-		            elapsedMinutes, elapsedSeconds,durationMinutes, 
-		                durationSeconds);
-		      }
-		      } else {
-		          if (elapsedHours > 0) {
-		             return String.format("%d:%02d:%02d", elapsedHours, 
-		                    elapsedMinutes, elapsedSeconds);
-		            } else {
-		                return String.format("%02d:%02d",elapsedMinutes, 
-		                    elapsedSeconds);
-		            }
-		        }
-		    }
 	
-	public void MusicPlayer() {
-		player = null;
-		songLoaded = false;
-		volume = null;
-		duration = null;
-		playTime = null;
-		
-		GridPane grid = new GridPane();
-		grid.setAlignment(Pos.CENTER);
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(2,25,25,25));
-		
-		time = new Slider();
-		HBox.setHgrow(time,Priority.ALWAYS);
-		time.setMinWidth(50);
-		time.setMaxWidth(Double.MAX_VALUE);
-		grid.add(time, 0, 6);
-		
-		
-		playTime = new Label();
-		playTime.setPrefWidth(130);
-		playTime.setMinWidth(50);
-		grid.add(playTime, 1, 5);
-		
-		songTitle = new Label();
-		songTitle.setPrefWidth(200);
-		songTitle.setMinWidth(50);
-		grid.add(songTitle, 0, 0);
-		
-		mainScene = new Scene(grid, 300, 300);
+//	public void MusicPlayer() {
+//		player = null;
+//		songLoaded = false;
+//		volume = null;
+//		duration = null;
+//		playTime = null;
+//		
+//		GridPane grid = new GridPane();
+//		grid.setAlignment(Pos.CENTER);
+//		grid.setHgap(10);
+//		grid.setVgap(10);
+//		grid.setPadding(new Insets(2,25,25,25));
+//		
+//		time = new Slider();
+//		HBox.setHgrow(time,Priority.ALWAYS);
+//		time.setMinWidth(50);
+//		time.setMaxWidth(Double.MAX_VALUE);
+//		grid.add(time, 0, 6);
+//		
+//		
+//		playTime = new Label();
+//		playTime.setPrefWidth(130);
+//		playTime.setMinWidth(50);
+//		grid.add(playTime, 1, 5);
+//		
+//		songTitle = new Label();
+//		songTitle.setPrefWidth(200);
+//		songTitle.setMinWidth(50);
+//		grid.add(songTitle, 0, 0);
+//		
+//		mainScene = new Scene(grid, 300, 300);
+//	}
+	
+	public static void main(String[] args) {
+		launch();
 	}
 }
