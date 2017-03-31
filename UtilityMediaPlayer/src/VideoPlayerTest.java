@@ -216,7 +216,17 @@ public class VideoPlayerTest
 	@Test
 	public void testChangePositionNoVideo()
 	{
+		float initPos = testPlayer.getPlayer().getTime();
 		
+		long attemptedChangeTime = 100;
+		testPlayer.changePosition(attemptedChangeTime);
+		
+		assertTrue(testPlayer.getPlayer().getTime() == initPos);
+		assertFalse(testPlayer.getPlayer().isSeekable());
 	}
+	
+	
+	//Test captureScreen
+	
 	
 }

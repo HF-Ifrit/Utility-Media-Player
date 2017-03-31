@@ -18,9 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class VideoPlayer implements Player
-{
-	private static final ArrayList<String> SUPPORTED_IMAGE_FORMATS = new ArrayList<String>(Arrays.asList("jpg", "png", "jpeg"));
-	
+{	
 	private final JFrame frame;
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	private final EmbeddedMediaPlayer player;
@@ -71,7 +69,7 @@ public class VideoPlayer implements Player
 			@Override
 			public void actionPerformed(ActionEvent e) 
 			{
-				captureScreen("PNG");
+				captureScreen(ImageViewer.ImageFormat.PNG);
 			}
 		});
 		
@@ -225,17 +223,17 @@ public class VideoPlayer implements Player
 	 * Takes a screenshot of the currently playing video if the playback is paused
 	 * @param format Image format to save the image as
 	 */
-	private void captureScreen(String format)
+	private void captureScreen(ImageViewer.ImageFormat format)
 	{
-		if(!player.isPlaying() && SUPPORTED_IMAGE_FORMATS.contains(format.toLowerCase()))
+		if(!player.isPlaying())
 		{
 			try
 			{
 				long currentTime = System.currentTimeMillis();
-				String fileName = "capture" + currentTime + "." + format;
+				String fileName = "capture" + currentTime + "." + format.toString().toLowerCase();
 				
 				BufferedImage playerImage = player.getSnapshot();
-				ImageIO.write(playerImage, format, new File("media libraries/image/", fileName));
+				ImageIO.write(playerImage, format.toString().toLowerCase(), new File("media libraries/image/", fileName));
 				System.out.println("Screenshot saved in media libraries/image/" + fileName);
 			}
 			catch(IOException ex)
