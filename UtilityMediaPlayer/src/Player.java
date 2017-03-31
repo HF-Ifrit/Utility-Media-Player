@@ -1,7 +1,8 @@
 
 public interface Player 
 {
-	public void open(String fileName);
+	public boolean open(String fileName);
+	public boolean clear();
 	public void volumeChange(int newVolume);
 	public void alternatePlayback();
 	public void skipPlayback();
