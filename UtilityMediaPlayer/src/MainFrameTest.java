@@ -240,7 +240,7 @@ public class MainFrameTest{
 			tester.play();
 			assertEquals("file does play Video files", MainFrame.Mode.VIDEO, tester.getMode());
 			
-			//item 1
+			//item 4
 			filelist.setSelectedIndex(3);
 			tester.play();
 			assertEquals("file does play Video files", MainFrame.Mode.IMAGE, tester.getMode());
@@ -249,6 +249,17 @@ public class MainFrameTest{
 			fail("Unexpected exception/error: " + e.toString());
 		}
 		
+	}
+	
+	//test the volume operations
+	@Test
+	public void testVolumeControl(){
+		try{
+			fail("not implemented yet");
+		}
+		catch(Exception e){
+			fail("Unexpected exception/error: " + e.toString());
+		}
 	}
 
 }
