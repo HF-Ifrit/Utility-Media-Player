@@ -249,8 +249,6 @@ public class MusicPlayer implements Player {
 	}
 	
 	public void volumeChange(double newVolume) {
-		volumeChange(player);
-	public void volumeChange(double newVolume) {
 		if (newVolume > 0) {
 			player.setVolume(newVolume);
 		}
