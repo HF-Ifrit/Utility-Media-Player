@@ -180,16 +180,12 @@ public class VideoPlayer implements Player
 	}
 	
 	//VideoPlayer functionality implementation
-	@Override
-	public void open(String fileName)
-	{
-		openVideo(fileName);
-	}
+	
 	
 	/**
 	 * Opens the video player and plays its selected media if one has already been selected
 	 */
-	public void openVideo(String fileName)
+	public boolean openVideo(String fileName)
 	{
 		
 		loadVideo(fileName);
@@ -197,6 +193,10 @@ public class VideoPlayer implements Player
 			showPlayer();
 		
 		playVideo();
+		if(player.isPlaying())
+			return true;
+		else
+			return false;
 	}
 	
 	/**
@@ -293,10 +293,10 @@ public class VideoPlayer implements Player
 	 * Play video from a certain position
 	 * @param time Time in milliseconds to play from
 	 */
-	public void seekVideo(long time)
+	public void seekVideo(float time)
 	{
 		if(player.isSeekable())
-			player.setTime(time);
+			player.setPosition(time);
 	}
 	
 	/**
@@ -372,15 +372,19 @@ public class VideoPlayer implements Player
 	}
 
 	@Override
-	public boolean open(String fileName) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean open(String fileName)
+	{
+		return openVideo(fileName);
 	}
 
 	@Override
-	public boolean clear() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean clear() 
+	{
+		stopVideo();
+		player.release();
+		frame.dispose();
+		hasMedia = false;
+		return player.isPlayable();
 	}
 }
 

@@ -91,5 +91,76 @@ public class VideoPlayerTest
 		assertFalse(testPlayer.hasVideo());
 	}
 	
-	 
+	//Testing stopVideo method
+	
+	//Player should set playback back to beginning of video when stopped and should not be playing
+	@Test
+	public void testStopWhilePlaying() throws InterruptedException
+	{
+		testPlayer.loadVideo(video1);
+		testPlayer.showPlayer();
+		testPlayer.playVideo();
+		
+		Thread.sleep(2000);
+		testPlayer.stopVideo();
+		assertFalse(testPlayer.getPlayer().isPlaying());
+		assertTrue(testPlayer.getPlayer().getPosition() < 0);
+	}
+	
+	//Stopping when there is no video should not do anything
+	@Test
+	public void testStopNoVideo()
+	{
+		testPlayer.showPlayer();
+		testPlayer.stopVideo();
+		
+		assertFalse(testPlayer.getPlayer().isPlayable());
+	}
+	
+	//Stopping when paused should set playback to beginning of video
+	@Test
+	public void testStopWhilePaused() throws InterruptedException
+	{
+		testPlayer.loadVideo(video1);
+		testPlayer.showPlayer();
+		testPlayer.playVideo();
+		
+		Thread.sleep(1000);
+		testPlayer.pauseVideo();
+		testPlayer.stopVideo();
+		
+		assertTrue(testPlayer.getPlayer().getPosition() < 0);
+	}
+	
+	//Testing changePosition
+	
+	//Playback should start from the specified position if it is valid when paused
+	@Test
+	public void testValidChangePositionWhilePaused() throws InterruptedException
+	{
+		testPlayer.loadVideo(video1);
+		testPlayer.showPlayer();
+		testPlayer.playVideo();
+		Thread.sleep(1000);
+		
+		testPlayer.pauseVideo();
+		float initPos = testPlayer.getPlayer().getPosition();
+		
+		testPlayer.changePosition((int)initPos + 5);
+		
+		assertTrue(testPlayer.getPlayer().getPosition() == (int)initPos + 5);
+	}
+	
+	//Playback should start from the specified position if it is valid when playing
+	@Test
+	public void testValidChangePositionWhilePlaying()
+	{
+		testPlayer.loadVideo(video1);
+		testPlayer.showPlayer();
+		testPlayer.playVideo();
+		
+		float initPos = testPlayer.getPlayer().getPosition();
+		testPlayer.changePosition((long)initPos + 200);
+		assertTrue(testPlayer.getPlayer().getPosition() > initPos);
+	}
 }
