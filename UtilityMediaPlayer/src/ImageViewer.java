@@ -1,4 +1,7 @@
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -15,22 +18,26 @@ public class ImageViewer {
 	private static final double CLOCKWISE = 90;
 	private static final double COUNTERCLOCKWISE = 270;
 
+	
+	
 	enum ImageFormat {
 		JPG, PNG, GIF
 	}
 
-	ImageViewer() {
-		;
-	}
-
 	boolean open(String pathname) {
-		File f = new File(pathname);
-		Image image;
-		try {
-			image = new Image(f.toURI().toString());
-		} catch (Exception e) {
+		if(pathname == null) {
 			return false;
 		}
+		
+		File f = new File(pathname);
+		InputStream fileStream;
+		try {
+			fileStream = new FileInputStream(f);
+		} catch (FileNotFoundException e1) {
+			return false;
+		}
+		
+		Image image = new Image(fileStream);
 
 		if (image.isError()) {
 			return false;
@@ -80,7 +87,7 @@ public class ImageViewer {
 
 		Group root = new Group();
 		Scene scene = new Scene(root);
-		scene.setFill(Color.BLACK);
+		scene.setFill(Color.WHITE);
 		HBox box = new HBox();
 		box.getChildren().add(currentIV);
 		root.getChildren().add(box);
@@ -124,4 +131,31 @@ public class ImageViewer {
 		openImage = false;
 		return true;
 	}
+	
+	
+	//TODO: manual testing package; requires ImageViewer to extend Application
+/*	String workingDir = System.getProperty("user.dir");
+	String fileSep = System.getProperty("file.separator");
+	
+	String gifPath = workingDir + fileSep + "media libraries" + fileSep + "images" + fileSep + "gif.gif";
+	
+	@Override
+	public void start(Stage stage) {
+		
+		open(gifPath);
+		
+		rotateImage(false);
+		
+		stage.setTitle("ImageView");
+		stage.setWidth(600);
+		stage.setHeight(800);
+		stage.setScene(mainScene); 
+		stage.sizeToScene(); 
+		stage.show(); 
+	}
+	
+	public static void main(String[] args) {
+	Application.launch();
+}*/
+	
 }
