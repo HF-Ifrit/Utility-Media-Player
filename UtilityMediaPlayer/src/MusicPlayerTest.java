@@ -13,7 +13,13 @@ import javafx.scene.media.MediaPlayer;
 
 public class MusicPlayerTest {
 	MusicPlayer testPlayer;
-	String testSong1 = "media libraries/test.mp3";
+	//String testSong1 = "media libraries/test.mp3";
+	
+	String workingDir = System.getProperty("user.dir");
+	String fileSep = System.getProperty("file.separator");
+	
+	String testSong1 = workingDir + fileSep + "media libraries" + fileSep + "test.mp3";
+	
 	@Rule
 	public JavaFXThreadingRule jfxRule = new JavaFXThreadingRule();
 	
@@ -37,6 +43,7 @@ public class MusicPlayerTest {
 	//Testing the open() method. The audio file should be loaded, and its metadata displayed in the window.
 	@Test
 	public void testValidFile() throws InterruptedException {
+		System.out.println(testSong1);
 		System.out.println(testPlayer.open(testSong1));
 		System.out.println(testPlayer.player.getStatus());
 		
@@ -61,5 +68,45 @@ public class MusicPlayerTest {
 		testPlayer.open(testSong1);
 		testPlayer.alternatePlayback();
 		assertTrue(testPlayer.isPaused);
+	}
+	
+	@Test
+	//Testing the pause button multiple times
+	public void testPauseMultiple() {
+		testPlayer.open(testSong1);
+		testPlayer.alternatePlayback();
+		assertTrue(testPlayer.isPaused);
+		testPlayer.alternatePlayback();
+		assertFalse(testPlayer.isPaused);
+		testPlayer.alternatePlayback();
+		assertTrue(testPlayer.isPaused);
+		testPlayer.alternatePlayback();
+		assertFalse(testPlayer.isPaused);
+	}
+	
+	@Test
+	//Testing setting new volume to medium value
+	public void testSetVolumeMedium() {
+		testPlayer.open(testSong1);
+		testPlayer.volumeChange(0.5);
+	}
+	
+	@Test
+	//Testing setting volume to negative value
+	public void testSetVolumeNegative() {
+		testPlayer.open(testSong1);
+		testPlayer.volumeChange(-0.5);
+	}
+	
+	@Test
+	//Testing clear without opening a file first
+	public void testClearEmpty() {
+		assertTrue(testPlayer.clear());
+	}
+	
+	@Test
+	public void testClearOpen() {
+		testPlayer.open(testSong1);
+		assertTrue(testPlayer.clear());
 	}
 }

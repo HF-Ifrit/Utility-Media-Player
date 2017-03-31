@@ -279,13 +279,15 @@ public class MusicPlayer implements Player {
 		return this.mainScene;
 	}
 	
-	/*Helper method that generates a Button and adds it to the grid. Used for setup.
+	
+	/*
+	Helper method that generates a Button and adds it to the grid. Used for setup.
 	 * @param buttonName The text displayed on the button
 	 * @param column The index of the column on the grid
 	 * @param row The index of the row on the grid
 	 * @param grid The GridPanel that the Button is being placed on
 	 * @return A reference to the newly generated button
-	 */
+	 
 	private Button makeButton(String buttonName, int column, int row, GridPane grid) {
 		HBox box = new HBox(10);
 		Button button = new Button();
@@ -329,7 +331,7 @@ public class MusicPlayer implements Player {
 		grid.add(label, column, row - 1);
 		grid.add(slider, column, row);
 		return slider;
-	}
+	}*/
 	
 	
 	
