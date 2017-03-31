@@ -132,9 +132,15 @@ public class ImageViewerTest {
 		
 		assertNull(testViewer.getScene());
 	}
+	
+	@Test
+	public void gifToMP4BadFormat() {
+		testViewer.open(imagePath);
+		assertTrue(testViewer.gifToVideo(VideoPlayer.VideoFormat.MP4));
+	}
 
 	@Test
-	public void gifToMP4() {
+	public void gifToMP4Good() {
 		testViewer.open(gifPath);
 		assertTrue(testViewer.gifToVideo(VideoPlayer.VideoFormat.MP4));
 	}
