@@ -283,12 +283,12 @@ public class VideoPlayer implements Player
 		if(filePath != null)
 		{
 			if(player.isPlaying())
-			stopVideo();
+				stopVideo();
 			loaded = player.prepareMedia(filePath);
 			player.parseMedia();
-			videoDuration = player.getMediaMeta().getLength() / 1000;
-			timeSlider.setMaximum((int)videoDuration);
 			hasMedia = true;
+			showPlayer();
+			player.start();
 		}
 		
 		return loaded;
@@ -298,10 +298,10 @@ public class VideoPlayer implements Player
 	 * Play video from a certain position
 	 * @param time Time in milliseconds to play from
 	 */
-	public void seekVideo(float time)
+	public void seekVideo(long time)
 	{
-		if(player.isSeekable())
-			player.setPosition(time);
+		if(player.isSeekable() && time > 0.0 && time < player.getLength())
+			player.setTime(time);
 	}
 	
 	/**
