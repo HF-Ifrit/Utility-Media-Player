@@ -23,8 +23,8 @@ public class ImageViewer {
 		;
 	}
 
-	boolean open(String filename) {
-		File f = new File(filename);
+	boolean open(String pathname) {
+		File f = new File(pathname);
 		Image image;
 		try {
 			image = new Image(f.toURI().toString());
@@ -113,8 +113,9 @@ public class ImageViewer {
 		return true;
 	}
 
+	//TODO: implement this
 	boolean gifToVideo(VideoPlayer.VideoFormat format) {
-
+		return false;
 	}
 
 	boolean clear() {
