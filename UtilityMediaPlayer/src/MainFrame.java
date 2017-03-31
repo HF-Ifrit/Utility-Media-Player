@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+
 import java.awt.Container;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
@@ -8,8 +9,20 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.*;
+
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.embed.swing.JFXPanel;
+import javafx.geometry.Insets;
+import javafx.scene.*;
 import javax.swing.border.BevelBorder;
 import java.awt.Font;
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 
 //primary GUI window that will interact and control other modules
 public class MainFrame extends JFrame {
@@ -21,9 +34,12 @@ public class MainFrame extends JFrame {
 	private JMenuItem menuItem;
 	private JRadioButtonMenuItem rbMenuItem;
 	private JCheckBoxMenuItem cbMenuItem;
+	private Button playButton;
 	
 	JTextArea output;
     JScrollPane scrollPane;
+    
+    
 
 	/**
 	 * Launch the application.
@@ -39,22 +55,41 @@ public class MainFrame extends JFrame {
 			}
 		});
 	}
+	
 
 	/**
 	 * Create the frame.
 	 */
 	private MainFrame() {
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1040, 543);
 		
+        
+      
 		
-		
-		
-		
-		//File OptionsMenu
-		String[] petStrings = { "Bird", "Cat", "Dog", "Rabbit", "Pig" };
 	}
 	
+	//creates gui 
+	private static void createAndShowGUI() {
+        //Create and set up the window.
+        JFrame frame = new JFrame("MenuLookDemo");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+ 
+        //Create and set up the content pane.
+        MainFrame demo = new MainFrame();
+        frame.setJMenuBar(demo.createTextMenuBar());
+        frame.setContentPane(demo.createContentPane());
+        frame.getContentPane().add(createFileList(), BorderLayout.WEST);
+        frame.add(demo.createControlBar(), BorderLayout.SOUTH);
+ 
+        //Display the window.
+        frame.setSize(1600, 900);
+        frame.setVisible(true);
+        
+    }
+	
+	//creates the menu bar with all options on it
 	private JMenuBar createTextMenuBar(){
 
 		JMenuBar menuBar;
@@ -147,23 +182,84 @@ public class MainFrame extends JFrame {
         }
     }
 	
-	//creates gui 
-	private static void createAndShowGUI() {
-        //Create and set up the window.
-        JFrame frame = new JFrame("MenuLookDemo");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
- 
-        //Create and set up the content pane.
-        MainFrame demo = new MainFrame();
-        frame.setJMenuBar(demo.createTextMenuBar());
-        frame.setContentPane(demo.createContentPane());
-        frame.getContentPane().add(createFileList(), BorderLayout.WEST);
-        
- 
-        //Display the window.
-        frame.setSize(1600, 900);
-        frame.setVisible(true);
+    /**
+     * creates the button controller for the frame
+     * 
+     * @return JFXPanel holding all buttons for the lower Controller Panel
+     */
+    private JFXPanel createControlBar(){
+    	/**
+    	 * creates player interface panel
+    	 */
+    	JFXPanel fxPanel = new JFXPanel();
+    	GridPane grid = new GridPane();
+    	
+    	fxPanel.setScene(new Scene(newHBoxBar()));
+    	
+    	return fxPanel;
     }
+    
+    //helper method that adds the HBox Pane to the JFXPanel
+    private HBox newHBoxBar(){
+    	Button currentButton;
+    	Image currentImage;
+    	ImageView imageview;
+    	
+    	//initializes hbox
+    	HBox hbox = new HBox();
+        hbox.setPadding(new Insets(15, 12, 15, 400));
+        hbox.setSpacing(30);
+        
+        
+        //adds back button
+        currentImage = new Image(getClass().getResourceAsStream("/internaldata/Rewind.png"));
+    	currentButton = new Button();
+    	imageview = new ImageView(currentImage);
+    	imageview.setFitHeight(50);
+    	imageview.setFitWidth(50);
+    	currentButton.setGraphic(imageview);
+
+    	hbox.getChildren().add(currentButton);
+    	
+        
+        //adds PlayButton image and button
+    	Image playImage = new Image(getClass().getResourceAsStream("/internaldata/Play.png"));
+    	Button playButtonTemp = new Button();
+    	playButton = playButtonTemp;
+    	imageview = new ImageView(playImage);
+    	imageview.setFitHeight(50);
+    	imageview.setFitWidth(50);
+    	playButtonTemp.setGraphic(imageview);
+    	
+    	hbox.getChildren().add(playButtonTemp);
+    	
+    	
+    	
+    	//add forward button
+    	currentImage = new Image(getClass().getResourceAsStream("/internaldata/Forward.png"));
+     	currentButton = new Button();
+     	imageview = new ImageView(currentImage);
+     	imageview.setFitHeight(50);
+     	imageview.setFitWidth(50);
+     	currentButton.setGraphic(imageview);
+
+     	hbox.getChildren().add(currentButton);
+     	
+     	//add volume control button
+     	volume = createSlider("Volume: ", null, 0, 4, grid);
+		volume.valueProperty().addListener(new InvalidationListener() {
+			public void invalidated(Observable ov) {
+				if (volume.isValueChanging()) {
+					volumeChange(player);
+				}
+			}
+		});
+    	
+    	
+    	return hbox;
+    }
+    
+    
 	
 	/**
 	 *TODO
@@ -198,9 +294,18 @@ public class MainFrame extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			e.getSource();
 			System.out.println("Saving file.....");
 
 		}
 
+	}
+	
+	/**
+	 * 
+	 * internal testing class
+	 */
+	public class testSuite{
+		
 	}
 }
