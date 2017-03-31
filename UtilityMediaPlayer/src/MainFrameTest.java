@@ -18,7 +18,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 
-public class MainFrameTest {
+public class MainFrameTest{
 	
 	private MainFrame main;
 	//reference to Main Frame test suite
@@ -35,12 +35,12 @@ public class MainFrameTest {
 	//cleanup after each test
 	@After
 	public void tearDown() throws Exception {
-
+		tester.getMainFrame().setVisible(false);
 		tester.reset();
 
 
 
-	    }
+	}
 
 
 	//test that main method runs without errors
@@ -162,6 +162,93 @@ public class MainFrameTest {
 		catch(Exception e){
 			fail("Unexpected exception/error: " + e.toString());
 		}
+	}
+	
+	//test backFile
+	@Test
+	public void testBackFile(){
+		try{
+			JFrame controller = tester.createAndShowGUI();
+			int listSize = tester.getFileList().getModel().getSize();
+			int endindex = listSize - 1;
+			JList<String> filelist = tester.getFileList();
+			assertEquals("initial file list does not contain correct selection index" , -1, filelist.getSelectedIndex());
+			tester.backFile();
+			assertEquals("intial file list does not loop to back" , endindex ,filelist.getSelectedIndex());
+			tester.backFile();
+			assertEquals("file list does decrement to end - 1" , endindex -1 ,filelist.getSelectedIndex());
+			tester.backFile();
+			assertEquals("file list does decrement to end - 2" , endindex - 2 ,filelist.getSelectedIndex());
+			tester.backFile();
+			assertEquals("file list does decrement to end - 3" , endindex - 3 ,filelist.getSelectedIndex());
+		}
+		catch(Exception e){
+			fail("Unexpected exception/error: " + e.toString());
+		}
+	}
+	
+	//test forwardFile operations
+	@Test
+	public void testForwardfile(){
+		try{
+			JFrame controller = tester.createAndShowGUI();
+			int listSize = tester.getFileList().getModel().getSize();
+			int endindex = listSize - 1;
+			int startindex = 0;
+			JList<String> filelist = tester.getFileList();
+			assertEquals("initial file list does not contain correct selection index" , -1, filelist.getSelectedIndex());
+			tester.forwardFile();
+			assertEquals("initial file list does not loop to front" , startindex ,filelist.getSelectedIndex());
+			
+			filelist.setSelectedIndex(endindex);
+			tester.forwardFile();
+			assertEquals("file list does not loop to front from end index" , startindex ,filelist.getSelectedIndex());
+			tester.forwardFile();
+			assertEquals("file list does increment to end + 1" , startindex + 1 ,filelist.getSelectedIndex());
+			tester.forwardFile();
+			assertEquals(" file list does increment to end +2" , startindex + 2 ,filelist.getSelectedIndex());
+			tester.forwardFile();
+			assertEquals("file list does increment to end + 3" , startindex + 3 ,filelist.getSelectedIndex());
+		}
+		catch(Exception e){
+			fail("Unexpected exception/error: " + e.toString());
+		}
+	}
+	
+	//test play operations
+	@Test
+	public void testPlay(){
+		try{
+			JFrame controller = tester.createAndShowGUI();
+			assertEquals("file does not start in empty mode", MainFrame.Mode.EMPTY, tester.getMode());
+			tester.play();
+			assertEquals("file does not start in empty mode", MainFrame.Mode.EMPTY, tester.getMode());
+			JList<String> filelist = tester.getFileList();
+			
+			//item 1
+			filelist.setSelectedIndex(0);
+			tester.play();
+			assertEquals("file does play Video files of mp4", MainFrame.Mode.VIDEO, tester.getMode());
+
+			//item 2
+			filelist.setSelectedIndex(1);
+			tester.play();
+			assertEquals("file does play Audio files of mp3", MainFrame.Mode.AUDIO, tester.getMode());
+			
+			//item 3
+			filelist.setSelectedIndex(2);
+			tester.play();
+			assertEquals("file does play Video files", MainFrame.Mode.VIDEO, tester.getMode());
+			
+			//item 1
+			filelist.setSelectedIndex(3);
+			tester.play();
+			assertEquals("file does play Video files", MainFrame.Mode.IMAGE, tester.getMode());
+		}
+		catch(Exception e){
+			fail("Unexpected exception/error: " + e.toString());
+		}
+		
 	}
 
 }
