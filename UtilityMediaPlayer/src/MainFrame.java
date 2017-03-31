@@ -235,7 +235,7 @@ public class MainFrame extends JFrame {
     	imageview.setFitHeight(50);
     	imageview.setFitWidth(50);
     	currentButton.setGraphic(imageview);
-    	currentButton.setOnAction(jfxControl.new forwardFile());
+    	currentButton.setOnAction(jfxControl.new backFile());
     	currentButton.setAccessibleRoleDescription("Rewind");
    
 
