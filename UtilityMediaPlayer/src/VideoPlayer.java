@@ -1,7 +1,6 @@
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
-import uk.co.caprica.vlcj.player.media.Media;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -12,10 +11,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.sql.Date;
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Arrays;
+
 
 public class VideoPlayer implements Player
 {	
@@ -223,18 +219,20 @@ public class VideoPlayer implements Player
 	 * Takes a screenshot of the currently playing video if the playback is paused
 	 * @param format Image format to save the image as
 	 */
-	private void captureScreen(ImageViewer.ImageFormat format)
+	public void captureScreen(ImageViewer.ImageFormat format)
 	{
 		if(!player.isPlaying())
 		{
 			try
 			{
-				long currentTime = System.currentTimeMillis();
-				String fileName = "capture" + currentTime + "." + format.toString().toLowerCase();
+				//long currentTime = System.currentTimeMillis();
+				long currentTime = player.getTime();
+				long maxLength = player.getLength();
+				String fileName = "capture" + currentTime + "_" + maxLength + "." + format.toString().toLowerCase();
 				
 				BufferedImage playerImage = player.getSnapshot();
-				ImageIO.write(playerImage, format.toString().toLowerCase(), new File("media libraries/image/", fileName));
-				System.out.println("Screenshot saved in media libraries/image/" + fileName);
+				ImageIO.write(playerImage, format.toString().toLowerCase(), new File("output/", fileName));
+				System.out.println("Screenshot saved in output/" + fileName);
 			}
 			catch(IOException ex)
 			{
