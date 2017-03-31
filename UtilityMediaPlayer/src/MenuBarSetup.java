@@ -21,7 +21,7 @@ public class MenuBarSetup {
 	/**creates the fileMenu tab and attaches it to input
 	 * @param menuBar the JMenuBar that the function will attach the file menu section to
 	 */
-	public static JMenuBar attachFileMenu(JMenuBar menuBar, MainFrame mainframe){
+	public static JMenuBar attachFileMenu(JMenuBar menuBar, MainFrame mainFrame){
 		//temporary loading spaces on creation
 		JMenu menu, submenu;
 		JMenuItem menuItem;
@@ -45,7 +45,7 @@ public class MenuBarSetup {
          * TODO demo
          * change listener to not be coupled
          */
-        menuItem.addActionListener(mainframe.new openFile());
+        menuItem.addActionListener(mainFrame.new openFile());
         menu.add(menuItem);
         
         //OpenMultipleFiles
@@ -59,7 +59,7 @@ public class MenuBarSetup {
          * TODO demo
          * change listener to not be coupled
          */
-        menuItem.addActionListener(mainframe.new openMultipleFiles());
+        menuItem.addActionListener(mainFrame.new openMultipleFiles());
         menu.add(menuItem);
         
         //SaveFile
@@ -73,7 +73,7 @@ public class MenuBarSetup {
          * TODO demo
          * change listener to not be coupled
          */
-        menuItem.addActionListener(mainframe.new openSaveFile());
+        menuItem.addActionListener(mainFrame.new openSaveFile());
         menu.add(menuItem);
         
       //ConvertFile
@@ -487,6 +487,8 @@ public class MenuBarSetup {
 		return menuBar;
 	}
 	
+	
+	//Image MenuBar
 	public static JMenuBar attachImageMenu(JMenuBar menuBar){
 		//temporary loading spaces on creation
 		JMenu menu, submenu;
@@ -496,7 +498,7 @@ public class MenuBarSetup {
 		
 		
 		
-		//Audio Tab
+		//Image Tab
         menu = new JMenu("Image");
         menu.setMnemonic(KeyEvent.VK_I);
         menu.getAccessibleContext().setAccessibleDescription(
@@ -575,7 +577,8 @@ public class MenuBarSetup {
 	
 	
 	
-	/**creates the helpMenu tab and attaches it to input
+	/**
+	 * creates the helpMenu tab and attaches it to input
 	 * @param menuBar the JMenuBar that the function will attach the help menu section to
 	 */
 	public static JMenuBar attachHelpMenu(JMenuBar menuBar){
@@ -615,4 +618,10 @@ public class MenuBarSetup {
 		
 		return menuBar;
 	}
+	
+	/**
+	 * attaches player buttons to lower panel
+	 */
+	
+	
 }
