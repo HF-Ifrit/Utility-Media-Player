@@ -4,30 +4,30 @@ import java.awt.Container;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
+
 
 import javax.swing.*;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.*;
 import javax.swing.border.BevelBorder;
 import java.awt.Font;
 import javafx.scene.control.Button;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+
 
 //primary GUI window that will interact and control other modules
 public class MainFrame extends JFrame {
 
-	private JList list;
+	
 	private JPanel contentPane;
 	private JMenuBar menuBar;
 	private JMenu menu, submenu;
@@ -35,11 +35,26 @@ public class MainFrame extends JFrame {
 	private JRadioButtonMenuItem rbMenuItem;
 	private JCheckBoxMenuItem cbMenuItem;
 	private Button playButton;
+	private Slider volumeSlider;
+	
+	//JFX controllers
+	private JFXController jfxControl;
 	
 	JTextArea output;
     JScrollPane scrollPane;
+    JList fileList;
     
+    //players/viewers
+    private Player currentPlayer;
+    private ImageViewer currentImage;
     
+    //player mode that is currently loaded
+    private Mode mode;
+    
+    //enum to determine what mode the current controller is set to
+    public enum Mode{
+    	EMPTY,VIDEO,IMAGE,MUSIC
+    }
 
 	/**
 	 * Launch the application.
@@ -62,6 +77,8 @@ public class MainFrame extends JFrame {
 	 */
 	private MainFrame() {
 		
+		currentPlayer = new MusicPlayer();
+		jfxControl = new JFXController(this);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1040, 543);
 		
@@ -73,20 +90,20 @@ public class MainFrame extends JFrame {
 	//creates gui 
 	private static void createAndShowGUI() {
         //Create and set up the window.
-        JFrame frame = new JFrame("MenuLookDemo");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JFrame displayFrame = new JFrame("UMP Controller");
+        displayFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  
         //Create and set up the content pane.
         MainFrame demo = new MainFrame();
-        frame.setJMenuBar(demo.createTextMenuBar());
-        frame.setContentPane(demo.createContentPane());
-        frame.getContentPane().add(createFileList(), BorderLayout.WEST);
-        frame.add(demo.createControlBar(), BorderLayout.SOUTH);
+        displayFrame.setJMenuBar(demo.createTextMenuBar());
+        displayFrame.setContentPane(demo.createContentPane());
+        demo.setFileList(createFileList());
+        displayFrame.getContentPane().add(demo.fileList, BorderLayout.WEST);
+        displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
  
         //Display the window.
-        frame.setSize(1600, 900);
-        frame.setVisible(true);
-        
+        displayFrame.setSize(1600, 900);
+        displayFrame.setVisible(true);
     }
 	
 	//creates the menu bar with all options on it
@@ -118,7 +135,7 @@ public class MainFrame extends JFrame {
 		return menuBar;
 	}
 	
-	//creates the sideView for 
+	//creates the sideView for file of lists
 	private static JList<String> createFileList(){
 		JList<String> list;
 		list = new JList<String>();
@@ -135,7 +152,13 @@ public class MainFrame extends JFrame {
 		list.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
 		return list;
+	}
+	
+	//sets the MainFrame's fileList variable
+	public void setFileList(JList<String> fileList){
+		this.fileList = fileList;
 	}
 	
 	
@@ -151,6 +174,7 @@ public class MainFrame extends JFrame {
         output = new JTextArea(5, 30);
         output.setEditable(false);
         scrollPane = new JScrollPane(output);
+        scrollPane.setVisible(true);
        
  
         //Add the text area to the content pane.
@@ -161,15 +185,7 @@ public class MainFrame extends JFrame {
         return contentPane;
     }
 	
-	//creates content
-	public void addJList(){
-		
-        //create list area
-        list = createFileList();
-        
-        //add list to content pane
-		getContentPane().add(list, BorderLayout.SOUTH);
-	}
+
 	
 	 /** Returns an ImageIcon, or null if the path was invalid. */
     protected static ImageIcon createImageIcon(String path) {
@@ -218,6 +234,9 @@ public class MainFrame extends JFrame {
     	imageview.setFitHeight(50);
     	imageview.setFitWidth(50);
     	currentButton.setGraphic(imageview);
+    	currentButton.setOnAction(new backFile());
+    	currentButton.setAccessibleRoleDescription("Rewind");
+   
 
     	hbox.getChildren().add(currentButton);
     	
@@ -225,11 +244,12 @@ public class MainFrame extends JFrame {
         //adds PlayButton image and button
     	Image playImage = new Image(getClass().getResourceAsStream("/internaldata/Play.png"));
     	Button playButtonTemp = new Button();
-    	playButton = playButtonTemp;
     	imageview = new ImageView(playImage);
     	imageview.setFitHeight(50);
     	imageview.setFitWidth(50);
     	playButtonTemp.setGraphic(imageview);
+    	playButtonTemp.setAccessibleRoleDescription("Play");
+    	this.playButton = playButtonTemp;
     	
     	hbox.getChildren().add(playButtonTemp);
     	
@@ -242,18 +262,44 @@ public class MainFrame extends JFrame {
      	imageview.setFitHeight(50);
      	imageview.setFitWidth(50);
      	currentButton.setGraphic(imageview);
+     	currentButton.setAccessibleRoleDescription("Forward");
+     	currentButton.setOnAction(new forwardFile());
 
      	hbox.getChildren().add(currentButton);
      	
-     	//add volume control button
-     	volume = createSlider("Volume: ", null, 0, 4, grid);
+     	
+     
+     	Slider slider = new Slider(0, 100, 100);
+		slider.setPrefWidth(300);
+		slider.setMaxWidth(300);
+		slider.setMinWidth(30);
+		slider.setAccessibleRoleDescription("Spacing");
+		
+		
+		slider.setVisible(false);
+		hbox.getChildren().add(slider);
+     	
+		
+		
+		//add volume control slider
+		final Slider volume = new Slider(0, 100, 100);
+		volume.setPrefWidth(200);
+		volume.setMaxWidth(300);
+		volume.setMinWidth(30);
+		volume.setAccessibleRoleDescription("Volume");
+		
+		//responds to slider movements
+		/*
 		volume.valueProperty().addListener(new InvalidationListener() {
 			public void invalidated(Observable ov) {
 				if (volume.isValueChanging()) {
-					volumeChange(player);
+					currentPlayer.volumeChange((int) volume.getValue());
 				}
 			}
 		});
+		*/
+		
+		hbox.getChildren().add(volume);
     	
     	
     	return hbox;
@@ -262,7 +308,7 @@ public class MainFrame extends JFrame {
     
 	
 	/**
-	 *TODO
+	 *TODO 
 	 *integrate actions with other components
 	 *
 	 */
@@ -272,7 +318,7 @@ public class MainFrame extends JFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			System.out.println("Opening file....");
+			System.out.println("Opening file...");
 			
 		}
 		
@@ -283,7 +329,7 @@ public class MainFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Opening multiple files!");
+				System.out.println("Opening multiple files...");
 				
 			}
 			
@@ -295,17 +341,118 @@ public class MainFrame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			e.getSource();
-			System.out.println("Saving file.....");
+			System.out.println("Saving file...");
 
 		}
 
 	}
+
+	
+	//controller for Rewind Button
+	public class backFile implements EventHandler<javafx.event.ActionEvent>{
+
+		@Override
+		public void handle(javafx.event.ActionEvent event) {
+			int setIndex = fileList.getModel().getSize() - 1;
+			if(fileList.getSelectedIndex() > 0)
+				fileList.setSelectedIndex(fileList.getSelectedIndex() - 1);
+			else
+				fileList.setSelectedIndex(setIndex);
+		}
+
+	}
+	
+	//controller for Forward Button
+	public class forwardFile implements EventHandler<javafx.event.ActionEvent>{
+
+		@Override
+		public void handle(javafx.event.ActionEvent event) {
+			int setIndex = 0;
+			if(fileList.getSelectedIndex() < fileList.getModel().getSize() - 1)
+				fileList.setSelectedIndex(fileList.getSelectedIndex() + 1);
+			else
+				fileList.setSelectedIndex(setIndex);
+
+		}
+
+	}
+
+	
+	/**
+	 * Testing variables
+	 * 
+	 */
+	public JFrame createAndShowGUI;
 	
 	/**
 	 * 
 	 * internal testing class
+	 * provides access to private variables and methods only for testing purposes only
+	 * remove during release
 	 */
-	public class testSuite{
+	public static class TestSuite{
+		/**
+		 * reference to a controlled testing instance of a MainFrame
+		 */
+		public MainFrame mainFrame;
 		
+		
+		//creates a new MainFrame within the TestSuite
+		public void newMainFrame(){
+			mainFrame = new MainFrame();
+		}
+		
+		//returns current instance of the MainFrame
+		public MainFrame getMainFrame(){
+			return mainFrame;
+		}
+		
+		
+		//returns frame created by createAndShowGUI for testing purposes
+		public static JFrame createAndShowGUI() {
+	        //Create and set up the window.
+	        JFrame frame = new JFrame("UMP Controller");
+	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	 
+	        //Create and set up the content pane.
+	        MainFrame demo = new MainFrame();
+	        frame.setJMenuBar(demo.createTextMenuBar());
+	        frame.setContentPane(demo.createContentPane());
+	        frame.getContentPane().add(MainFrame.createFileList(), BorderLayout.WEST);
+	        frame.add(demo.createControlBar(), BorderLayout.SOUTH);
+	 
+	        //Display the window.
+	        frame.setSize(1600, 800);
+	        frame.setVisible(true);
+	        
+	        return frame;
+	    }
+		
+		//returns JList from createFileList
+		public static JList<String> createFileList(){
+			 
+	        
+	        //add list to content pane
+			return MainFrame.createFileList();
+		}
+		
+		//returns an image icon from the createImageIcon 
+		 public static ImageIcon createImageIcon(String path) {
+		        return MainFrame.createImageIcon(path);
+		 }
+		 
+		 //returns JFXPanel Control Bar
+		 public JFXPanel createControlBar(){
+		    	return mainFrame.createControlBar();
+		 }
+		 
+		 public HBox newHBoxBar(){
+			 return mainFrame.newHBoxBar();
+		 }
+		
+		//resets all stored values in the TestSuite
+		public void reset(){
+			mainFrame = null;
+		}
 	}
 }

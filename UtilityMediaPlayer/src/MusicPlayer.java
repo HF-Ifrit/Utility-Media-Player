@@ -38,6 +38,11 @@ public class MusicPlayer implements Player {
 	Label songTitle;
 	Scene mainScene;
 	
+	enum MusicFormat {
+   	 MP3,
+   	 FLAC,
+    }
+	
 	/*The method that starts when the MusicPlayer is run. Will be delegated to a controller later in development;
 	 * for now, this allows the MusicPlayer to function as a stand-alone application.(non-Javadoc)
 	 * @see javafx.application.Application#start(javafx.stage.Stage)
@@ -274,13 +279,15 @@ public class MusicPlayer implements Player {
 		return this.mainScene;
 	}
 	
-	/*Helper method that generates a Button and adds it to the grid. Used for setup.
+	
+	/*
+	Helper method that generates a Button and adds it to the grid. Used for setup.
 	 * @param buttonName The text displayed on the button
 	 * @param column The index of the column on the grid
 	 * @param row The index of the row on the grid
 	 * @param grid The GridPanel that the Button is being placed on
 	 * @return A reference to the newly generated button
-	 */
+	 
 	private Button makeButton(String buttonName, int column, int row, GridPane grid) {
 		HBox box = new HBox(10);
 		Button button = new Button();
@@ -324,11 +331,11 @@ public class MusicPlayer implements Player {
 		grid.add(label, column, row - 1);
 		grid.add(slider, column, row);
 		return slider;
-	}
+	}*/
 	
 	
 	
-	public void MusicPlayer() {
+	public MusicPlayer() {
 		player = null;
 		songLoaded = false;
 		volume = null;

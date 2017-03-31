@@ -18,9 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class VideoPlayer implements Player
-{
-	private static final ArrayList<String> SUPPORTED_IMAGE_FORMATS = new ArrayList<String>(Arrays.asList("jpg", "png", "jpeg"));
-	
+{	
 	private final JFrame frame;
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	private final EmbeddedMediaPlayer player;
@@ -36,6 +34,11 @@ public class VideoPlayer implements Player
 	private JSlider volumeSlider;
 	private JSlider timeSlider;
 	private JButton captureButton;
+	
+	enum VideoFormat {
+   	 WEBM,
+   	 MP4
+    }
 	
 	//Constructors
 	public VideoPlayer()
@@ -66,7 +69,7 @@ public class VideoPlayer implements Player
 			@Override
 			public void actionPerformed(ActionEvent e) 
 			{
-				captureScreen("PNG");
+				captureScreen(ImageViewer.ImageFormat.PNG);
 			}
 		});
 		
@@ -133,10 +136,7 @@ public class VideoPlayer implements Player
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				if(player.isPlaying())
-					pauseVideo();
-				else
-					playVideo();
+				alternatePlayback();
 			}
 		});
 		
@@ -183,16 +183,12 @@ public class VideoPlayer implements Player
 	}
 	
 	//VideoPlayer functionality implementation
-	@Override
-	public void open(String fileName)
-	{
-		openVideo(fileName);
-	}
+	
 	
 	/**
 	 * Opens the video player and plays its selected media if one has already been selected
 	 */
-	public void openVideo(String fileName)
+	public boolean openVideo(String fileName)
 	{
 		
 		loadVideo(fileName);
@@ -200,6 +196,10 @@ public class VideoPlayer implements Player
 			showPlayer();
 		
 		playVideo();
+		if(player.isPlaying())
+			return true;
+		else
+			return false;
 	}
 	
 	/**
@@ -223,17 +223,17 @@ public class VideoPlayer implements Player
 	 * Takes a screenshot of the currently playing video if the playback is paused
 	 * @param format Image format to save the image as
 	 */
-	private void captureScreen(String format)
+	private void captureScreen(ImageViewer.ImageFormat format)
 	{
-		if(!player.isPlaying() && SUPPORTED_IMAGE_FORMATS.contains(format.toLowerCase()))
+		if(!player.isPlaying())
 		{
 			try
 			{
 				long currentTime = System.currentTimeMillis();
-				String fileName = "capture" + currentTime + "." + format;
+				String fileName = "capture" + currentTime + "." + format.toString().toLowerCase();
 				
 				BufferedImage playerImage = player.getSnapshot();
-				ImageIO.write(playerImage, format, new File("media libraries/image/", fileName));
+				ImageIO.write(playerImage, format.toString().toLowerCase(), new File("media libraries/image/", fileName));
 				System.out.println("Screenshot saved in media libraries/image/" + fileName);
 			}
 			catch(IOException ex)
@@ -281,12 +281,12 @@ public class VideoPlayer implements Player
 		if(filePath != null)
 		{
 			if(player.isPlaying())
-			stopVideo();
+				stopVideo();
 			loaded = player.prepareMedia(filePath);
 			player.parseMedia();
-			videoDuration = player.getMediaMeta().getLength() / 1000;
-			timeSlider.setMaximum((int)videoDuration);
 			hasMedia = true;
+			showPlayer();
+			player.start();
 		}
 		
 		return loaded;
@@ -298,7 +298,7 @@ public class VideoPlayer implements Player
 	 */
 	public void seekVideo(long time)
 	{
-		if(player.isSeekable())
+		if(player.isSeekable() && time > 0.0 && time < player.getLength())
 			player.setTime(time);
 	}
 	
@@ -340,15 +340,18 @@ public class VideoPlayer implements Player
 	
 	//Player interface implementation
 	@Override
-	public void volumeChange(int newVolume) 
+	public void volumeChange(double newVolume) 
 	{
-		changeVolume(newVolume);
+		changeVolume((int)newVolume);
 	}
 
 	@Override
 	public void alternatePlayback() 
 	{
-		// TODO Auto-generated method stub
+		if(getPlayer().isPlaying())
+			pauseVideo();
+		else
+			playVideo();
 	}
 
 	@Override
@@ -369,9 +372,22 @@ public class VideoPlayer implements Player
 		VideoPlayer v = new VideoPlayer("media libraries/video/kaius_presentation.mp4");
 		v.showPlayer();
 		v.pauseVideo();
-//		v.playVideo();
-//		Thread.sleep(2000);
-//		v.loadVideo("media libraries/video/WIN_20170227_19_51_17_Pro.mp4");
+	}
+
+	@Override
+	public boolean open(String fileName)
+	{
+		return openVideo(fileName);
+	}
+
+	@Override
+	public boolean clear() 
+	{
+		stopVideo();
+		player.release();
+		frame.dispose();
+		hasMedia = false;
+		return player.isPlayable();
 	}
 }
 
