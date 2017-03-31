@@ -13,6 +13,7 @@ import javax.swing.KeyStroke;
 public class MenuBarSetup {
 	
 	/**
+	 * 
 	 * TODO
 	 * 1. create parameter to each attach function to take in a variable array of actionListeners and attach them in order to all the menu items
 	 * 2. create a validation check method for attaching actionlisteners to menu items
