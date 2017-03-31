@@ -333,7 +333,7 @@ public class MusicPlayer implements Player {
 	
 	
 	
-	public void MusicPlayer() {
+	public MusicPlayer() {
 		player = null;
 		songLoaded = false;
 		volume = null;
