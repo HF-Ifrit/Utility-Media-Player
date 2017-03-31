@@ -370,5 +370,17 @@ public class VideoPlayer implements Player
 		v.showPlayer();
 		v.pauseVideo();
 	}
+
+	@Override
+	public boolean open(String fileName) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean clear() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
 
