@@ -1,6 +1,7 @@
 import java.awt.BorderLayout;
 
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -82,7 +83,6 @@ public class MainFrame extends JFrame {
 		jfxControl = new JFXController(this);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1040, 543);
-		
         
       
 		
@@ -105,6 +105,7 @@ public class MainFrame extends JFrame {
         //Display the window.
         displayFrame.setSize(1600, 900);
         displayFrame.setVisible(true);
+        displayFrame.setMinimumSize(new Dimension(600, 400));
     }
 	
 	//creates the menu bar with all options on it
@@ -211,101 +212,38 @@ public class MainFrame extends JFrame {
     	JFXPanel fxPanel = new JFXPanel();
     	GridPane grid = new GridPane();
     	
-    	fxPanel.setScene(new Scene(newHBoxBar()));
+    	fxPanel.setScene(new Scene(HBoxBuilder.newHBoxBar(this)));
     	
     	return fxPanel;
     }
     
-    //helper method that adds the HBox Pane to the JFXPanel
-    private HBox newHBoxBar(){
-    	Button currentButton;
-    	Image currentImage;
-    	ImageView imageview;
-    	
-    	//initializes hbox
-    	HBox hbox = new HBox();
-        hbox.setPadding(new Insets(15, 12, 15, 400));
-        hbox.setSpacing(30);
-        
-        
-        //adds back button
-        currentImage = new Image(getClass().getResourceAsStream("/internaldata/Rewind.png"));
-    	currentButton = new Button();
-    	imageview = new ImageView(currentImage);
-    	imageview.setFitHeight(50);
-    	imageview.setFitWidth(50);
-    	currentButton.setGraphic(imageview);
-    	currentButton.setOnAction(jfxControl.new backFile());
-    	currentButton.setAccessibleRoleDescription("Rewind");
-   
-
-    	hbox.getChildren().add(currentButton);
-    	
-        
-        //adds PlayButton image and button
-    	Image playImage = new Image(getClass().getResourceAsStream("/internaldata/Play.png"));
-    	Button playButtonTemp = new Button();
-    	imageview = new ImageView(playImage);
-    	imageview.setFitHeight(50);
-    	imageview.setFitWidth(50);
-    	playButtonTemp.setGraphic(imageview);
-    	playButtonTemp.setOnAction(jfxControl.new playButton());
-    	playButtonTemp.setAccessibleRoleDescription("Play");
-    	this.playButton = playButtonTemp;
-    	
-    	hbox.getChildren().add(playButtonTemp);
-    	
-    	
-    	
-    	//add forward button
-    	currentImage = new Image(getClass().getResourceAsStream("/internaldata/Forward.png"));
-     	currentButton = new Button();
-     	imageview = new ImageView(currentImage);
-     	imageview.setFitHeight(50);
-     	imageview.setFitWidth(50);
-     	currentButton.setGraphic(imageview);
-     	currentButton.setAccessibleRoleDescription("Forward");
-     	currentButton.setOnAction(this.jfxControl.new forwardFile());
-
-     	hbox.getChildren().add(currentButton);
-     	
-     	
-     
-     	Slider slider = new Slider(0, 100, 100);
-		slider.setPrefWidth(300);
-		slider.setMaxWidth(300);
-		slider.setMinWidth(30);
-		slider.setAccessibleRoleDescription("Spacing");
-		
-		
-		slider.setVisible(false);
-		hbox.getChildren().add(slider);
-     	
-		
-		
-		//add volume control slider
-		final Slider volume = new Slider(0, 100, 100);
-		volume.setPrefWidth(200);
-		volume.setMaxWidth(300);
-		volume.setMinWidth(30);
-		volume.setAccessibleRoleDescription("Volume");
-		
-		//responds to slider movements
-		/*
-		volume.valueProperty().addListener(new InvalidationListener() {
-			public void invalidated(Observable ov) {
-				if (volume.isValueChanging()) {
-					currentPlayer.volumeChange((int) volume.getValue());
-				}
-			}
-		});
-		*/
-		
-		hbox.getChildren().add(volume);
-    	
-    	
-    	return hbox;
+    /**
+     * Getters and Setters
+     */
+    
+    /**
+     * returns JFXController for the MainFrame
+     */
+    public JFXController getJFXController(){
+    	return this.jfxControl;
     }
+    
+    /**
+     * returns the source PlayButton for MainFrame
+     */
+    public Button getPlayButton(){
+    	return this.playButton;
+    }
+    
+    /**
+     * sets the playButton of the MainFrame
+     */
+    public void setPlayButton(Button playButton){
+    	this.playButton = playButton;
+    }
+
+    
+    
     
     /**
      * operations called by actionListeneers
@@ -322,7 +260,7 @@ public class MainFrame extends JFrame {
 	//plays current file at file seleciton index
 	public void play(){
 		int selectedindex = fileList.getSelectedIndex();
-		if(selectedindex == -1){
+		if(selectedindex < 0){
 			mode = Mode.EMPTY;
 		}
 		else{
@@ -423,7 +361,7 @@ public class MainFrame extends JFrame {
 	
 	
 	/**
-	 * 
+	 * TODO
 	 * internal testing class
 	 * provides access to private variables and methods only for testing purposes only
 	 * remove during release
@@ -488,7 +426,7 @@ public class MainFrame extends JFrame {
 		 
 		 //returns HBox of mainFrame
 		 public HBox newHBoxBar(){
-			 return mainFrame.newHBoxBar();
+			 return HBoxBuilder.newHBoxBar(mainFrame);
 		 }
 		 
 		 //returns the fileList of mainFrame
