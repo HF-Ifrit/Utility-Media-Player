@@ -1,8 +1,13 @@
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+
 
 public class VideoPlayerTest 
 {
@@ -227,5 +232,40 @@ public class VideoPlayerTest
 	
 	//Test captureScreen
 	
-	
+	//Player should take a screenshot of the video when paused and save it in the output folder with the correct format
+	@Test
+	public void testCaptureScreenValid() throws InterruptedException
+	{
+		testPlayer.loadVideo(video1);
+		testPlayer.playVideo();
+		
+		Thread.sleep(500);
+		
+		testPlayer.pauseVideo();
+		
+		Thread.sleep(500);
+		
+		//Saving as PNG
+		long currTime = testPlayer.getPlayer().getTime();
+		long maxTime = testPlayer.getPlayer().getLength();
+		testPlayer.captureScreen(ImageViewer.ImageFormat.PNG);
+		
+		File outputFolder = new File("output/");
+		ArrayList<String> outputList = new ArrayList<String>(Arrays.asList(outputFolder.list()));
+		
+		assertTrue(outputList.contains("capture" + currTime + "_" + maxTime + "." + "png"));
+		
+		
+		Thread.sleep(2000);
+		
+		//Saving as JPG
+		testPlayer.captureScreen(ImageViewer.ImageFormat.JPG);
+		assertTrue(outputList.contains("capture" + currTime + "_" + maxTime + "." + "jpg"));
+		
+		Thread.sleep(2000);
+		
+		//Saving as GIF
+		testPlayer.captureScreen(ImageViewer.ImageFormat.GIF);
+		assertTrue(outputList.contains("capture" + currTime + "_" + maxTime + "." + "gif"));
+	}
 }

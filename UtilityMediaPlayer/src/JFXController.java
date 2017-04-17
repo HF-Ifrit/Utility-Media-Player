@@ -11,13 +11,34 @@ public class JFXController {
 	}
 
 	//controller for Rewind Button
-	public class backFile implements EventHandler<ActionEvent>{
+	public class backFile implements EventHandler<javafx.event.ActionEvent>{
 
 		@Override
-		public void handle(ActionEvent event) {
-			// TODO Auto-generated method stub
-			
+		public void handle(javafx.event.ActionEvent event) {
+			stage.backFile();
 		}
-		
+
 	}
+	
+	//Controller for Play Button
+	public class playButton implements EventHandler<javafx.event.ActionEvent>{
+
+		@Override
+		public void handle(javafx.event.ActionEvent event) {
+			stage.play();
+		}
+
+	}
+	
+	//controller for Forward Button
+	public class forwardFile implements EventHandler<javafx.event.ActionEvent>{
+
+			@Override
+			public void handle(javafx.event.ActionEvent event) {
+				stage.forwardFile();
+
+			}
+	}
+	
+	
 }

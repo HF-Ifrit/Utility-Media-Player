@@ -42,7 +42,7 @@ public class MainFrame extends JFrame {
 	
 	JTextArea output;
     JScrollPane scrollPane;
-    JList fileList;
+    JList<String> fileList;
     
     //players/viewers
     private Player currentPlayer;
@@ -53,7 +53,7 @@ public class MainFrame extends JFrame {
     
     //enum to determine what mode the current controller is set to
     public enum Mode{
-    	EMPTY,VIDEO,IMAGE,MUSIC
+    	EMPTY,VIDEO,IMAGE,AUDIO
     }
 
 	/**
@@ -77,7 +77,8 @@ public class MainFrame extends JFrame {
 	 */
 	private MainFrame() {
 		
-		currentPlayer = new MusicPlayer();
+		currentPlayer = null;
+		mode = Mode.EMPTY;
 		jfxControl = new JFXController(this);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1040, 543);
@@ -234,7 +235,7 @@ public class MainFrame extends JFrame {
     	imageview.setFitHeight(50);
     	imageview.setFitWidth(50);
     	currentButton.setGraphic(imageview);
-    	currentButton.setOnAction(new backFile());
+    	currentButton.setOnAction(jfxControl.new backFile());
     	currentButton.setAccessibleRoleDescription("Rewind");
    
 
@@ -248,6 +249,7 @@ public class MainFrame extends JFrame {
     	imageview.setFitHeight(50);
     	imageview.setFitWidth(50);
     	playButtonTemp.setGraphic(imageview);
+    	playButtonTemp.setOnAction(jfxControl.new playButton());
     	playButtonTemp.setAccessibleRoleDescription("Play");
     	this.playButton = playButtonTemp;
     	
@@ -263,7 +265,7 @@ public class MainFrame extends JFrame {
      	imageview.setFitWidth(50);
      	currentButton.setGraphic(imageview);
      	currentButton.setAccessibleRoleDescription("Forward");
-     	currentButton.setOnAction(new forwardFile());
+     	currentButton.setOnAction(this.jfxControl.new forwardFile());
 
      	hbox.getChildren().add(currentButton);
      	
@@ -305,7 +307,69 @@ public class MainFrame extends JFrame {
     	return hbox;
     }
     
-    
+    /**
+     * operations called by actionListeneers
+     */
+	//move file selection unit forward one index
+	public void backFile(){
+		int setIndex = fileList.getModel().getSize() - 1;
+		if(fileList.getSelectedIndex() > 0)
+			fileList.setSelectedIndex(fileList.getSelectedIndex() - 1);
+		else
+			fileList.setSelectedIndex(setIndex);
+	}
+	
+	//plays current file at file seleciton index
+	public void play(){
+		int selectedindex = fileList.getSelectedIndex();
+		if(selectedindex == -1){
+			mode = Mode.EMPTY;
+		}
+		else{
+			String filename = fileList.getModel().getElementAt(selectedindex);
+			mode = parseFileType(filename);
+		}
+		/**
+		 * TODO
+		 * call respective player depending on mode
+		 */
+		
+	}
+	
+	
+	//moves the file selection unit back one index
+	public void forwardFile(){
+		int setIndex = 0;
+		if(fileList.getSelectedIndex() < fileList.getModel().getSize() - 1)
+			fileList.setSelectedIndex(fileList.getSelectedIndex() + 1);
+		else
+			fileList.setSelectedIndex(setIndex);
+	}
+	
+	
+	//temporary parse file system for supported formats
+	/**
+	 * TODO
+	 * will be implemented in a separate file management class
+	 */
+	public Mode parseFileType(String file){
+		
+		//checks if ending filetype is video format
+		if(file.substring(file.lastIndexOf('.')).equals(".gif") || file.substring(file.lastIndexOf('.')).equals(".mp4")){
+			return Mode.VIDEO;
+		}
+		//check if ending filetype is audio format
+		else if(file.substring(file.lastIndexOf('.')).equals(".mp3")){
+			return Mode.AUDIO;
+		}
+		//check if ending filetype is image format
+		else if(file.substring(file.lastIndexOf('.')).equals(".png") || file.substring(file.lastIndexOf('.')).equals(".jpg")){
+			return Mode.IMAGE;
+		}
+		//otherwise file can't be opened
+		else
+			return Mode.EMPTY;
+	}
 	
 	/**
 	 *TODO 
@@ -348,41 +412,15 @@ public class MainFrame extends JFrame {
 	}
 
 	
-	//controller for Rewind Button
-	public class backFile implements EventHandler<javafx.event.ActionEvent>{
 
-		@Override
-		public void handle(javafx.event.ActionEvent event) {
-			int setIndex = fileList.getModel().getSize() - 1;
-			if(fileList.getSelectedIndex() > 0)
-				fileList.setSelectedIndex(fileList.getSelectedIndex() - 1);
-			else
-				fileList.setSelectedIndex(setIndex);
-		}
 
-	}
-	
-	//controller for Forward Button
-	public class forwardFile implements EventHandler<javafx.event.ActionEvent>{
-
-		@Override
-		public void handle(javafx.event.ActionEvent event) {
-			int setIndex = 0;
-			if(fileList.getSelectedIndex() < fileList.getModel().getSize() - 1)
-				fileList.setSelectedIndex(fileList.getSelectedIndex() + 1);
-			else
-				fileList.setSelectedIndex(setIndex);
-
-		}
-
-	}
 
 	
 	/**
 	 * Testing variables
 	 * 
 	 */
-	public JFrame createAndShowGUI;
+	
 	
 	/**
 	 * 
@@ -409,16 +447,18 @@ public class MainFrame extends JFrame {
 		
 		
 		//returns frame created by createAndShowGUI for testing purposes
-		public static JFrame createAndShowGUI() {
+		public JFrame createAndShowGUI() {
 	        //Create and set up the window.
 	        JFrame frame = new JFrame("UMP Controller");
 	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	 
 	        //Create and set up the content pane.
 	        MainFrame demo = new MainFrame();
+	        mainFrame = demo;
 	        frame.setJMenuBar(demo.createTextMenuBar());
 	        frame.setContentPane(demo.createContentPane());
-	        frame.getContentPane().add(MainFrame.createFileList(), BorderLayout.WEST);
+	        demo.setFileList(MainFrame.createFileList());
+	        frame.getContentPane().add(demo.fileList, BorderLayout.WEST);
 	        frame.add(demo.createControlBar(), BorderLayout.SOUTH);
 	 
 	        //Display the window.
@@ -446,9 +486,36 @@ public class MainFrame extends JFrame {
 		    	return mainFrame.createControlBar();
 		 }
 		 
+		 //returns HBox of mainFrame
 		 public HBox newHBoxBar(){
 			 return mainFrame.newHBoxBar();
 		 }
+		 
+		 //returns the fileList of mainFrame
+		 public JList<String> getFileList(){
+			 return mainFrame.fileList;
+		 }
+		 
+		 //returns the current Mode of the controller
+		 public Mode getMode(){
+			 return mainFrame.mode;
+		 }
+		 
+		 //runs backFile procedure
+		 public void backFile(){
+			 mainFrame.backFile();
+		 }
+		 
+		 //runs the playFile procedure
+		 public void play(){
+			 mainFrame.play();
+		 }
+		 
+		 //runs forwardFile procedure
+		 public void forwardFile(){
+			 mainFrame.forwardFile();
+		 }
+		 
 		
 		//resets all stored values in the TestSuite
 		public void reset(){
