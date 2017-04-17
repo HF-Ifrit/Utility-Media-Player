@@ -39,8 +39,20 @@ public class MusicPlayer implements Player {
 	Scene mainScene;
 	
 	enum MusicFormat {
-   	 MP3,
-   	 FLAC,
+   	 MP3("libmp3lame"),
+   	 FLAC("flac");
+   	 
+   	 private MusicFormat(String encoder)
+   	 {
+   		this.codec = encoder; 
+   	 }
+   	 
+   	 private final String codec;
+   	 
+   	 public String getCodec()
+   	 {
+   		 return codec;
+   	 }
     }
 	
 	/*The method that starts when the MusicPlayer is run. Will be delegated to a controller later in development;

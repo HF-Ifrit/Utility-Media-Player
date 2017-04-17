@@ -7,6 +7,11 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import it.sauronsoftware.jave.AudioAttributes;
+import it.sauronsoftware.jave.Encoder;
+import it.sauronsoftware.jave.EncoderException;
+import it.sauronsoftware.jave.EncodingAttributes;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -18,9 +23,13 @@ public class VideoPlayer implements Player
 	private final JFrame frame;
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	private final EmbeddedMediaPlayer player;
+	private final Integer EXTRACTION_BITRATE = new Integer(128000);
+	private final Integer EXTRACTION_CHANNELS = new Integer(2);
+	private final Integer EXTRACTION_SAMPLING_RATE = new Integer(44100);
+	
 	private long videoDuration;
 	private boolean hasMedia;
-	
+	private String videoPath;
 	//TODO Currently using these GUI controls for testing. Remove when finished with VideoPlayer
 	private JPanel contentPane;
 	private JButton resumeButton;
@@ -31,7 +40,8 @@ public class VideoPlayer implements Player
 	private JSlider timeSlider;
 	private JButton captureButton;
 	
-	enum VideoFormat {
+	enum VideoFormat 
+	{
    	 WEBM,
    	 MP4
     }
@@ -39,7 +49,7 @@ public class VideoPlayer implements Player
 	//Constructors
 	public VideoPlayer()
 	{
-		videoDuration  = 0;
+		videoDuration = 0;
 		
 		new NativeDiscovery().discover();
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
@@ -186,7 +196,6 @@ public class VideoPlayer implements Player
 	 */
 	public boolean openVideo(String fileName)
 	{
-		
 		loadVideo(fileName);
 		if(!frame.isVisible())
 			showPlayer();
@@ -278,6 +287,7 @@ public class VideoPlayer implements Player
 		boolean loaded = false;
 		if(filePath != null)
 		{
+			videoPath = filePath;
 			if(player.isPlaying())
 				stopVideo();
 			loaded = player.prepareMedia(filePath);
@@ -309,6 +319,45 @@ public class VideoPlayer implements Player
 		player.setVolume(volumePercentage);
 	}
 	
+	/**
+	 * Extract audio from the current video 
+	 */
+	public boolean extractAudio(MusicPlayer.MusicFormat format)
+	{
+		if(!player.isPlayable())
+			return false;
+		else
+		{
+			String fileName = "extracted" + System.currentTimeMillis() + "." + format.toString();
+			File audioFile = new File("output/" + fileName);
+			File currentVideoFile = new File(getVideoFilePath());
+			AudioAttributes audioAtt = new AudioAttributes();
+			audioAtt.setCodec(format.getCodec());
+			audioAtt.setBitRate(EXTRACTION_BITRATE);
+			audioAtt.setChannels(EXTRACTION_CHANNELS);
+			audioAtt.setSamplingRate(EXTRACTION_SAMPLING_RATE);
+			
+			EncodingAttributes encAtt = new EncodingAttributes();
+			encAtt.setFormat(format.toString().toLowerCase());
+			encAtt.setAudioAttributes(audioAtt);
+			
+			Encoder encoder = new Encoder();
+			
+			try 
+			{
+				encoder.encode(currentVideoFile, audioFile, encAtt);
+			} 
+			catch (IllegalArgumentException | EncoderException e) 
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return false;
+			}
+			System.out.println("Audio successfully extracted. File created at " + audioFile.getAbsolutePath());
+			return true;
+		}	
+	}
+	
 	//Getter-setters
 	/**
 	 * Get the JFrame of this player
@@ -325,6 +374,14 @@ public class VideoPlayer implements Player
 	public EmbeddedMediaPlayer getPlayer()
 	{
 		return player;
+	}
+	
+	/**
+	 * Get the file path of the video being played in the player
+	 */
+	public String getVideoFilePath()
+	{
+		return videoPath;
 	}
 	
 	//Bool conditions
@@ -368,8 +425,7 @@ public class VideoPlayer implements Player
 	{
 		//Testing stuff
 		VideoPlayer v = new VideoPlayer("media libraries/video/kaius_presentation.mp4");
-		v.showPlayer();
-		v.pauseVideo();
+		v.extractAudio(MusicPlayer.MusicFormat.FLAC);
 	}
 
 	@Override
