@@ -40,7 +40,8 @@ public class VideoPlayer implements Player
 	private JSlider timeSlider;
 	private JButton captureButton;
 	
-	enum VideoFormat {
+	enum VideoFormat 
+	{
    	 WEBM,
    	 MP4
     }
@@ -286,7 +287,7 @@ public class VideoPlayer implements Player
 		boolean loaded = false;
 		if(filePath != null)
 		{
-			//videoPath = filePath;
+			videoPath = filePath;
 			if(player.isPlaying())
 				stopVideo();
 			loaded = player.prepareMedia(filePath);
@@ -321,23 +322,23 @@ public class VideoPlayer implements Player
 	/**
 	 * Extract audio from the current video 
 	 */
-	public boolean extractAudio()
+	public boolean extractAudio(MusicPlayer.MusicFormat format)
 	{
 		if(!player.isPlayable())
 			return false;
 		else
 		{
-			String fileName = "extracted" + System.currentTimeMillis() + ".wav";
-			File audioFile = new File("media libraries/audio/" + fileName);
+			String fileName = "extracted" + System.currentTimeMillis() + "." + format.toString();
+			File audioFile = new File("output/" + fileName);
 			File currentVideoFile = new File(getVideoFilePath());
 			AudioAttributes audioAtt = new AudioAttributes();
-			audioAtt.setCodec("pcm_s24le");
+			audioAtt.setCodec(format.getCodec());
 			audioAtt.setBitRate(EXTRACTION_BITRATE);
 			audioAtt.setChannels(EXTRACTION_CHANNELS);
 			audioAtt.setSamplingRate(EXTRACTION_SAMPLING_RATE);
 			
 			EncodingAttributes encAtt = new EncodingAttributes();
-			encAtt.setFormat("wav");
+			encAtt.setFormat(format.toString().toLowerCase());
 			encAtt.setAudioAttributes(audioAtt);
 			
 			Encoder encoder = new Encoder();
@@ -424,7 +425,7 @@ public class VideoPlayer implements Player
 	{
 		//Testing stuff
 		VideoPlayer v = new VideoPlayer("media libraries/video/kaius_presentation.mp4");
-		//v.extractAudio();
+		v.extractAudio(MusicPlayer.MusicFormat.FLAC);
 	}
 
 	@Override
