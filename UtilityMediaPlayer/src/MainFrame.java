@@ -272,6 +272,9 @@ public class MainFrame extends JFrame {
 		 * call respective player depending on mode
 		 */
 		
+		
+		this.add(new JFrame(), BorderLayout.SOUTH);
+		
 	}
 	
 	

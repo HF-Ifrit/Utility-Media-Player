@@ -1,3 +1,4 @@
+import java.awt.Component;
 
 public interface Player 
 {
@@ -7,4 +8,5 @@ public interface Player
 	public void alternatePlayback();
 	public void skipPlayback();
 	public void changePosition(long playbackPosition);
+	public Component showView();
 }
