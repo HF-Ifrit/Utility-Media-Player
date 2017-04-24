@@ -1,6 +1,7 @@
 import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.awt.Component;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
@@ -50,8 +51,27 @@ public class VideoPlayer implements Player
 
 	enum VideoFormat 
 	{
-		WEBM,
-		MP4
+		WEBM("vp8", "vorb"),
+		MP4("mp4v", "mp4a");
+		
+		private VideoFormat(String vEncoder, String aEncoder)
+	   	 {
+	   		this.vcodec = vEncoder; 
+	   		this.acodec = aEncoder;
+	   	 }
+	   	 
+	   	 private final String vcodec;
+	   	 private final String acodec;
+	   	 
+	   	 public String getVideoCodec()
+	   	 {
+	   		 return vcodec;
+	   	 }
+	   	 
+	   	 public String getAudioCodec()
+	   	 {
+	   		 return acodec;
+	   	 }
 	}
 
 	//Constructors
@@ -256,12 +276,14 @@ public class VideoPlayer implements Player
 
 	/**
 	 * Create an animated GIF sequence from the input start time of the video to the input end time of the video
+	 * @param startTime Time to start making the gif from in milliseconds
+	 * @param endTime Time to end the gif in milliseconds
 	 * @throws InterruptedException 
 	 * @throws AWTException 
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	public boolean gifClip(long startTime, long endTime) throws InterruptedException, AWTException, FileNotFoundException, IOException
+	public boolean gifClip(long startTime, long endTime) throws IOException
 	{
 		if(!hasMedia
 				|| startTime < 0 
@@ -314,8 +336,10 @@ public class VideoPlayer implements Player
 	
 	/**
 	 * Make a clip of a video
+	 * @param start Time to start clip from in seconds
+	 * @param finish Time to end clip from in seconds
 	 */
-	public boolean clipVideo(int start, int finish)
+	public boolean clipVideo(int start, int finish, VideoFormat format)
 	{
 		if(!hasMedia
 				|| start < 0 
@@ -328,14 +352,23 @@ public class VideoPlayer implements Player
 		}
 		else
 		{
-			String sout = ":sout=#transcode{vcodec=mp4v,vb=%d,scale=%f}:duplicate{dst=file{dst=%s}}";
+			
+			int dotIndex = videoPath.indexOf('.');
+			String extension = videoPath.substring(dotIndex+1, videoPath.length());
+			VideoFormat currentFormat = VideoFormat.valueOf(extension.toUpperCase());
+			
+			//String sout = ":sout=#transcode{vcodec=" + format.getVideoCodec() + ",vb=%d,scale=%f}:duplicate{dst=file{dst=%s}}";
+			String sout = ":sout=#transcode{vcodec=" + currentFormat.getVideoCodec() + ",vb=%d,scale=%f}:duplicate{dst=file{dst=%s}}";
+
 			int bits = 4096;
 			float scale = 0.5f;
 			long systemTime = System.currentTimeMillis();
-			String dest = "output/clip" + systemTime + ".mp4";
+			String dest = "output/clip" + systemTime + "." + format.toString();
+			
+			
 			String finalSOut =  String.format(sout, bits, scale, dest);
 			player.playMedia(videoPath, ":start-time="+start,":stop-time=" + finish, finalSOut);
-			
+			File output = new File("output/clip." + format.toString());
 			return true;
 		}
 	}
@@ -427,6 +460,12 @@ public class VideoPlayer implements Player
 		return player.isPlayable();
 	}
 	
+	@Override
+	public Component showView() 
+	{
+		return getFrame();
+	}
+	
 	public void testSurfaceCapture() throws AWTException
 	{
 		Canvas can = mediaPlayerComponent.getVideoSurface();
@@ -453,7 +492,9 @@ public class VideoPlayer implements Player
 		VideoPlayer v = new VideoPlayer("media libraries/video/singing_dove.mp4");
 		Thread.sleep(500);
 		v.pauseVideo();
-		v.clipVideo(1, 4);
+		v.clipVideo(1, 4, VideoFormat.MP4);
 	}
+
+	
 }
 
