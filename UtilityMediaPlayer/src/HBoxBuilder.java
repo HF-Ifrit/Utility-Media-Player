@@ -8,6 +8,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -15,14 +16,17 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 public class HBoxBuilder extends HBox{
 	private static double SPACING = 25;
-	private static double LEFT_EDGE = 200;
+	private static double LEFT_EDGE = 125;
 	private static double FIT_VALUE = 40;
 	
 	protected DoubleProperty prefTileSize = new SimpleDoubleProperty(SPACING);
 	protected MainFrame frame;
+	
+	final static Label volumeCaption = new Label("Volume:");
 	
 	private HBoxBuilder(MainFrame newFrame){
 		this.frame = newFrame;
@@ -101,7 +105,10 @@ public class HBoxBuilder extends HBox{
 		swatch.getChildren().add(slider);
 		*/
      	
-		
+		//add volume text
+     	volumeCaption.setTextFill(Color.BLACK);
+        GridPane.setConstraints(volumeCaption, 0, 0);
+        swatch.getChildren().add(volumeCaption);
 		
 		//add volume control slider
 		final Slider volume = new Slider(0, 100, 100);
@@ -135,14 +142,23 @@ public class HBoxBuilder extends HBox{
 				double edge = SPACING + LEFT_EDGE;
 				for (Node child : swatch.getChildrenUnmodifiable()) {
 					Control tile = (Control) child;
-					final double margin = ( hbox.prefTileSize.get() - LEFT_EDGE)/ swatch.getChildrenUnmodifiable().size();
-					tile.setPrefWidth(margin - SPACING);
-					
-					GridPane.setMargin(child, new Insets(15, edge, 15, edge));
-					edge += margin;
-					
-					if(child instanceof Slider){
-						((Slider) child).setMinWidth(margin - SPACING);
+					if(!(child instanceof Label)){
+							
+						
+						final double margin = ( hbox.prefTileSize.get() - LEFT_EDGE)/ swatch.getChildrenUnmodifiable().size();
+						tile.setPrefWidth(margin - SPACING);
+						
+						GridPane.setMargin(child, new Insets(15, edge, 15, edge));
+						edge += margin;
+						
+						if(child instanceof Slider){
+							((Slider) child).setMinWidth(margin - SPACING);
+							
+						}
+					}
+					else{
+						GridPane.setMargin(child, new Insets(15, edge, 15, edge));
+						edge += 50;
 					}
 				}
 			}
