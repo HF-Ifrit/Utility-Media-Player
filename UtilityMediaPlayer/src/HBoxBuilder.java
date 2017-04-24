@@ -116,6 +116,7 @@ public class HBoxBuilder extends HBox{
 		volume.setMaxWidth(300);
 		volume.setMinWidth(100);
 		volume.setAccessibleRoleDescription("Volume");
+		frame.setVolumeSlider(volume);
 		
 		//responds to slider movements
 		/*

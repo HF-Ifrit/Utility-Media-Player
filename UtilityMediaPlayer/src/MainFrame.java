@@ -1,5 +1,5 @@
 import java.awt.BorderLayout;
-
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.EventQueue;
@@ -49,8 +49,13 @@ public class MainFrame extends JFrame {
     private Player currentPlayer;
     private ImageViewer currentImage;
     
+    //previous file that was played
+    private String previousFile;
+    private Mode previousMode;
+    
     //player mode that is currently loaded
     private Mode mode;
+    
     
     //enum to determine what mode the current controller is set to
     public enum Mode{
@@ -79,8 +84,10 @@ public class MainFrame extends JFrame {
 	private MainFrame() {
 		
 		currentPlayer = null;
+		previousFile = "";
 		mode = Mode.EMPTY;
 		jfxControl = new JFXController(this);
+		currentImage = new ImageViewer();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1040, 543);
         
@@ -257,23 +264,87 @@ public class MainFrame extends JFrame {
 			fileList.setSelectedIndex(setIndex);
 	}
 	
-	//plays current file at file seleciton index
+	//plays current file at file selection index
 	public void play(){
+		String filename = "";
+		Mode tempmode = Mode.EMPTY;
 		int selectedindex = fileList.getSelectedIndex();
 		if(selectedindex < 0){
 			mode = Mode.EMPTY;
+			return;
 		}
 		else{
-			String filename = fileList.getModel().getElementAt(selectedindex);
-			mode = parseFileType(filename);
+			 filename = fileList.getModel().getElementAt(selectedindex);
+			tempmode = parseFileType(filename);
 		}
 		/**
 		 * TODO
 		 * call respective player depending on mode
 		 */
+		//creates a new player for new file
+		if(filename != previousFile){
+			mode = tempmode;
+			if(currentPlayer != null){
+				currentPlayer.clear();
+			}
+			createViews(filename);
 		
+			
+		}
+		//runs play action on currentFile
+		else{
+			playbackExecute();
+		}
 		
-		this.add(new JFrame(), BorderLayout.SOUTH);
+	}
+	
+	//helper method to streamline closing video/music player windows
+	private void closePlayers(){
+		if(currentPlayer != null){
+			currentPlayer.clear();
+		}
+	}
+	
+	//helper method to streamline play/pause of current mode
+	private void playbackExecute(){
+		if((mode == Mode.AUDIO) || (mode == Mode.VIDEO)){
+			currentPlayer.alternatePlayback();
+		}
+	}
+	
+	//helper method to streamline creation of generic Players
+	private void setupPlayers(String filename){
+		currentPlayer.open(filename);
+		currentPlayer.volumeChange(this.volumeSlider.getValue());
+		Component tempPlayer = currentPlayer.showView();
+		
+		this.add(tempPlayer, BorderLayout.CENTER);
+		tempPlayer.setVisible(true);
+	}
+	
+	//helper method to streamline creation of new video/music players
+	private void createViews(String filename){
+		if(mode == Mode.AUDIO){
+			//TODO testing checks
+			filename = "media libraries/test.mp3";
+			currentPlayer = new MusicPlayer();
+			setupPlayers(filename);
+			
+			
+		}
+		if(mode == Mode.VIDEO){
+			//TODO testing checks
+			filename = "media libraries/video/singing_dove.mp4";
+			currentPlayer = new VideoPlayer();
+			setupPlayers(filename);
+		}
+		if(mode == Mode.IMAGE){
+			currentImage.open(filename);
+			closePlayers();
+			JFXPanel panel = new JFXPanel();
+			panel.setScene(currentImage.getScene());
+			this.add(panel, BorderLayout.CENTER);
+		}
 		
 	}
 	
@@ -310,6 +381,11 @@ public class MainFrame extends JFrame {
 		//otherwise file can't be opened
 		else
 			return Mode.EMPTY;
+	}
+	
+	//sets the volumeSlider reference to selected reference
+	public void setVolumeSlider(Slider volume){
+		this.volumeSlider = volume;
 	}
 	
 	/**
