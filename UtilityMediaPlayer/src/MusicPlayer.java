@@ -39,8 +39,20 @@ public class MusicPlayer implements Player {
 	Scene mainScene;
 	
 	enum MusicFormat {
-   	 MP3,
-   	 FLAC,
+   	 MP3("libmp3lame"),
+   	 FLAC("flac");
+   	 
+   	 private MusicFormat(String encoder)
+   	 {
+   		this.codec = encoder; 
+   	 }
+   	 
+   	 private final String codec;
+   	 
+   	 public String getCodec()
+   	 {
+   		 return codec;
+   	 }
     }
 	
 	/*The method that starts when the MusicPlayer is run. Will be delegated to a controller later in development;
@@ -101,8 +113,8 @@ public class MusicPlayer implements Player {
 //				}
 //			}
 //		});
-		
-		//Create the time slider and add its event handler.
+//		
+//		//Create the time slider and add its event handler.
 //		playTime = new Label("Time :");
 //		time = createSlider("Time: ", playTime, 0, 6, grid);
 //		time.valueProperty().addListener(new InvalidationListener() {
@@ -368,7 +380,7 @@ public class MusicPlayer implements Player {
 		mainScene = new Scene(grid, 300, 300);
 	}
 	
-//	public static void main(String[] args) {
-//		launch();
-//	}
+	public static void main(String[] args) {
+		Application.launch();
+	}
 }
