@@ -318,7 +318,7 @@ public class MainFrame extends JFrame {
 		currentPlayer.volumeChange(this.volumeSlider.getValue());
 		Component tempPlayer = currentPlayer.showView();
 		
-		this.add(tempPlayer, BorderLayout.CENTER);
+		this.getContentPane().add(tempPlayer, BorderLayout.CENTER);
 		tempPlayer.setVisible(true);
 	}
 	
@@ -339,12 +339,16 @@ public class MainFrame extends JFrame {
 			setupPlayers(filename);
 		}
 		if(mode == Mode.IMAGE){
+			//TODO testing checks
+			filename = "media libraries/images/image.png";
 			currentImage.open(filename);
 			closePlayers();
 			JFXPanel panel = new JFXPanel();
 			panel.setScene(currentImage.getScene());
-			this.add(panel, BorderLayout.CENTER);
+			this.getContentPane().add(panel, BorderLayout.CENTER);
+			
 		}
+		this.paint(this.getGraphics());
 		
 	}
 	
