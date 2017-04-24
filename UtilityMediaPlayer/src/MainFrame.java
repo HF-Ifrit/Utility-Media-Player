@@ -19,10 +19,14 @@ import javax.swing.border.BevelBorder;
 import java.awt.Font;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
+import javafx.scene.effect.Reflection;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
 
 //primary GUI window that will interact and control other modules
@@ -89,7 +93,7 @@ public class MainFrame extends JFrame {
 		jfxControl = new JFXController(this);
 		currentImage = new ImageViewer();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1040, 543);
+		setBounds(0, 0, 1040, 543);
         
       
 		
@@ -98,7 +102,7 @@ public class MainFrame extends JFrame {
 	//creates gui 
 	private static void createAndShowGUI() {
         //Create and set up the window.
-        JFrame displayFrame = new JFrame("UMP Controller");
+        JFrame displayFrame = new MainFrame();
         displayFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  
         //Create and set up the content pane.
@@ -108,7 +112,23 @@ public class MainFrame extends JFrame {
         demo.setFileList(createFileList());
         displayFrame.getContentPane().add(demo.fileList, BorderLayout.WEST);
         displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
- 
+
+
+        /*
+        StackPane stack = new StackPane();
+        Scene scene = new Scene(stack,300,300);
+        Text hello = new Text("Hello");
+        
+        scene.setFill(Color.BLACK);
+        hello.setFill(Color.WHEAT);
+        hello.setEffect(new Reflection());
+        JFXPanel panel = new JFXPanel();
+        panel.setScene(scene);
+        stack.getChildren().add(hello);
+        displayFrame.getContentPane().add(panel, BorderLayout.EAST);
+        */
+        
+        
         //Display the window.
         displayFrame.setSize(1600, 900);
         displayFrame.setVisible(true);
@@ -345,7 +365,7 @@ public class MainFrame extends JFrame {
 			closePlayers();
 			JFXPanel panel = new JFXPanel();
 			panel.setScene(currentImage.getScene());
-			this.getContentPane().add(panel, BorderLayout.CENTER);
+			this.getContentPane().add(panel, BorderLayout.EAST);
 			
 		}
 		this.paint(this.getGraphics());

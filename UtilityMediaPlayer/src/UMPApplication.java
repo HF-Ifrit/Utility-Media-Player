@@ -22,10 +22,7 @@ public class UMPApplication extends Application{
 		
 		String filename = "media libraries/video/singing_dove.mp4";
 		Player currentPlayer = new VideoPlayer();
-		currentPlayer.open(filename);
-		Component tempPlayer = currentPlayer.showView();
-		tempPlayer.setVisible(true);
-		f.getContentPane().add(tempPlayer, BorderLayout.CENTER);
+		
 		
 		f.setSize(400, 300);
 		f.setVisible(true);
