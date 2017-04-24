@@ -1,9 +1,27 @@
-import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
-import uk.co.caprica.vlcj.discovery.NativeDiscovery;
-import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+import java.awt.AWTException;
+import java.awt.BorderLayout;
+import java.awt.Canvas;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.imageio.stream.FileImageOutputStream;
+import javax.imageio.stream.ImageOutputStream;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -11,11 +29,11 @@ import it.sauronsoftware.jave.AudioAttributes;
 import it.sauronsoftware.jave.Encoder;
 import it.sauronsoftware.jave.EncoderException;
 import it.sauronsoftware.jave.EncodingAttributes;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
+import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
+import uk.co.caprica.vlcj.discovery.NativeDiscovery;
+import uk.co.caprica.vlcj.player.MediaPlayer;
+import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 
 public class VideoPlayer implements Player
@@ -26,171 +44,48 @@ public class VideoPlayer implements Player
 	private final Integer EXTRACTION_BITRATE = new Integer(128000);
 	private final Integer EXTRACTION_CHANNELS = new Integer(2);
 	private final Integer EXTRACTION_SAMPLING_RATE = new Integer(44100);
-	
-	private long videoDuration;
+
 	private boolean hasMedia;
 	private String videoPath;
-	//TODO Currently using these GUI controls for testing. Remove when finished with VideoPlayer
-	private JPanel contentPane;
-	private JButton resumeButton;
-	private JButton rewindButton;
-	private JButton	skipButton;
-	private JButton	stopButton;
-	private JSlider volumeSlider;
-	private JSlider timeSlider;
-	private JButton captureButton;
-	
+
 	enum VideoFormat 
 	{
-   	 WEBM,
-   	 MP4
-    }
-	
+		WEBM,
+		MP4
+	}
+
 	//Constructors
 	public VideoPlayer()
 	{
-		videoDuration = 0;
-		
 		new NativeDiscovery().discover();
+		
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-		
-		contentPane = new JPanel();
-		contentPane.setLayout(new BorderLayout());
-		contentPane.add(mediaPlayerComponent, BorderLayout.CENTER);
 
-		JPanel controlsPane = new JPanel();
-		resumeButton = createPlayPauseButton();
-		controlsPane.add(resumeButton);
-//		rewindButton = new JButton("Rewind");
-//		controlsPane.add(rewindButton);
-//		skipButton = new JButton("Skip");
-//		controlsPane.add(skipButton);
-		stopButton = createStopButton();
-		controlsPane.add(stopButton);
-		
-		//TODO Capture button for testing purposes; Remove when done
-		captureButton = new JButton("Capture");
-		captureButton.addActionListener(new ActionListener() 
-		{
-			@Override
-			public void actionPerformed(ActionEvent e) 
-			{
-				captureScreen(ImageViewer.ImageFormat.PNG);
-			}
-		});
-		
-		controlsPane.add(captureButton);
-		contentPane.add(controlsPane, BorderLayout.SOUTH);
-		
-
-		volumeSlider = createVolumeSlider();
-		timeSlider = createTimeSlider(0);
-		contentPane.add(volumeSlider, BorderLayout.EAST);
-		
 		frame = new JFrame("Video Player");
 		frame.setBounds(100, 100, 600, 400);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new WindowAdapter()
-				{
-					@Override
-					public void windowClosing(WindowEvent e)
-					{
-						mediaPlayerComponent.release();
-						System.exit(0);
-					}
-				});
-		
+		{
+			@Override
+			public void windowClosing(WindowEvent e)
+			{
+				mediaPlayerComponent.release();
+				System.exit(0);
+			}
+		});
+
 		hasMedia = false;
 		player = mediaPlayerComponent.getMediaPlayer();
 	}
-	
+
 	public VideoPlayer(String filePath)
 	{
 		this();
 		loadVideo(filePath);
 	}
-	
-	
-	//GUI control generaiton
-	/**
-	 * Generates a Stop Button control
-	 * @return A button that can stop video playback
-	 */
-	private JButton createStopButton()
-	{
-		JButton stop = new JButton("Stop");
-		stop.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				stopVideo();
-			}
-		});
-		return stop;
-	}
-	
-	/**
-	 * Generates a Play/Pause button
-	 * @return A button that can pause and resume video playback
-	 */
-	private JButton createPlayPauseButton()
-	{
-		JButton playPause = new JButton("Play/Pause");
-		playPause.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				alternatePlayback();
-			}
-		});
-		
-		return playPause;
-	}
-	
-	/**
-	 * Generates a volume slider
-	 * @return A JSlider that controls the volume of the video playback
-	 */
-	private JSlider createVolumeSlider()
-	{
-		JSlider vSlider = new JSlider();
-		vSlider.addChangeListener(new ChangeListener() 
-			{
-				@Override
-				public void stateChanged(ChangeEvent e) 
-				{
-					changeVolume(vSlider.getValue());	
-				}
-			});
-		
-		return vSlider;
-	}
-	
-	/**
-	 * Generates a time seeker slide bar
-	 * @return A JSlider that keeps track of the time in the playback
-	 */
-	private JSlider createTimeSlider(int videoTime)
-	{
-		JSlider tSlider = new JSlider(0, videoTime);
-		tSlider.addChangeListener(new ChangeListener()
-				{
-					@Override
-					public void stateChanged(ChangeEvent e)
-					{
-						System.out.println(tSlider.getValue());
-						seekVideo(tSlider.getValue());
-					}
-				});
-		
-		return tSlider;
-	}
-	
+
 	//VideoPlayer functionality implementation
-	
-	
+
 	/**
 	 * Opens the video player and plays its selected media if one has already been selected
 	 */
@@ -199,31 +94,31 @@ public class VideoPlayer implements Player
 		loadVideo(fileName);
 		if(!frame.isVisible())
 			showPlayer();
-		
+
 		playVideo();
 		if(player.isPlaying())
 			return true;
 		else
 			return false;
 	}
-	
+
 	/**
 	 * Reveals the video player frame
 	 */
-	public void showPlayer()
+	private void showPlayer()
 	{
-		frame.setContentPane(contentPane);
+		frame.setContentPane(mediaPlayerComponent);
 		frame.setVisible(true);
 		SwingUtilities.invokeLater(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						new VideoPlayer();
-					}
-				});
+		{
+			@Override
+			public void run()
+			{
+				new VideoPlayer();
+			}
+		});
 	}
-	
+
 	/**
 	 * Takes a screenshot of the currently playing video if the playback is paused
 	 * @param format Image format to save the image as
@@ -234,11 +129,10 @@ public class VideoPlayer implements Player
 		{
 			try
 			{
-				//long currentTime = System.currentTimeMillis();
 				long currentTime = player.getTime();
 				long maxLength = player.getLength();
 				String fileName = "capture" + currentTime + "_" + maxLength + "." + format.toString().toLowerCase();
-				
+
 				BufferedImage playerImage = player.getSnapshot();
 				ImageIO.write(playerImage, format.toString().toLowerCase(), new File("output/", fileName));
 				System.out.println("Screenshot saved in output/" + fileName);
@@ -251,7 +145,7 @@ public class VideoPlayer implements Player
 		else
 			System.out.println("Video must be paused before screenshotting!");
 	}
-	
+
 	/**
 	 * Plays the current video in the media player; Plays from paused position
 	 */
@@ -260,7 +154,7 @@ public class VideoPlayer implements Player
 		if(hasVideo())
 			player.play();
 	}
-	
+
 	/**
 	 * Pauses playback of the current video
 	 */
@@ -268,7 +162,7 @@ public class VideoPlayer implements Player
 	{
 		player.pause();
 	}
-	
+
 	/**
 	 * Stops playback of the current video
 	 */
@@ -276,7 +170,7 @@ public class VideoPlayer implements Player
 	{
 		player.stop();
 	}
-	
+
 	/**
 	 * Assigns the video file to the video player
 	 * @param filePath The local file path of the video to be played
@@ -296,10 +190,10 @@ public class VideoPlayer implements Player
 			showPlayer();
 			player.start();
 		}
-		
+
 		return loaded;
 	}
-	
+
 	/**
 	 * Play video from a certain position
 	 * @param time Time in milliseconds to play from
@@ -309,7 +203,7 @@ public class VideoPlayer implements Player
 		if(player.isSeekable() && time > 0.0 && time < player.getLength())
 			player.setTime(time);
 	}
-	
+
 	/**
 	 * Change the volume of the current playing video
 	 * @param volumePercentage The new percentage to set the volume to
@@ -318,9 +212,10 @@ public class VideoPlayer implements Player
 	{
 		player.setVolume(volumePercentage);
 	}
-	
+
 	/**
-	 * Extract audio from the current video 
+	 * Extract audio from the current video, and save it in the output folder using the input format
+	 * @param format The supported audio file format to save the file as. Supported formats are MP3 and FLAC
 	 */
 	public boolean extractAudio(MusicPlayer.MusicFormat format)
 	{
@@ -331,25 +226,26 @@ public class VideoPlayer implements Player
 			String fileName = "extracted" + System.currentTimeMillis() + "." + format.toString();
 			File audioFile = new File("output/" + fileName);
 			File currentVideoFile = new File(getVideoFilePath());
+
 			AudioAttributes audioAtt = new AudioAttributes();
 			audioAtt.setCodec(format.getCodec());
 			audioAtt.setBitRate(EXTRACTION_BITRATE);
 			audioAtt.setChannels(EXTRACTION_CHANNELS);
 			audioAtt.setSamplingRate(EXTRACTION_SAMPLING_RATE);
-			
+
 			EncodingAttributes encAtt = new EncodingAttributes();
 			encAtt.setFormat(format.toString().toLowerCase());
 			encAtt.setAudioAttributes(audioAtt);
-			
+
 			Encoder encoder = new Encoder();
-			
+
 			try 
 			{
+				System.out.println("Extracting audio, please wait....");
 				encoder.encode(currentVideoFile, audioFile, encAtt);
 			} 
 			catch (IllegalArgumentException | EncoderException e) 
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				return false;
 			}
@@ -357,7 +253,93 @@ public class VideoPlayer implements Player
 			return true;
 		}	
 	}
+
+	/**
+	 * Create an animated GIF sequence from the input start time of the video to the input end time of the video
+	 * @throws InterruptedException 
+	 * @throws AWTException 
+	 * @throws IOException 
+	 * @throws FileNotFoundException 
+	 */
+	public boolean gifClip(long startTime, long endTime) throws InterruptedException, AWTException, FileNotFoundException, IOException
+	{
+		if(!hasMedia
+				|| startTime < 0 
+				|| startTime > player.getLength() 
+				|| endTime < 0 
+				|| endTime > player.getLength()
+				|| startTime > endTime)
+			return false;
+		else
+		{
+			ArrayList<BufferedImage> capturedImages = new ArrayList<BufferedImage>((int)(endTime-startTime));
+			player.addMediaPlayerEventListener(new MediaPlayerEventAdapter()
+					{
+						@Override
+						public void snapshotTaken(MediaPlayer mp, String fileName)
+						{
+							System.out.println("Snapshot successfully taken");
+							System.out.println(capturedImages.size());
+						}
+					});
+			pauseVideo();
+			player.setTime(startTime);
+			
+			//TODO: GIFs are really slow and have low quality
+			while(player.getTime() <= endTime)
+			{
+				BufferedImage image = player.getVideoSurfaceContents();
+				capturedImages.add(image);
+				player.setTime(player.getTime() + 5);
+			}
+			
+			BufferedImage firstImage = capturedImages.get(0);
+			ImageOutputStream output = new FileImageOutputStream(new File("output/clip.gif"));
+			GifSequenceWriter writer = new GifSequenceWriter(output, firstImage.getType(), 1, true);
+			
+			writer.writeToSequence(firstImage);
+			for(int i = 1; i < capturedImages.size(); i++)
+			{
+				writer.writeToSequence(capturedImages.get(i));
+			}
+			
+			writer.close();
+			output.close();
+			
+			System.out.println(String.format("Images from %d to %d captured", startTime,endTime));
+			
+			return true;
+		}
+	}
 	
+	/**
+	 * Make a clip of a video
+	 */
+	public boolean clipVideo(int start, int finish)
+	{
+		if(!hasMedia
+				|| start < 0 
+				|| start > player.getLength() 
+				|| finish < 0 
+				|| finish > player.getLength()
+				|| start > finish)
+		{
+			return false;
+		}
+		else
+		{
+			String sout = ":sout=#transcode{vcodec=mp4v,vb=%d,scale=%f}:duplicate{dst=file{dst=%s}}";
+			int bits = 4096;
+			float scale = 0.5f;
+			long systemTime = System.currentTimeMillis();
+			String dest = "output/clip" + systemTime + ".mp4";
+			String finalSOut =  String.format(sout, bits, scale, dest);
+			player.playMedia(videoPath, ":start-time="+start,":stop-time=" + finish, finalSOut);
+			
+			return true;
+		}
+	}
+
 	//Getter-setters
 	/**
 	 * Get the JFrame of this player
@@ -367,7 +349,7 @@ public class VideoPlayer implements Player
 	{
 		return frame;
 	}
-	
+
 	/**
 	 * Get the media player associated with this VideoPlayer
 	 */
@@ -375,7 +357,7 @@ public class VideoPlayer implements Player
 	{
 		return player;
 	}
-	
+
 	/**
 	 * Get the file path of the video being played in the player
 	 */
@@ -384,6 +366,14 @@ public class VideoPlayer implements Player
 		return videoPath;
 	}
 	
+	/**
+	 * Get the length of the playing video file
+	 */
+	public long getVideoLength()
+	{
+		return player.getLength();
+	}
+
 	//Bool conditions
 	/**
 	 * Determine if this player is loaded with a video
@@ -392,7 +382,7 @@ public class VideoPlayer implements Player
 	{
 		return hasMedia;
 	}
-	
+
 	//Player interface implementation
 	@Override
 	public void volumeChange(double newVolume) 
@@ -412,7 +402,7 @@ public class VideoPlayer implements Player
 	@Override
 	public void skipPlayback() 
 	{
-		// TODO Auto-generated method stub
+		player.setTime(player.getLength());
 	}
 
 	@Override
@@ -420,13 +410,6 @@ public class VideoPlayer implements Player
 	{
 		seekVideo(playbackPosition);
 	}	
-	
-	public static void main(String[] args) throws InterruptedException
-	{
-		//Testing stuff
-		VideoPlayer v = new VideoPlayer("media libraries/video/kaius_presentation.mp4");
-		v.extractAudio(MusicPlayer.MusicFormat.FLAC);
-	}
 
 	@Override
 	public boolean open(String fileName)
@@ -442,6 +425,35 @@ public class VideoPlayer implements Player
 		frame.dispose();
 		hasMedia = false;
 		return player.isPlayable();
+	}
+	
+	public void testSurfaceCapture() throws AWTException
+	{
+		Canvas can = mediaPlayerComponent.getVideoSurface();
+		Robot r = new Robot();
+		BufferedImage img = r.createScreenCapture(can.getBounds());
+		can.printAll(img.getGraphics());
+				//new BufferedImage(can.getWidth(), can.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		
+		
+		try
+		{
+			String format = "png";
+			ImageIO.write(img, format, new File("output/buff." + format));
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public static void main(String[] args) throws InterruptedException, AWTException, FileNotFoundException, IOException
+	{
+		//Testing stuff
+		VideoPlayer v = new VideoPlayer("media libraries/video/singing_dove.mp4");
+		Thread.sleep(500);
+		v.pauseVideo();
+		v.clipVideo(1, 4);
 	}
 }
 

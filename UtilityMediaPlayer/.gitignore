@@ -1,4 +1,5 @@
 /bin
+/output
 .settings
 *.project
 .classpath
