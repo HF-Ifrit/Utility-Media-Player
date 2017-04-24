@@ -1,15 +1,16 @@
+import java.awt.Component;
 import java.io.*;
+
+import javax.swing.JFrame;
+
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.Media;
-import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.MapChangeListener;
-import javafx.collections.MapChangeListener.Change;
+import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -25,7 +26,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class MusicPlayer implements Player {
+public class MusicPlayer extends Application implements Player {
 	
 	boolean songLoaded;
 	boolean isPaused;
@@ -37,6 +38,8 @@ public class MusicPlayer implements Player {
 	Label playTime;
 	Label songTitle;
 	Scene mainScene;
+	JFrame mainFrame;
+	
 	
 	enum MusicFormat {
    	 MP3("libmp3lame"),
@@ -59,104 +62,105 @@ public class MusicPlayer implements Player {
 	 * for now, this allows the MusicPlayer to function as a stand-alone application.(non-Javadoc)
 	 * @see javafx.application.Application#start(javafx.stage.Stage)
 	 */
-//	public void start(Stage primaryStage) {
-//		
-//		primaryStage.setTitle("Music Player");
-//		
-//		player = null;
-//		songLoaded = false;
-//		volume = null;
-//		duration = null;
-//		playTime = null;
-//		
-//		GridPane grid = new GridPane();
-//		grid.setAlignment(Pos.CENTER);
-//		grid.setHgap(10);
-//		grid.setVgap(10);
-//		grid.setPadding(new Insets(2,25,25,25));
-//		
-//		playTime = new Label();
-//		playTime.setPrefWidth(130);
-//		playTime.setMinWidth(50);
-//		grid.add(playTime, 1, 5);
-//		
-//		songTitle = new Label();
-//		songTitle.setPrefWidth(200);
-//		songTitle.setMinWidth(50);
-//		grid.add(songTitle, 0, 0);
-//		
-//		mainScene = new Scene(grid, 300, 300);
-//		
-//		//Create the play/pause button and add its event handler.
-//		Button play = makeButton("Play/Pause", 0, 8, grid);
-//		play.setOnAction(new EventHandler<ActionEvent>() {
-//			@Override
-//			public void handle(ActionEvent event) {
-//				if (songLoaded) {
-//					alternatePlayback(player);
-//				}
-//				else {
-//					open("media libraries/test.mp3");
-//					songLoaded = true;
-//					duration = player.getMedia().getDuration();
-//					
-//				}
-//			}
-//		});
-//		
-//		//Create the volume slider and add its event handler.
-//		volume = createSlider("Volume: ", null, 0, 4, grid);
-//		volume.valueProperty().addListener(new InvalidationListener() {
-//			public void invalidated(Observable ov) {
-//				if (volume.isValueChanging()) {
-//					volumeChange(player);
-//				}
-//			}
-//		});
-//		
-//		//Create the time slider and add its event handler.
-//		playTime = new Label("Time :");
-//		time = createSlider("Time: ", playTime, 0, 6, grid);
-//		time.valueProperty().addListener(new InvalidationListener() {
-//			public void invalidated(Observable o) {
-//				if (time.isValueChanging()) {
-//					changePosition(player);
-//				}
-//			}
-//		});
-//		
-//		primaryStage.setScene(mainScene);
-//		primaryStage.show();
-//	}
-	@Override
+	public void start(Stage primaryStage) {
+		
+		primaryStage.setTitle("Music Player");
+		
+		player = null;
+		songLoaded = false;
+		volume = null;
+		duration = null;
+		playTime = null;
+		mainFrame = new JFrame();
+		JFXPanel panel = new JFXPanel();
+		mainFrame.add(panel);
+		
+		
+		GridPane grid = new GridPane();
+		grid.setAlignment(Pos.CENTER);
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(2,25,25,25));
+		
+		playTime = new Label();
+		playTime.setPrefWidth(130);
+		playTime.setMinWidth(50);
+		grid.add(playTime, 1, 5);
+		
+		songTitle = new Label();
+		songTitle.setPrefWidth(200);
+		songTitle.setMinWidth(50);
+		grid.add(songTitle, 0, 0);
+		
+		mainScene = new Scene(grid, 300, 300);
+		
+		//Create the play/pause button and add its event handler.
+		Button play = makeButton("Play/Pause", 0, 8, grid);
+		play.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				if (songLoaded) {
+					alternatePlayback(player);
+				}
+				else {
+					open("media libraries/test.mp3");
+					songLoaded = true;
+					duration = player.getMedia().getDuration();
+					
+				}
+			}
+		});
+		
+		//Create the volume slider and add its event handler.
+		volume = createSlider("Volume: ", null, 0, 4, grid);
+		volume.valueProperty().addListener(new InvalidationListener() {
+			public void invalidated(Observable ov) {
+				if (volume.isValueChanging()) {
+					volumeChange(player);
+				}
+			}
+		});
+		
+		//Create the time slider and add its event handler.
+		playTime = new Label("Time :");
+		time = createSlider("Time: ", playTime, 0, 6, grid);
+		time.valueProperty().addListener(new InvalidationListener() {
+			public void invalidated(Observable o) {
+				if (time.isValueChanging()) {
+					changePosition(player);
+				}
+			}
+		});
+		panel.setScene(mainScene);
+		panel.setVisible(true);
+		primaryStage.setScene(mainScene);
+		primaryStage.show();
+	}
 	/*Opens the specified music file and loads it into the player
 	 * @param fileName The name of the desired music file
 	 */
-	public boolean open(String fileName) {
+	private void openSong (String fileName) {
 		if (fileName != null) {
 			String uri = new File(fileName).toURI().toString();	
-			Media media = new Media(uri);
-			MediaPlayer musicPlayer = new MediaPlayer(media);
-			this.player = musicPlayer;
-			player.setOnReady(new Runnable() {
-				public void run() {
-					media.getMetadata().addListener((MapChangeListener<String, Object>) change -> {
-						if (change.wasAdded()) {
-							setMetadata(change.getKey(), change.getValueAdded());
-						}
-					});
-					player.setVolume(1.0);
-        			duration = media.getDuration();
-        			updateValues();
-        			songLoaded = true;
-        			playing = true;
-        			musicPlayer.play();	
-				}
-			});
-		return songLoaded;	
-		}
-		else {
-			return false;
+			if (uri.endsWith("mp3")) {
+				Media media = new Media(uri);
+				MediaPlayer musicPlayer = new MediaPlayer(media);
+				this.player = musicPlayer;
+				musicPlayer.setOnReady(new Runnable() {
+					public void run() {
+						media.getMetadata().addListener((MapChangeListener<String, Object>) change -> {
+							if (change.wasAdded()) {
+								setMetadata(change.getKey(), change.getValueAdded());
+							}
+						});
+						player.setVolume(1.0);
+	        			duration = media.getDuration();
+	        			updateValues();
+	        			songLoaded = true;
+	        			playing = true;
+	        			}
+				});
+			}
 		}
 	}
 		
@@ -185,10 +189,16 @@ public class MusicPlayer implements Player {
 		}
 	}
 	
+	/* Changes the volume of the audio track currently playing.
+	 * @param musicPlayer The MediaPlayer associated with this current track.
+	 */
 	private void volumeChange(MediaPlayer musicPlayer) {
 		player.setVolume(volume.getValue() / 100.0);
 	}
 	
+	/* Provides playback seeking for the current track
+	 * @param musicPlayer The MediaPlayer associated with this current track.
+	 */
 	private void changePosition(MediaPlayer musicPlayer) {
 		if (player.getMedia().getDuration() != null) {
 			player.seek(duration.multiply(time.getValue() / 100));
@@ -220,6 +230,7 @@ public class MusicPlayer implements Player {
 		}
 	}
 	
+	/*This helper method displays the current time elapsed in the track. */
 	private static String formatTime(Duration elapsed, Duration duration) {
 		int intElapsed = (int) Math.floor(elapsed.toSeconds());
 		int elapsedHours = intElapsed / (60 * 60);
@@ -265,12 +276,17 @@ public class MusicPlayer implements Player {
 		alternatePlayback(player);
 	}
 	
+	public boolean open(String fileName) {
+		openSong(fileName);
+		return songLoaded;
+	}
+	
 	public void volumeChange(double newVolume) {
-		if (newVolume > 0) {
+		if (newVolume >= 0) {
 			player.setVolume(newVolume);
 		}
-		else {
-			volumeChange(player);
+		else if (newVolume < 0) {
+			player.setVolume(player.getVolume() + newVolume);
 		}
 	}
 	
@@ -284,11 +300,12 @@ public class MusicPlayer implements Player {
 	
 	public boolean clear() {
 		player.dispose();
+		this.player = null;
 		return true;
 	}
 	
-	public Scene getScene() {
-		return this.mainScene;
+	public Component showView() {
+		return mainFrame;
 	}
 	
 	
@@ -298,7 +315,7 @@ public class MusicPlayer implements Player {
 	 * @param column The index of the column on the grid
 	 * @param row The index of the row on the grid
 	 * @param grid The GridPanel that the Button is being placed on
-	 * @return A reference to the newly generated button
+	 * @return A reference to the newly generated button */
 	 
 	private Button makeButton(String buttonName, int column, int row, GridPane grid) {
 		HBox box = new HBox(10);
@@ -343,7 +360,7 @@ public class MusicPlayer implements Player {
 		grid.add(label, column, row - 1);
 		grid.add(slider, column, row);
 		return slider;
-	}*/
+	}
 	
 	
 	
