@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -8,7 +9,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import it.sauronsoftware.jave.*;
 
 public class ImageViewer {
 
@@ -127,39 +127,24 @@ public class ImageViewer {
 
 	boolean gifToVideo(VideoPlayer.VideoFormat format) {
 		
-		Encoder encoder = new Encoder();
-		File source = currentFile;
+		String filepath = currentFile.getAbsolutePath();
+		
+		//Intended format:
+		//ffmpeg -i GIFPATH.GIF -movflags faststart -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" VIDEOPATH.MP4
+		String ffmpegCommand = "ffmpeg -i "
+				+ filepath
+				+ " -movflags faststart -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" "
+				+ outputPath;
+		
+		System.out.println(ffmpegCommand);
 		
 		try {
-			if( ! encoder.getInfo(source).getVideo().getDecoder().equals("gif")) {
-				return false;
-			}
-		} catch (EncoderException e) {
+			Runtime.getRuntime().exec(ffmpegCommand);
+			return true;
+		} catch (IOException e1) {
+			System.out.println(e1.getMessage());
 			return false;
 		}
-		
-		long currentTime = System.currentTimeMillis();
-		String formatString = format.toString().toLowerCase();
-		
-		String fileName = "video" + currentTime + "." + formatString;
-		
-		File target = new File (outputPath + fileSep + fileName);
-		
-		VideoAttributes video = new VideoAttributes();
-		
-		video.setCodec("mpeg4");
-		
-		EncodingAttributes attrs = new EncodingAttributes();
-		attrs.setFormat(formatString);
-		attrs.setVideoAttributes(video);
-		
-		try {
-			encoder.encode(source,  target,  attrs);
-		} catch (IllegalArgumentException | EncoderException e) {
-			return false;
-		}
-		
-		return true;
 	}
 
 	boolean clear() {
