@@ -393,7 +393,7 @@ public class MainFrame extends JFrame {
 		this.previousFile = filename;
 		if(mode == Mode.AUDIO){
 			//TODO testing checks
-			filename = "media libraries/test.mp3";
+			filename = "media libraries/audio/test.mp3";
 			currentPlayer = new MusicPlayer();
 			setupPlayers(filename);
 		}

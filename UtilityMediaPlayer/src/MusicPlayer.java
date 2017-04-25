@@ -28,7 +28,7 @@ import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
-public class MusicPlayer extends Application implements Player {
+public class MusicPlayer implements Player {
 	
 	boolean songLoaded;
 	boolean isPaused;
@@ -64,8 +64,7 @@ public class MusicPlayer extends Application implements Player {
    	 }
     }
 	
-	/*The method that starts when the MusicPlayer is run. Will be delegated to a controller later in development;
-	 * for now, this allows the MusicPlayer to function as a stand-alone application.(non-Javadoc)
+	/*The method that starts when the MusicPlayer is run. Used for testing purposes.
 	 * @see javafx.application.Application#start(javafx.stage.Stage)
 	 */
 	public void start(Stage primaryStage) {
@@ -410,34 +409,77 @@ public class MusicPlayer extends Application implements Player {
 		duration = null;
 		playTime = null;
 		
-//		mainFrame = new JFXPanel();
-		
-//		GridPane grid = new GridPane();
-//		grid.setAlignment(Pos.CENTER);
-//		grid.setHgap(10);
-//		grid.setVgap(10);
-//		grid.setPadding(new Insets(2,25,25,25));
-//		
-//		time = new Slider();
-//		HBox.setHgrow(time,Priority.ALWAYS);
-//		time.setMinWidth(50);
-//		time.setMaxWidth(Double.MAX_VALUE);
-//		grid.add(time, 0, 6);
-//		
+		mainFrame = new JFXPanel();
+						
+		player = null;
+		songLoaded = false;
+		volume = null;
+		duration = null;
+		playTime = null;
+
+		songTitle = null;
+		albumImage = null;
+		mainFrame = new JFXPanel();
+			
+		GridPane grid = new GridPane();
+		grid.setAlignment(Pos.CENTER);
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(2,25,25,25));
+			
 //		playTime = new Label();
 //		playTime.setPrefWidth(130);
 //		playTime.setMinWidth(50);
-//		grid.add(playTime, 1, 5);
-//		
-//		songTitle = new Label();
-//		songTitle.setPrefWidth(200);
-//		songTitle.setMinWidth(50);
-//		grid.add(songTitle, 0, 0);
-//		
-//		mainScene = new Scene(grid, 300, 300);
-//		mainFrame.setScene(mainScene);
-		
-		
+//		grid.add(playTime, 3, 5);
+			
+		mainScene = new Scene(grid, 300, 300);
+			
+		songTitle = makeLabel("Title: ", 0, 0, grid);
+		artist = makeLabel("Artist: ", 1, 0, grid);
+		albumTitle = makeLabel("Album: ", 0, 1, grid);
+			
+		//TODO
+		//set the image section here.
+
+		//Create the play/pause button and add its event handler.
+		Button play = makeButton("Play/Pause", 0, 8, grid);
+		play.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				if (songLoaded) {
+					alternatePlayback(player);
+				}
+				else {
+					open("media libraries/test.mp3");
+					songLoaded = true;
+					duration = player.getMedia().getDuration();
+						
+				}
+			}
+		});
+		testButton = play;
+			
+		//Create the volume slider and add its event handler.
+		volume = createSlider("Volume: ", null, 0, 4, grid);
+		volume.valueProperty().addListener(new InvalidationListener() {
+			public void invalidated(Observable ov) {
+				if (volume.isValueChanging()) {
+					volumeChange(player);
+				}
+			}
+		});
+			
+		//Create the time slider and add its event handler.
+		playTime = new Label("Time :");
+		time = createSlider("Time: ", playTime, 0, 6, grid);
+		time.valueProperty().addListener(new InvalidationListener() {
+			public void invalidated(Observable o) {
+				if (time.isValueChanging()) {
+					changePosition(player);
+				}
+			}
+		});
+		mainFrame.setScene(mainScene);
 	}
 	
 	public static void main(String[] args) {
