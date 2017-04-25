@@ -296,7 +296,7 @@ public class MainFrame extends JFrame {
 			return;
 		}
 		else{
-			 filename = fileList.getModel().getElementAt(selectedindex);
+			filename = fileList.getModel().getElementAt(selectedindex);
 			tempmode = parseFileType(filename);
 		}
 		/**
@@ -365,6 +365,7 @@ public class MainFrame extends JFrame {
 	
 	//helper method to streamline creation of new video/music players
 	private void createViews(String filename){
+		this.previousFile = filename;
 		if(mode == Mode.AUDIO){
 			//TODO testing checks
 			filename = "media libraries/test.mp3";
@@ -386,7 +387,7 @@ public class MainFrame extends JFrame {
 			setupViewer(filename);
 		}
 		this.paint(this.getGraphics());
-		this.previousFile = filename;
+		
 	}
 	
 	
