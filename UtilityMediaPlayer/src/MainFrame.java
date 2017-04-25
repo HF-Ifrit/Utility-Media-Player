@@ -58,7 +58,7 @@ public class MainFrame extends JFrame {
     
     //players/viewers
     private Player currentPlayer;
-    private ImageViewer currentImage;
+    private ImageViewer currentViewer;
     
     //previous file that was played
     private String previousFile;
@@ -99,7 +99,7 @@ public class MainFrame extends JFrame {
 		previousFile = "";
 		mode = Mode.EMPTY;
 		jfxControl = new JFXController(this);
-		currentImage = new ImageViewer();
+		currentViewer = new ImageViewer();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, 1040, 543);
         
@@ -379,7 +379,7 @@ public class MainFrame extends JFrame {
 	//helper method to creation for new scene
 	private void setupViewer(String filename){
 		JFXPanel panel = new JFXPanel();
-		panel.setScene(currentImage.getScene());
+		panel.setScene(currentViewer.getScene());
 		getFrame().add(panel, BorderLayout.CENTER);
 		
 		updateComponent(panel);
@@ -396,8 +396,6 @@ public class MainFrame extends JFrame {
 			filename = "media libraries/test.mp3";
 			currentPlayer = new MusicPlayer();
 			setupPlayers(filename);
-			
-			
 		}
 		if(mode == Mode.VIDEO){
 			//TODO testing checks
@@ -408,11 +406,10 @@ public class MainFrame extends JFrame {
 		if(mode == Mode.IMAGE){
 			//TODO testing checks
 			filename = "media libraries/images/image.png";
-			currentImage.open(filename);
+			currentViewer.open(filename);
 			setupViewer(filename);
 		}
-		this.paint(this.getGraphics());
-		
+		this.paint(this.getGraphics());  
 	}
 	
 	
@@ -612,6 +609,24 @@ public class MainFrame extends JFrame {
 		 public void forwardFile(){
 			 mainFrame.forwardFile();
 		 }
+		 
+		 //returns the previous file played by the UMP
+		 public String getPreviousFile(){
+			 return mainFrame.previousFile;
+		 }
+		 
+		 //returns the currentPlayer of the mainFrame
+		 public Player getCurrentPlayer(){
+			 return mainFrame.currentPlayer;
+		 }
+		 
+		 
+		 //returns the current Viewer of the mainFrame
+		 public ImageViewer getCurrentViewer(){
+			 return mainFrame.currentViewer;
+		 }
+		 
+			 
 		 
 		
 		//resets all stored values in the TestSuite
