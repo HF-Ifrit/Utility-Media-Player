@@ -5,7 +5,10 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 import javax.swing.*;
 
@@ -33,6 +36,9 @@ import javafx.scene.text.Text;
 public class MainFrame extends JFrame {
 
 	private JFrame frame;
+	private static final String AUDIO_PATH = "media libraries/audio/";
+	private static final String VIDEO_PATH = "media libraries/video/";
+	private static final String IMAGE_PATH = "media libraries/images/";
 	
 	private JPanel contentPane;
 	private JMenuBar menuBar;
@@ -170,14 +176,33 @@ public class MainFrame extends JFrame {
 	private static JList<String> createFileList(){
 		JList<String> list;
 		list = new JList<String>();
-		list.setModel(new AbstractListModel<String>() {
+		ArrayList<String> audio = MainFrame.getFolderContents(MainFrame.AUDIO_PATH);
+		ArrayList<String> video = MainFrame.getFolderContents(MainFrame.VIDEO_PATH);
+		ArrayList<String> images = MainFrame.getFolderContents(MainFrame.IMAGE_PATH);
+		ArrayList<String> fileList = new ArrayList<String>();
+		fileList.addAll(audio);
+		fileList.addAll(video);
+		fileList.addAll(images);
+		Collections.sort(fileList);
+		list.setModel(new AbstractListModel<String>()
+		{
 			String[] values = new String[] {
 					"Video.mp4", "Audio.mp3", "Media.gif", "Image.png"};
-			public int getSize() {
-				return values.length;
+			
+			ArrayList<String> fileNames = fileList;
+			
+			public ArrayList<String> getFileNames() 
+			{
+				return fileNames;
 			}
+			
+			public int getSize() 
+			{
+				return fileNames.size();
+			}
+			
 			public String getElementAt(int index) {
-				return values[index];
+				return getFileNames().get(index);
 			}
 		});
 		list.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -473,6 +498,16 @@ public class MainFrame extends JFrame {
 		return frame;
 	}
 
+	public static ArrayList<String> getFolderContents(String folderPath)
+	{
+		File f = new File(folderPath);
+		File[] files = f.listFiles();
+		ArrayList<String> fileNames = new ArrayList<String>(files.length);
+		for(int i = 0; i < files.length; i++)
+			fileNames.add(files[i].getName());
+		
+		return fileNames;
+	}
 
 	
 	/**

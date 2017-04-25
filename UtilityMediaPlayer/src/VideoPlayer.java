@@ -409,6 +409,14 @@ public class VideoPlayer implements Player
 	{
 		return player;
 	}
+	
+	/**
+	 * Get the media player component for the Video Player
+	 */
+	public EmbeddedMediaPlayerComponent getPlayerComponent()
+	{
+		return mediaPlayerComponent;
+	}
 
 	/**
 	 * Get the file path of the video being played in the player
@@ -487,7 +495,15 @@ public class VideoPlayer implements Player
 	
 	public static void main(String[] args) throws InterruptedException, AWTException, FileNotFoundException, IOException
 	{
+		JFrame frame = new JFrame("Video Player");
+		VideoPlayer v = new VideoPlayer("media libraries/video/singing_dove.mp4");
+		frame.setBounds(100, 100, 500, 500);
 
+		frame.setContentPane(v.mediaPlayerComponent);
+		frame.setVisible(true);
+		v.playVideo();
+		Thread.sleep(2000);
+		v.clear();
 	}
 }
 
