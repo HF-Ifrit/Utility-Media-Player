@@ -1,8 +1,14 @@
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -124,7 +130,23 @@ public class ImageViewer {
 
 		return true;
 	}
-
+	
+	//Opens a new JOptionPane that displays basic image properties, iff an image is currently open.
+	void imageProperties() {
+		if(openImage == false) {
+			return;
+		}
+		
+		else {
+			String currentPath = currentFile.getAbsolutePath();
+			String height = "" + currentIV.getImage().getHeight();
+			String width = "" + currentIV.getImage().getWidth();
+			String properties = "Path: " + currentPath + "\n"
+					+ "Height (px): " + height + "\n"
+					+ "Width (px): " + width;
+	        JOptionPane.showMessageDialog(null, properties,"Image Properties", JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
 	
 	//TODO: this needs to change
 	boolean gifToVideo(VideoPlayer.VideoFormat format) {

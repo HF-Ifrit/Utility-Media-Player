@@ -110,7 +110,7 @@ public class MusicPlayer implements Player {
 					alternatePlayback(player);
 				}
 				else {
-					open("media libraries/test.mp3");
+					open("media libraries/audio/test.mp3");
 					songLoaded = true;
 					duration = player.getMedia().getDuration();
 					
