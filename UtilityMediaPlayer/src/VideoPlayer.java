@@ -45,11 +45,7 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 
 public class VideoPlayer implements Player
-{	
-	private final JFrame frame;
-	private final JPanel panel;
-	private final JFXPanel jfxPanel;
-	
+{		
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	private final EmbeddedMediaPlayer player;
 	private final Integer EXTRACTION_AUDIO_BITRATE = new Integer(128000);
@@ -93,29 +89,10 @@ public class VideoPlayer implements Player
 		new NativeDiscovery().discover();
 		
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-
-		frame = new JFrame();
-		panel = new JPanel();
-		jfxPanel = new JFXPanel();
-		jfxPanel.add(mediaPlayerComponent);
-		panel.add(mediaPlayerComponent);
-		panel.setBackground(Color.BLACK);
 		
-//		frame.setBounds(100, 100, 600, 400);
-//		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-//		frame.addWindowListener(new WindowAdapter()
-//		{
-//			@Override
-//			public void windowClosing(WindowEvent e)
-//			{
-//				mediaPlayerComponent.release();
-//			}
-//		});
 		vidDimension = null;
 		hasMedia = false;
-		player = mediaPlayerComponent.getMediaPlayer();
-
-		
+		player = mediaPlayerComponent.getMediaPlayer();	
 	}
 
 	public VideoPlayer(String filePath)
@@ -133,7 +110,7 @@ public class VideoPlayer implements Player
 	{
 		loadVideo(fileName);
 		
-		playVideo(); //TODO
+		playVideo();
 		if(player.isPlaying())
 			return true;
 		else
@@ -144,10 +121,7 @@ public class VideoPlayer implements Player
 	 * Reveals the video player frame
 	 */
 	private void showPlayer()
-	{
-		//frame.setContentPane(mediaPlayerComponent);
-		//frame.setVisible(true);
-		
+	{	
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
@@ -226,8 +200,6 @@ public class VideoPlayer implements Player
 			loaded = player.prepareMedia(filePath);
 			player.parseMedia();
 			hasMedia = true;
-			if(!panel.isVisible())
-				showPlayer();
 			//player.start(); //TODO
 		}
 
@@ -431,15 +403,6 @@ public class VideoPlayer implements Player
 
 	//Getter-setters
 	/**
-	 * Get the JFrame of this player
-	 * @return
-	 */
-	public JFrame getFrame()
-	{
-		return frame;
-	}
-
-	/**
 	 * Get the media player associated with this VideoPlayer
 	 */
 	public EmbeddedMediaPlayer getPlayer()
@@ -524,14 +487,7 @@ public class VideoPlayer implements Player
 	
 	public static void main(String[] args) throws InterruptedException, AWTException, FileNotFoundException, IOException
 	{
-		//Testing stuff
-		
-//		VideoPlayer v = new VideoPlayer("media libraries/video/singing_dove.mp4");
-//		v.open(v.videoPath);
-//		Thread.sleep(500);
-//		v.clipVideo(1, 4, VideoFormat.WEBM);
-	}
 
-	
+	}
 }
 
