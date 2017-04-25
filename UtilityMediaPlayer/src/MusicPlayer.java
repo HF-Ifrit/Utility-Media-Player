@@ -20,6 +20,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.image.Image;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -38,6 +39,9 @@ public class MusicPlayer extends Application implements Player {
 	Duration duration;
 	Label playTime;
 	Label songTitle;
+	Label albumTitle;
+	Label artist;
+	Image albumImage;
 	Scene mainScene;
 	JFXPanel mainFrame;
 	public Button testButton;
@@ -73,6 +77,8 @@ public class MusicPlayer extends Application implements Player {
 		volume = null;
 		duration = null;
 		playTime = null;
+		songTitle = null;
+		albumImage = null;
 		mainFrame = new JFXPanel();
 		
 		GridPane grid = new GridPane();
@@ -81,17 +87,19 @@ public class MusicPlayer extends Application implements Player {
 		grid.setVgap(10);
 		grid.setPadding(new Insets(2,25,25,25));
 		
-		playTime = new Label();
-		playTime.setPrefWidth(130);
-		playTime.setMinWidth(50);
-		grid.add(playTime, 1, 5);
-		
-		songTitle = new Label();
-		songTitle.setPrefWidth(200);
-		songTitle.setMinWidth(50);
-		grid.add(songTitle, 0, 0);
+//		playTime = new Label();
+//		playTime.setPrefWidth(130);
+//		playTime.setMinWidth(50);
+//		grid.add(playTime, 3, 5);
 		
 		mainScene = new Scene(grid, 300, 300);
+		
+		songTitle = makeLabel("Title: ", 0, 0, grid);
+		artist = makeLabel("Artist: ", 1, 0, grid);
+		albumTitle = makeLabel("Album: ", 0, 1, grid);
+		
+		//TODO
+		//set the image section here.
 		
 		//Create the play/pause button and add its event handler.
 		Button play = makeButton("Play/Pause", 0, 8, grid);
@@ -143,15 +151,18 @@ public class MusicPlayer extends Application implements Player {
 			String uri = new File(fileName).toURI().toString();	
 			if (uri.endsWith("mp3")) {
 				Media media = new Media(uri);
+				media.getMetadata().addListener( new MapChangeListener<String, Object>() {
+					@Override
+					public void onChanged(Change<? extends String, ? extends Object> change) {
+						if (change.wasAdded()) {
+							setMetadata(change.getKey(), change.getValueAdded());
+						}
+					}
+				});
 				MediaPlayer musicPlayer = new MediaPlayer(media);
 				this.player = musicPlayer;
 				musicPlayer.setOnReady(new Runnable() {
 					public void run() {
-						media.getMetadata().addListener((MapChangeListener<String, Object>) change -> {
-							if (change.wasAdded()) {
-								setMetadata(change.getKey(), change.getValueAdded());
-							}
-						});
 						if (player != null) {
 							player.setVolume(1.0);
 							duration = media.getDuration();
@@ -159,7 +170,6 @@ public class MusicPlayer extends Application implements Player {
 							songLoaded = true;
 							playing = true;
 							musicPlayer.play();
-							System.out.println("Hey dog " + musicPlayer.getStatus());
 	        				}
 						}
 				});
@@ -171,7 +181,16 @@ public class MusicPlayer extends Application implements Player {
 	//TODO Add album, artist, image?
 	private void setMetadata(String key, Object value) {
 		if (key.equals("title")) {
-			songTitle.setText(value.toString());
+			songTitle.setText(songTitle.getText() + value.toString());
+		}
+		if (key.equals("album")) {
+			albumTitle.setText(albumTitle.getText() + value.toString());
+		}
+		if (key.equals("artist")) {
+			artist.setText(artist.getText() + value.toString());
+		}
+		//TODO:
+		if (key.equals("image")) {
 		}
 	}
 	
@@ -371,8 +390,18 @@ public class MusicPlayer extends Application implements Player {
 		return slider;
 	}
 	
+	private Label makeLabel(String id, int column, int row, GridPane grid) {
+		Label label = new Label();
+		label.setId(id);
+		label.setText(id);
+		label.setPrefWidth(200);
+		label.setMinWidth(50);
+		grid.add(label, column, row);
+		return label;
+	}
 	
 	
+	/* The commented out section is used if the MusicPlayer is not implemented as an Application. However, as of release time, it will be an Application. */
 	public MusicPlayer() {
 		player = null;
 		songLoaded = false;
@@ -380,32 +409,32 @@ public class MusicPlayer extends Application implements Player {
 		duration = null;
 		playTime = null;
 		
-		mainFrame = new JFXPanel();
+//		mainFrame = new JFXPanel();
 		
-		GridPane grid = new GridPane();
-		grid.setAlignment(Pos.CENTER);
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(2,25,25,25));
-		
-		time = new Slider();
-		HBox.setHgrow(time,Priority.ALWAYS);
-		time.setMinWidth(50);
-		time.setMaxWidth(Double.MAX_VALUE);
-		grid.add(time, 0, 6);
-		
-		playTime = new Label();
-		playTime.setPrefWidth(130);
-		playTime.setMinWidth(50);
-		grid.add(playTime, 1, 5);
-		
-		songTitle = new Label();
-		songTitle.setPrefWidth(200);
-		songTitle.setMinWidth(50);
-		grid.add(songTitle, 0, 0);
-		
-		mainScene = new Scene(grid, 300, 300);
-		mainFrame.setScene(mainScene);
+//		GridPane grid = new GridPane();
+//		grid.setAlignment(Pos.CENTER);
+//		grid.setHgap(10);
+//		grid.setVgap(10);
+//		grid.setPadding(new Insets(2,25,25,25));
+//		
+//		time = new Slider();
+//		HBox.setHgrow(time,Priority.ALWAYS);
+//		time.setMinWidth(50);
+//		time.setMaxWidth(Double.MAX_VALUE);
+//		grid.add(time, 0, 6);
+//		
+//		playTime = new Label();
+//		playTime.setPrefWidth(130);
+//		playTime.setMinWidth(50);
+//		grid.add(playTime, 1, 5);
+//		
+//		songTitle = new Label();
+//		songTitle.setPrefWidth(200);
+//		songTitle.setMinWidth(50);
+//		grid.add(songTitle, 0, 0);
+//		
+//		mainScene = new Scene(grid, 300, 300);
+//		mainFrame.setScene(mainScene);
 		
 		
 	}
