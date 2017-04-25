@@ -44,7 +44,6 @@ public class MusicPlayerTest {
 	public void testValidFile() throws InterruptedException {
 		testPlayer.open(testSong1);
 		testPlayer.testButton.fire();
-		System.out.println(testPlayer.player.getStatus());
 		assertTrue(testPlayer.songLoaded);
 	}
 	
@@ -52,9 +51,8 @@ public class MusicPlayerTest {
 	public void testWrongFile() throws InterruptedException {
 		testPlayer.open("media libraries/image.png");
 		assertFalse(testPlayer.songLoaded);
-		
-		testPlayer.open(testSong1); //To avoid a null pointer upon start of next test
 	}
+
 	
 	@Test 
 	//Testing the open() method. There is a null file being passed in, so nothing should happen.
@@ -107,7 +105,6 @@ public class MusicPlayerTest {
 	@Test 
 	//Testing clear without opening a file first
 	public void testClearEmpty() {
-		testPlayer.open(testSong1);
 		assertFalse(testPlayer.clear());
 	}
 	

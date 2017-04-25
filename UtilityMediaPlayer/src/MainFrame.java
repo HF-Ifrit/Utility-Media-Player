@@ -393,19 +393,19 @@ public class MainFrame extends JFrame {
 		this.previousFile = filename;
 		if(mode == Mode.AUDIO){
 			//TODO testing checks
-			filename = "media libraries/test.mp3";
+			filename = "media libraries/audio/" + filename;
 			currentPlayer = new MusicPlayer();
 			setupPlayers(filename);
 		}
 		if(mode == Mode.VIDEO){
 			//TODO testing checks
-			filename = "media libraries/video/singing_dove.mp4";
+			filename = "media libraries/video/" + filename;
 			currentPlayer = new VideoPlayer();
 			setupPlayers(filename);
 		}
 		if(mode == Mode.IMAGE){
 			//TODO testing checks
-			filename = "media libraries/images/image.png";
+			filename = "media libraries/images/" + filename;
 			currentViewer.open(filename);
 			setupViewer(filename);
 		}
