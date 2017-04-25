@@ -1,11 +1,9 @@
 import static org.junit.Assert.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,7 +34,7 @@ public class ImageViewerTest {
 	@Before
 	public void Before() 
 	{
-		testViewer = new ImageViewer();
+		testViewer = new ImageViewer(true);
 		
 		imagePath = workingDir + fileSep + "media libraries" + fileSep + "images" + fileSep + "image.png";
 		gifPath = workingDir + fileSep + "media libraries" + fileSep + "images" + fileSep + "gif.gif";
