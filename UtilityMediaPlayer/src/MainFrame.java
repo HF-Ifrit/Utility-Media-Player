@@ -57,6 +57,7 @@ public class MainFrame extends JFrame {
     //previous file that was played
     private String previousFile;
     private Mode previousMode;
+    private Component previousComponent;
     
     //player mode that is currently loaded
     private Mode mode;
@@ -307,6 +308,7 @@ public class MainFrame extends JFrame {
 			mode = tempmode;
 			if(currentPlayer != null){
 				currentPlayer.clear();
+				currentPlayer = null;
 			}
 			createViews(filename);
 			
@@ -320,11 +322,11 @@ public class MainFrame extends JFrame {
 	}
 	
 	//helper method to streamline closing video/music player windows
-	private void closePlayers(){
-		if(currentPlayer != null){
-			currentPlayer.clear();
-			currentPlayer = null;
+	private void updateComponent(Component newComponent){
+		if(previousComponent != null){
+			getFrame().remove(previousComponent);
 		}
+		previousComponent = newComponent;
 	}
 	
 	//helper method to streamline play/pause of current mode
@@ -339,11 +341,13 @@ public class MainFrame extends JFrame {
 		Component tempPlayer = currentPlayer.showView();
 		getFrame().add(tempPlayer, BorderLayout.CENTER);
 		
-		validate();		
-		repaint();
+		
 		currentPlayer.open(filename);
 		currentPlayer.volumeChange(this.volumeSlider.getValue());
-		tempPlayer.setVisible(true);
+		updateComponent(tempPlayer);
+		getFrame().setVisible(true);
+		getFrame().validate();		
+		getFrame().repaint();
 	}
 	
 	//helper method to creation for new scene
@@ -351,9 +355,11 @@ public class MainFrame extends JFrame {
 		JFXPanel panel = new JFXPanel();
 		panel.setScene(currentImage.getScene());
 		getFrame().add(panel, BorderLayout.CENTER);
-		validate();		
-		repaint();
-		panel.setVisible(true);
+		
+		updateComponent(panel);
+		getFrame().setVisible(true);
+		getFrame().validate();		
+		getFrame().repaint();
 	}
 	
 	//helper method to streamline creation of new video/music players
@@ -376,7 +382,6 @@ public class MainFrame extends JFrame {
 			//TODO testing checks
 			filename = "media libraries/images/image.png";
 			currentImage.open(filename);
-			closePlayers();
 			setupViewer(filename);
 		}
 		this.paint(this.getGraphics());
