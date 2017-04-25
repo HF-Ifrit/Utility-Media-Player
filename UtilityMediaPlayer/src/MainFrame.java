@@ -103,7 +103,7 @@ public class MainFrame extends JFrame {
 	//creates gui 
 	private static void createAndShowGUI() {
         //Create and set up the window.
-        JFrame displayFrame = new MainFrame();
+        JFrame displayFrame = new JFrame();
         displayFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  
         //Create and set up the content pane.
@@ -338,9 +338,8 @@ public class MainFrame extends JFrame {
 	private void setupPlayers(String filename){
 		Component tempPlayer = currentPlayer.showView();
 		getFrame().add(tempPlayer, BorderLayout.CENTER);
-		tempPlayer.setVisible(true);
-		validate();		
-		repaint();
+		getFrame().setVisible(true);
+		
 		currentPlayer.open(filename);
 		currentPlayer.volumeChange(this.volumeSlider.getValue());
 	}
@@ -500,7 +499,7 @@ public class MainFrame extends JFrame {
 	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	 
 	        //Create and set up the content pane.
-	        MainFrame demo = new MainFrame();
+	        MainFrame demo = new MainFrame(frame);
 	        mainFrame = demo;
 	        frame.setJMenuBar(demo.createTextMenuBar());
 	        frame.setContentPane(demo.createContentPane());
