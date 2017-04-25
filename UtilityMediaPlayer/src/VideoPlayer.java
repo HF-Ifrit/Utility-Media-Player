@@ -1,7 +1,9 @@
 import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
@@ -30,6 +32,11 @@ import it.sauronsoftware.jave.AudioAttributes;
 import it.sauronsoftware.jave.Encoder;
 import it.sauronsoftware.jave.EncoderException;
 import it.sauronsoftware.jave.EncodingAttributes;
+import it.sauronsoftware.jave.InputFormatException;
+import it.sauronsoftware.jave.VideoAttributes;
+import it.sauronsoftware.jave.VideoSize;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.layout.GridPane;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.player.MediaPlayer;
@@ -40,14 +47,20 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 public class VideoPlayer implements Player
 {	
 	private final JFrame frame;
+	private final JPanel panel;
+	private final JFXPanel jfxPanel;
+	
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	private final EmbeddedMediaPlayer player;
-	private final Integer EXTRACTION_BITRATE = new Integer(128000);
+	private final Integer EXTRACTION_AUDIO_BITRATE = new Integer(128000);
+	private final Integer EXTRACTION_VIDEO_BITRATE = new Integer(39000);
 	private final Integer EXTRACTION_CHANNELS = new Integer(2);
 	private final Integer EXTRACTION_SAMPLING_RATE = new Integer(44100);
-
+	private final Integer EXTRACTION_FRAMERATE = new Integer(15);
+	
 	private boolean hasMedia;
 	private String videoPath;
+	private Dimension vidDimension;
 
 	enum VideoFormat 
 	{
@@ -81,21 +94,28 @@ public class VideoPlayer implements Player
 		
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 
-		frame = new JFrame("Video Player");
-		frame.setBounds(100, 100, 600, 400);
-		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		frame.addWindowListener(new WindowAdapter()
-		{
-			@Override
-			public void windowClosing(WindowEvent e)
-			{
-				mediaPlayerComponent.release();
-				System.exit(0);
-			}
-		});
-
+		frame = new JFrame();
+		panel = new JPanel();
+		jfxPanel = new JFXPanel();
+		jfxPanel.add(mediaPlayerComponent);
+		panel.add(mediaPlayerComponent);
+		panel.setBackground(Color.BLACK);
+		
+//		frame.setBounds(100, 100, 600, 400);
+//		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+//		frame.addWindowListener(new WindowAdapter()
+//		{
+//			@Override
+//			public void windowClosing(WindowEvent e)
+//			{
+//				mediaPlayerComponent.release();
+//			}
+//		});
+		vidDimension = null;
 		hasMedia = false;
 		player = mediaPlayerComponent.getMediaPlayer();
+
+		
 	}
 
 	public VideoPlayer(String filePath)
@@ -112,10 +132,8 @@ public class VideoPlayer implements Player
 	public boolean openVideo(String fileName)
 	{
 		loadVideo(fileName);
-		if(!frame.isVisible())
-			showPlayer();
-
-		playVideo();
+		
+		playVideo(); //TODO
 		if(player.isPlaying())
 			return true;
 		else
@@ -127,8 +145,9 @@ public class VideoPlayer implements Player
 	 */
 	private void showPlayer()
 	{
-		frame.setContentPane(mediaPlayerComponent);
-		frame.setVisible(true);
+		//frame.setContentPane(mediaPlayerComponent);
+		//frame.setVisible(true);
+		
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
@@ -207,8 +226,9 @@ public class VideoPlayer implements Player
 			loaded = player.prepareMedia(filePath);
 			player.parseMedia();
 			hasMedia = true;
-			showPlayer();
-			player.start();
+			if(!panel.isVisible())
+				showPlayer();
+			//player.start(); //TODO
 		}
 
 		return loaded;
@@ -249,7 +269,7 @@ public class VideoPlayer implements Player
 
 			AudioAttributes audioAtt = new AudioAttributes();
 			audioAtt.setCodec(format.getCodec());
-			audioAtt.setBitRate(EXTRACTION_BITRATE);
+			audioAtt.setBitRate(EXTRACTION_AUDIO_BITRATE);
 			audioAtt.setChannels(EXTRACTION_CHANNELS);
 			audioAtt.setSamplingRate(EXTRACTION_SAMPLING_RATE);
 
@@ -352,6 +372,7 @@ public class VideoPlayer implements Player
 		}
 		else
 		{
+			vidDimension = player.getVideoDimension();
 			
 			int dotIndex = videoPath.indexOf('.');
 			String extension = videoPath.substring(dotIndex+1, videoPath.length());
@@ -363,12 +384,47 @@ public class VideoPlayer implements Player
 			int bits = 4096;
 			float scale = 0.5f;
 			long systemTime = System.currentTimeMillis();
-			String dest = "output/clip" + systemTime + "." + format.toString();
+			String dest = "output/clip" + systemTime + "." + currentFormat.toString();
+			File orig = new File(dest);
 			
 			
 			String finalSOut =  String.format(sout, bits, scale, dest);
+			player.stop();
 			player.playMedia(videoPath, ":start-time="+start,":stop-time=" + finish, finalSOut);
-			File output = new File("output/clip." + format.toString());
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+			File output = new File("output/converted." + format.toString());
+			
+			AudioAttributes audioAtt = new AudioAttributes();
+			audioAtt.setCodec(format.getAudioCodec());
+			audioAtt.setBitRate(EXTRACTION_AUDIO_BITRATE);
+			audioAtt.setChannels(EXTRACTION_CHANNELS);
+			audioAtt.setSamplingRate(EXTRACTION_SAMPLING_RATE);
+			
+			VideoAttributes videoAtt = new VideoAttributes();
+			videoAtt.setCodec(format.getVideoCodec());
+			videoAtt.setBitRate(EXTRACTION_VIDEO_BITRATE);
+			videoAtt.setFrameRate(EXTRACTION_FRAMERATE);
+			videoAtt.setSize(new VideoSize((int)vidDimension.getWidth(), (int)vidDimension.getHeight()));
+			
+			EncodingAttributes encAtt = new EncodingAttributes();
+			encAtt.setFormat(format.toString().toLowerCase());
+			encAtt.setAudioAttributes(audioAtt);
+			encAtt.setVideoAttributes(videoAtt);
+			encAtt.setDuration((float)(finish*1000 - start*1000));
+
+			Encoder encoder = new Encoder();
+			try 
+			{
+				encoder.encode(orig, output, encAtt);
+			} 
+			catch (IllegalArgumentException | EncoderException e ) 
+			{
+				e.printStackTrace();
+			}
 			return true;
 		}
 	}
@@ -455,44 +511,25 @@ public class VideoPlayer implements Player
 	{
 		stopVideo();
 		player.release();
-		frame.dispose();
+		//frame.dispose();
 		hasMedia = false;
-		return player.isPlayable();
+		return hasMedia;
 	}
 	
 	@Override
 	public Component showView() 
 	{
-		return getFrame();
-	}
-	
-	public void testSurfaceCapture() throws AWTException
-	{
-		Canvas can = mediaPlayerComponent.getVideoSurface();
-		Robot r = new Robot();
-		BufferedImage img = r.createScreenCapture(can.getBounds());
-		can.printAll(img.getGraphics());
-				//new BufferedImage(can.getWidth(), can.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		
-		
-		try
-		{
-			String format = "png";
-			ImageIO.write(img, format, new File("output/buff." + format));
-		}
-		catch(IOException e)
-		{
-			e.printStackTrace();
-		}
+		return mediaPlayerComponent.getVideoSurface();
 	}
 	
 	public static void main(String[] args) throws InterruptedException, AWTException, FileNotFoundException, IOException
 	{
 		//Testing stuff
-		VideoPlayer v = new VideoPlayer("media libraries/video/singing_dove.mp4");
-		Thread.sleep(500);
-		v.pauseVideo();
-		v.clipVideo(1, 4, VideoFormat.MP4);
+		
+//		VideoPlayer v = new VideoPlayer("media libraries/video/singing_dove.mp4");
+//		v.open(v.videoPath);
+//		Thread.sleep(500);
+//		v.clipVideo(1, 4, VideoFormat.WEBM);
 	}
 
 	
