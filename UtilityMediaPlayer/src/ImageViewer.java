@@ -125,23 +125,37 @@ public class ImageViewer {
 		return true;
 	}
 
+	
+	//TODO: this needs to change
 	boolean gifToVideo(VideoPlayer.VideoFormat format) {
 		
 		String filepath = currentFile.getAbsolutePath();
 		
 		//Intended format:
 		//ffmpeg -i GIFPATH.GIF -movflags faststart -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" VIDEOPATH.MP4
+		
+		//export PATH=$PATH:/cygdrive/c/cygwin64/home/abelk_000/393/UtilityMediaPlayer/jars
+
+		//proc = Runtime.getRuntime().exec(cmd, "PATH=$PATH:/android-sdk-linux_x86/platform-tools", fwrkDir);
+
+		
 		String ffmpegCommand = "ffmpeg -i "
 				+ filepath
 				+ " -movflags faststart -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" "
 				+ outputPath;
 		
-		System.out.println(ffmpegCommand);
+		String[] envp = new String[1];
+		envp[0] = "PATH=$PATH:" + workingDir + fileSep + "jars";
+		
+		//System.out.println(ffmpegCommand);
+		
+		System.out.println(envp[0]);
 		
 		try {
-			Runtime.getRuntime().exec(ffmpegCommand);
+			Process proc = Runtime.getRuntime().exec("ffmpeg -h", envp);
+			proc.waitFor();
 			return true;
-		} catch (IOException e1) {
+		} catch (IOException | InterruptedException e1) {
 			System.out.println(e1.getMessage());
 			return false;
 		}
