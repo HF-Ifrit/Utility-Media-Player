@@ -51,7 +51,8 @@ public class MusicPlayerTest {
 	public void testWrongFile() throws InterruptedException {
 		testPlayer.open("media libraries/image.png");
 		assertFalse(testPlayer.songLoaded);
-		}
+	}
+
 	
 	@Test 
 	//Testing the open() method. There is a null file being passed in, so nothing should happen.

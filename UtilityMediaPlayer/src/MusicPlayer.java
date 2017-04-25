@@ -77,6 +77,7 @@ public class MusicPlayer extends Application implements Player {
 		volume = null;
 		duration = null;
 		playTime = null;
+
 		songTitle = null;
 		albumImage = null;
 		mainFrame = new JFXPanel();
@@ -100,7 +101,7 @@ public class MusicPlayer extends Application implements Player {
 		
 		//TODO
 		//set the image section here.
-		
+
 		//Create the play/pause button and add its event handler.
 		Button play = makeButton("Play/Pause", 0, 8, grid);
 		play.setOnAction(new EventHandler<ActionEvent>() {
