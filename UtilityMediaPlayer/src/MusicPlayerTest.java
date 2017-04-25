@@ -9,11 +9,13 @@ import javafx.application.Application;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.media.MediaException;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.Stage;
 
 
 
 public class MusicPlayerTest {
 	MusicPlayer testPlayer;	
+	Stage mainStage;
 	String workingDir = System.getProperty("user.dir");
 	String fileSep = System.getProperty("file.separator");
 	
@@ -24,35 +26,47 @@ public class MusicPlayerTest {
 	
 	@Before
 	public void before() {
+		mainStage = new Stage();
 		testPlayer = new MusicPlayer();
+		testPlayer.start(mainStage);
 	}
 	
-	//Testing the open() method. The audio file should be loaded, and its metadata displayed in the window.
+	@After
+	public void after() {
+		if (testPlayer != null) {
+			testPlayer.clear();
+			testPlayer = null;
+		}
+	}
+	
+	//Testing the open() method. The audio file should be loaded.
 	@Test
 	public void testValidFile() throws InterruptedException {
-		System.out.println(testSong1);	
 		testPlayer.open(testSong1);
-		assertTrue(testPlayer.playing);
+		testPlayer.testButton.fire();
+		System.out.println(testPlayer.player.getStatus());
+		assertTrue(testPlayer.songLoaded);
 	}
 	
 	//Testing the open() method. This file cannot be loaded, as it is not a valid file type.
 	public void testWrongFile() throws InterruptedException {
 		testPlayer.open("media libraries/image.png");
 		assertFalse(testPlayer.songLoaded);
-		testPlayer.open(testSong1);
+		
+		testPlayer.open(testSong1); //To avoid a null pointer upon start of next test
 	}
 	
 	@Test 
 	//Testing the open() method. There is a null file being passed in, so nothing should happen.
 	public void testNullFile() throws InterruptedException {
 		assertFalse(testPlayer.open(null));
-		testPlayer.open(testSong1);
 	}
 	
 	@Test
 	//Testing the pause button
 	public void testPause() {
 		testPlayer.open(testSong1);
+		testPlayer.testButton.fire();
 		testPlayer.alternatePlayback();
 		assertTrue(testPlayer.isPaused);
 	}
@@ -61,7 +75,7 @@ public class MusicPlayerTest {
 	//Testing the pause button multiple times
 	public void testPauseMultiple() {
 		testPlayer.open(testSong1);
-		
+		testPlayer.testButton.fire();
 		testPlayer.alternatePlayback();
 		assertTrue(testPlayer.isPaused);
 		testPlayer.alternatePlayback();
@@ -85,21 +99,22 @@ public class MusicPlayerTest {
 	//Testing setting volume to negative value
 	public void testSetVolumeNegative() {
 		testPlayer.open(testSong1);
+		double oldVol = testPlayer.player.getVolume();
 		testPlayer.volumeChange(-0.5);
+		assertTrue(testPlayer.player.getVolume() == oldVol - 0.5);
 	}
 	
-	@Test
+	@Test 
 	//Testing clear without opening a file first
 	public void testClearEmpty() {
 		testPlayer.open(testSong1);
-		assertTrue(testPlayer.clear());
-		testPlayer.open(testSong1);
+		assertFalse(testPlayer.clear());
 	}
 	
 	@Test
 	public void testClearOpen() {
 		testPlayer.open(testSong1);
-		assertTrue(testPlayer.clear());
-		testPlayer.open(testSong1);
+		testPlayer.testButton.fire();
+		assertTrue(testPlayer.clear());		
 	}
 }
