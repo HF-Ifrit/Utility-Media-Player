@@ -4,27 +4,40 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
+
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
+
+import com.sun.corba.se.spi.orb.Operation;
+import com.sun.jna.platform.win32.DsGetDC.DOMAIN_CONTROLLER_INFO;
 
 
 public class VideoPlayerTest 
 {
 	VideoPlayer testPlayer;
-	String video1 = "media libraries/video/kaius_presentation.mp4";
-	String video2 = "media libraries/video/WIN_20170227_19_51_17_Pro.mp4";
+	JFrame testFrame;
+	String video1 = "media libraries/video/singing_dove.mp4";
+	String video2 = "media libraries/video/kaius_presentation.mp4";
 	
 	@Before
 	public void Before() 
 	{
+		testFrame = new JFrame();
+		testFrame.setBounds(100, 100, 400, 400);
+		testFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		testPlayer = new VideoPlayer();
+		testFrame.setContentPane(testPlayer.getPlayerComponent());
+		testFrame.setVisible(true);
 	}
 	
 	@After
 	public void After()	{
 		testPlayer.getPlayer().release();
-		testPlayer.getFrame().dispose();
+		testFrame.dispose();
+		testFrame = null;
 		testPlayer = null;
 	}
 	 
@@ -73,6 +86,7 @@ public class VideoPlayerTest
 	@Test
 	public void testPauseWhilePlaying() throws InterruptedException
 	{
+		
 		testPlayer.loadVideo(video1);
 		
 		testPlayer.playVideo();
