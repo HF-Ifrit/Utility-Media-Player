@@ -96,9 +96,8 @@ public class MainFrame extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, 1040, 543);
         
-      
-		
 	}
+	
 	
 	//creates gui 
 	private static void createAndShowGUI() {
@@ -310,7 +309,7 @@ public class MainFrame extends JFrame {
 				currentPlayer.clear();
 			}
 			createViews(filename);
-		
+			
 			
 		}
 		//runs play action on currentFile
@@ -324,6 +323,7 @@ public class MainFrame extends JFrame {
 	private void closePlayers(){
 		if(currentPlayer != null){
 			currentPlayer.clear();
+			currentPlayer = null;
 		}
 	}
 	
@@ -342,6 +342,17 @@ public class MainFrame extends JFrame {
 		
 		currentPlayer.open(filename);
 		currentPlayer.volumeChange(this.volumeSlider.getValue());
+		tempPlayer.setVisible(true);
+	}
+	
+	//helper method to creation for new scene
+	private void setupViewer(String filename){
+		JFXPanel panel = new JFXPanel();
+		panel.setScene(currentImage.getScene());
+		getFrame().add(panel, BorderLayout.CENTER);
+		validate();		
+		repaint();
+		panel.setVisible(true);
 	}
 	
 	//helper method to streamline creation of new video/music players
@@ -365,13 +376,10 @@ public class MainFrame extends JFrame {
 			filename = "media libraries/images/image.png";
 			currentImage.open(filename);
 			closePlayers();
-			JFXPanel panel = new JFXPanel();
-			panel.setScene(currentImage.getScene());
-			this.getContentPane().add(panel, BorderLayout.EAST);
-			
+			setupViewer(filename);
 		}
 		this.paint(this.getGraphics());
-		
+		this.previousFile = filename;
 	}
 	
 	
@@ -483,7 +491,7 @@ public class MainFrame extends JFrame {
 		
 		//creates a new MainFrame within the TestSuite
 		public void newMainFrame(){
-			mainFrame = new MainFrame();
+			mainFrame = new MainFrame(new JFrame());
 		}
 		
 		//returns current instance of the MainFrame
