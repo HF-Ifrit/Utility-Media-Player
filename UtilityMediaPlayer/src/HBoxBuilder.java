@@ -109,6 +109,7 @@ public class HBoxBuilder extends HBox{
      	volumeCaption.setTextFill(Color.BLACK);
         GridPane.setConstraints(volumeCaption, 0, 0);
         swatch.getChildren().add(volumeCaption);
+        volumeCaption.setAccessibleRoleDescription("Volume Text");
 		
 		//add volume control slider
 		final Slider volume = new Slider(0, 100, 100);
