@@ -166,6 +166,8 @@ public class VideoPlayer implements Player
 	{
 		if(hasVideo())
 			player.play();
+		
+		
 	}
 
 	/**
