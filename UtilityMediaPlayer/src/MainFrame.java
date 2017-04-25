@@ -28,6 +28,7 @@ import javafx.scene.layout.HBox;
 //primary GUI window that will interact and control other modules
 public class MainFrame extends JFrame {
 
+	private JFrame frame;
 	
 	private JPanel contentPane;
 	private JMenuBar menuBar;
@@ -81,8 +82,8 @@ public class MainFrame extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	private MainFrame() {
-		
+	private MainFrame(JFrame frame) {
+		this.frame = frame;
 		currentPlayer = null;
 		previousFile = "";
 		mode = Mode.EMPTY;
@@ -102,7 +103,7 @@ public class MainFrame extends JFrame {
         displayFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  
         //Create and set up the content pane.
-        MainFrame demo = new MainFrame();
+        MainFrame demo = new MainFrame(displayFrame);
         displayFrame.setJMenuBar(demo.createTextMenuBar());
         displayFrame.setContentPane(demo.createContentPane());
         demo.setFileList(createFileList());
@@ -113,6 +114,7 @@ public class MainFrame extends JFrame {
         displayFrame.setSize(1600, 900);
         displayFrame.setVisible(true);
         displayFrame.setMinimumSize(new Dimension(600, 400));
+
     }
 	
 	//creates the menu bar with all options on it
@@ -180,14 +182,14 @@ public class MainFrame extends JFrame {
         contentPane.setOpaque(false);
  
         //Create a scrolled text area.
-        output = new JTextArea(5, 30);
-        output.setEditable(false);
-        scrollPane = new JScrollPane(output);
-        scrollPane.setVisible(true);
+//        output = new JTextArea(5, 30);
+//        output.setEditable(false);
+//        scrollPane = new JScrollPane(output);
+//        scrollPane.setVisible(true);
        
  
         //Add the text area to the content pane.
-        contentPane.add(scrollPane, BorderLayout.CENTER);
+       // contentPane.add(scrollPane, BorderLayout.CENTER);
         
         contentPane.setVisible(true);
  
@@ -314,12 +316,13 @@ public class MainFrame extends JFrame {
 	
 	//helper method to streamline creation of generic Players
 	private void setupPlayers(String filename){
+		Component tempPlayer = currentPlayer.showView();
+		getFrame().add(tempPlayer, BorderLayout.CENTER);
+		tempPlayer.setVisible(true);
+		validate();		
+		repaint();
 		currentPlayer.open(filename);
 		currentPlayer.volumeChange(this.volumeSlider.getValue());
-		Component tempPlayer = currentPlayer.showView();
-		
-		this.getContentPane().add(tempPlayer, BorderLayout.CENTER);
-		tempPlayer.setVisible(true);
 	}
 	
 	//helper method to streamline creation of new video/music players
@@ -433,7 +436,10 @@ public class MainFrame extends JFrame {
 	}
 
 	
-
+	public JFrame getFrame()
+	{
+		return frame;
+	}
 
 
 	
