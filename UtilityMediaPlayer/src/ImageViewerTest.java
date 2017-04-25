@@ -141,6 +141,12 @@ public class ImageViewerTest {
 	}
 	
 	@Test
+	public void imageProperties() {
+		testViewer.open(imagePath);
+		testViewer.imageProperties();
+	}
+	
+	@Test
 	public void gifToMP4BadFormat() {
 		testViewer.open(imagePath);
 		assertFalse(testViewer.gifToVideo(VideoPlayer.VideoFormat.MP4));
