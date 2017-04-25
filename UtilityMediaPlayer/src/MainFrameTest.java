@@ -14,8 +14,10 @@ import org.junit.Test;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 
 public class MainFrameTest{
@@ -76,11 +78,8 @@ public class MainFrameTest{
 	public void testCreateContentPane() {
 		try{
 			Container jpanel = main.createContentPane();
-			assertEquals("Content Pane does not have a component",1, jpanel.getComponentCount());
+			assertFalse("Content Pane is opaque", jpanel.isOpaque());
 			assertTrue("Content Pane is not visible", jpanel.isVisible());
-			JScrollPane scrollPane = (JScrollPane) jpanel.getComponent(0);
-			assertTrue("Scroll Pane is not visible", scrollPane.isVisible());
-			assertEquals("Scroll Pane does not have a component",3, scrollPane.getComponentCount());
 			
 		}
 		catch(Exception e){
@@ -109,7 +108,6 @@ public class MainFrameTest{
 			Image imageLoaded = new Image(getClass().getResourceAsStream("/internaldata/Forward.png"));
 			java.awt.Image imageLoaded2 = new ImageIcon("/internaldata/Forward.png").getImage();
 			assertTrue("no image loaded" , imageIcon.getImage() != null);
-			//assertTrue("image is not requested Image", imageLoaded2.equals(imageIcon.getImage()));
 			assertTrue("image height not consistent", imageLoaded.getHeight() == imageIcon.getImage().getHeight(null));
 			assertTrue("image width not consistent", imageLoaded.getWidth() == imageIcon.getImage().getWidth(null));
 		}
@@ -148,16 +146,20 @@ public class MainFrameTest{
 	public void testNewHBoxBar(){
 		try{
 			HBox hbox = tester.newHBoxBar();
-			assertTrue(hbox.getChildren().get(0) instanceof Button);
-			assertEquals("incorrect first button", "Rewind", hbox.getChildren().get(0).getAccessibleRoleDescription());
-			assertTrue(hbox.getChildren().get(1) instanceof Button);
-			assertEquals("incorrect second button", "Play", hbox.getChildren().get(1).getAccessibleRoleDescription());
-			assertTrue(hbox.getChildren().get(2) instanceof Button);
-			assertEquals("incorrect second button", "Forward", hbox.getChildren().get(2).getAccessibleRoleDescription());
-			assertTrue(hbox.getChildren().get(3) instanceof Slider);
-			assertEquals("incorrect second button", "Spacing", hbox.getChildren().get(3).getAccessibleRoleDescription());
-			assertTrue(hbox.getChildren().get(4) instanceof Slider);
-			assertEquals("incorrect second button", "Volume", hbox.getChildren().get(4).getAccessibleRoleDescription());
+			System.out.println(hbox.getChildren());
+			GridPane pane = (GridPane) hbox.getChildren().get(0);
+			
+			
+			assertTrue(pane.getChildren().get(0) instanceof Button);
+			assertEquals("incorrect first button", "Rewind", pane.getChildren().get(0).getAccessibleRoleDescription());
+			assertTrue(pane.getChildren().get(1) instanceof Button);
+			assertEquals("incorrect second button", "Play", pane.getChildren().get(1).getAccessibleRoleDescription());
+			assertTrue(pane.getChildren().get(2) instanceof Button);
+			assertEquals("incorrect second button", "Forward", pane.getChildren().get(2).getAccessibleRoleDescription());
+			assertTrue(pane.getChildren().get(3) instanceof Label);
+			assertEquals("incorrect second button", "Volume Text", pane.getChildren().get(3).getAccessibleRoleDescription());
+			assertTrue(pane.getChildren().get(4) instanceof Slider);
+			assertEquals("incorrect second button", "Volume", pane.getChildren().get(4).getAccessibleRoleDescription());
 		}
 		catch(Exception e){
 			fail("Unexpected exception/error: " + e.toString());
@@ -221,29 +223,51 @@ public class MainFrameTest{
 		try{
 			JFrame controller = tester.createAndShowGUI();
 			assertEquals("file does not start in empty mode", MainFrame.Mode.EMPTY, tester.getMode());
+			assertTrue("player is incorrectly initialized to an object", tester.getCurrentPlayer() == null);
 			tester.play();
 			assertEquals("file does not start in empty mode", MainFrame.Mode.EMPTY, tester.getMode());
+			assertTrue("player is incorrectly initialized to an object", tester.getCurrentPlayer() == null);
+			
+			
+			
 			JList<String> filelist = tester.getFileList();
 			
 			//item 1
 			filelist.setSelectedIndex(0);
 			tester.play();
-			assertEquals("file does play Video files of mp4", MainFrame.Mode.VIDEO, tester.getMode());
+			assertEquals("file does not play Video files of mp4", MainFrame.Mode.VIDEO, tester.getMode());
+			assertTrue("player doesn't create the videoPlayer on play", tester.getCurrentPlayer() instanceof VideoPlayer);
+			
+			tester.play();
+			assertEquals("file does not keep same mode on play/pause", MainFrame.Mode.VIDEO, tester.getMode());
+			assertTrue("player doesn't keep a videoPlayer on play/pause", tester.getCurrentPlayer() instanceof VideoPlayer);
 
 			//item 2
 			filelist.setSelectedIndex(1);
 			tester.play();
-			assertEquals("file does play Audio files of mp3", MainFrame.Mode.AUDIO, tester.getMode());
+			assertEquals("file does not play Audio files of mp3", MainFrame.Mode.AUDIO, tester.getMode());
+			assertTrue("player doesn't create the musicPlayer on play", tester.getCurrentPlayer() instanceof MusicPlayer);
+			tester.play();
+			assertEquals("file does not keep same mode on play/pause", MainFrame.Mode.AUDIO, tester.getMode());
+			assertTrue("player doesn't keep a musicPlayer on play/pause", tester.getCurrentPlayer() instanceof MusicPlayer);
 			
 			//item 3
 			filelist.setSelectedIndex(2);
 			tester.play();
-			assertEquals("file does play Video files", MainFrame.Mode.VIDEO, tester.getMode());
+			assertEquals("file does not play Video files", MainFrame.Mode.VIDEO, tester.getMode());
+			assertTrue("player doesn't create the videoPlayer on play", tester.getCurrentPlayer() instanceof VideoPlayer);
+			tester.play();
+			assertEquals("file does not keep same mode on play/pause", MainFrame.Mode.VIDEO, tester.getMode());
+			assertTrue("player doesn't keep a videoPlayer on play/pause", tester.getCurrentPlayer() instanceof VideoPlayer);
 			
 			//item 4
 			filelist.setSelectedIndex(3);
 			tester.play();
-			assertEquals("file does play Video files", MainFrame.Mode.IMAGE, tester.getMode());
+			assertEquals("file does not play Video files", MainFrame.Mode.IMAGE, tester.getMode());
+			assertTrue("player doesn't create the imageViewer on play", tester.getCurrentViewer() instanceof ImageViewer);
+			tester.play();
+			assertEquals("file does not keep same mode on play/pause", MainFrame.Mode.IMAGE, tester.getMode());
+			assertTrue("player doesn't keep the imageViewer on play", tester.getCurrentViewer() instanceof ImageViewer);
 		}
 		catch(Exception e){
 			fail("Unexpected exception/error: " + e.toString());
