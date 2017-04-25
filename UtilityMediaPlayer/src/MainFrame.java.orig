@@ -296,7 +296,7 @@ public class MainFrame extends JFrame {
 			return;
 		}
 		else{
-			filename = fileList.getModel().getElementAt(selectedindex);
+			 filename = fileList.getModel().getElementAt(selectedindex);
 			tempmode = parseFileType(filename);
 		}
 		/**
@@ -342,7 +342,10 @@ public class MainFrame extends JFrame {
 		getFrame().add(tempPlayer, BorderLayout.CENTER);
 		getFrame().setVisible(true);
 		
+<<<<<<< HEAD
 		
+=======
+>>>>>>> 7f3147a95f31ac0fd02e600ef4901ed0d8fb7483
 		currentPlayer.open(filename);
 		currentPlayer.volumeChange(this.volumeSlider.getValue());
 		updateComponent(tempPlayer);
@@ -365,7 +368,6 @@ public class MainFrame extends JFrame {
 	
 	//helper method to streamline creation of new video/music players
 	private void createViews(String filename){
-		this.previousFile = filename;
 		if(mode == Mode.AUDIO){
 			//TODO testing checks
 			filename = "media libraries/test.mp3";
@@ -387,7 +389,7 @@ public class MainFrame extends JFrame {
 			setupViewer(filename);
 		}
 		this.paint(this.getGraphics());
-		
+		this.previousFile = filename;
 	}
 	
 	
