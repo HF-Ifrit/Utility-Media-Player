@@ -129,11 +129,10 @@ public class MusicPlayer implements Player {
 //				}
 //			}
 //		});
-//		panel.setScene(mainScene);
-//		panel.setVisible(true);
 //		primaryStage.setScene(mainScene);
 //		primaryStage.show();
 //	}
+	
 	/*Opens the specified music file and loads it into the player
 	 * @param fileName The name of the desired music file
 	 */
@@ -383,7 +382,6 @@ public class MusicPlayer implements Player {
 		time.setMinWidth(50);
 		time.setMaxWidth(Double.MAX_VALUE);
 		grid.add(time, 0, 6);
-		
 		
 		playTime = new Label();
 		playTime.setPrefWidth(130);

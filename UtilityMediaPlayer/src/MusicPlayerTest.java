@@ -78,6 +78,7 @@ public class MusicPlayerTest {
 		
 		testPlayer.open(testSong1);
 		testPlayer.volumeChange(0.5);
+		assertTrue(testPlayer.player.getVolume() == 0.5);
 	}
 	
 	@Test
