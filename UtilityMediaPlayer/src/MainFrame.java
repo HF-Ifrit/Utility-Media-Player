@@ -68,6 +68,8 @@ public class MainFrame extends JFrame {
     //player mode that is currently loaded
     private Mode mode;
     
+    //the specific MenuBarBuilder to the OS or type
+    
     
     //enum to determine what mode the current controller is set to
     public enum Mode{
@@ -147,30 +149,45 @@ public class MainFrame extends JFrame {
 	private JMenuBar createTextMenuBar(){
 
 		JMenuBar menuBar;
+		MenuBarSetup menuBarSetup = getMenuBarVersion();
 		
 		//Create the menu bar.
 		menuBar = new JMenuBar();
 
 		//Build the first menu as File tab
-		menuBar = MenuBarSetup.attachFileMenu(menuBar, this);
+		menuBar = menuBarSetup.attachFileMenu(menuBar, this);
 		
 		//build the second menu as a View tab
-		menuBar = MenuBarSetup.attachViewMenu(menuBar);
+		menuBar = menuBarSetup.attachViewMenu(menuBar);
 		
 		//build the third menu as a Video tab
-		menuBar = MenuBarSetup.attachVideoMenu(menuBar);
+		menuBar = menuBarSetup.attachVideoMenu(menuBar);
 		
 		//build fourth menu as Audio tab
-		menuBar = MenuBarSetup.attachAudioMenu(menuBar);
+		menuBar = menuBarSetup.attachAudioMenu(menuBar);
 		
 		//build fifth menu as Image tab
-		menuBar = MenuBarSetup.attachImageMenu(menuBar);
+		menuBar = menuBarSetup.attachImageMenu(menuBar);
 		
 		//build the last menu as help tab
-		menuBar =  MenuBarSetup.attachHelpMenu(menuBar);
+		menuBar =  menuBarSetup.attachHelpMenu(menuBar);
 		
 		return menuBar;
 	}
+	
+	//determines which OS/Menu Bar style to create of an abstarct MenuBarSetup
+	private MenuBarSetup getMenuBarVersion(){
+		if(OsUtils.isWindows()){
+			return new WindowsMenuBarSetup();
+		}
+		else if(OsUtils.isUnix()){
+			return new GenericMenuBarSetup();
+		}
+		else{
+			return new GenericMenuBarSetup();
+		}
+	}
+	
 	
 	//creates the sideView for file of lists
 	private static JList<String> createFileList(){
