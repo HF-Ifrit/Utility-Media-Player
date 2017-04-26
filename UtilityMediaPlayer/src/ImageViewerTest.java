@@ -147,7 +147,7 @@ public class ImageViewerTest {
 	@Test
 	public void gifToMP4BadFormat() {
 		testViewer.open(imagePath);
-		assertFalse(testViewer.gifToVideo(VideoPlayer.VideoFormat.MP4));
+		assertFalse(testViewer.gifToVideo());
 	}
 
 	@Test
@@ -156,7 +156,7 @@ public class ImageViewerTest {
 		ArrayList<File> oldFiles = new ArrayList<File>(Arrays.asList(outputFile.listFiles()));
 		
 		testViewer.open(gifPath);
-		assertTrue(testViewer.gifToVideo(VideoPlayer.VideoFormat.MP4));
+		assertTrue(testViewer.gifToVideo());
 		
 		ArrayList<File> updatedFiles = new ArrayList<File>(Arrays.asList(outputFile.listFiles()));
 		

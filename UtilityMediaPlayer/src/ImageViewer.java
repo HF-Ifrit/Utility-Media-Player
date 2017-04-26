@@ -186,7 +186,7 @@ public class ImageViewer {
 		}
 	}
 	
-	boolean gifToVideo(VideoPlayer.VideoFormat format) {
+	boolean gifToVideo() {
 		
 		if(openImage == false) {
 			return false;
