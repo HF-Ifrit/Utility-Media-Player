@@ -272,35 +272,5 @@ public class ImageViewer {
 	
 	public static void main(String[] args) {
 	Application.launch();
-}*/
-	
-	//This class taken from https://www.javaworld.com/article/2071275/core-java/when-runtime-exec---won-t.html?page=2
-	class StreamGobbler extends Thread
-	{
-	    InputStream is;
-	    String type;
-	    
-	    StreamGobbler(InputStream is, String type)
-	    {
-	        this.is = is;
-	        this.type = type;
-	    }
-	    
-	    public void run()
-	    {
-	        try
-	        {
-	            InputStreamReader isr = new InputStreamReader(is);
-	            BufferedReader br = new BufferedReader(isr);
-	            String line=null;
-	            while ( (line = br.readLine()) != null)
-	            	;
-	                //System.out.println(type + ">" + line);    
-	            } catch (IOException ioe)
-	              {
-	                ioe.printStackTrace();  
-	              }
-	    }
-	}
-	
+}*/	
 }

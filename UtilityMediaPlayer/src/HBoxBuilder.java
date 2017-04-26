@@ -39,7 +39,7 @@ public class HBoxBuilder extends HBox{
     	ImageView imageview;
     	JFXController jfxControl = newFrame.getJFXController();
     	
-    	// create a color swatch.
+    	// create a component swatch
     	final GridPane swatch = new GridPane();
     	
     	//initializes hbox
@@ -124,8 +124,6 @@ public class HBoxBuilder extends HBox{
 		volume.valueProperty().addListener(jfxControl.new volumeSlider());
 		
 		
-		//TODO
-		
 		
 		swatch.getChildren().add(volume);
     	
@@ -162,6 +160,21 @@ public class HBoxBuilder extends HBox{
 				}
 			}
 		});
+    	
+    	return hbox;
+    }
+    
+    //helper method to create a time-stamp tracker
+    public static HBox newTimeStampTrackerBar(MainFrame newFrame){
+    	Button currentButton;
+    	Image currentImage;
+    	ImageView imageview;
+    	JFXController jfxControl = newFrame.getJFXController();
+    	
+    	HBoxBuilder hbox = new HBoxBuilder(newFrame);
+    	final GridPane swatch = new GridPane();
+    	hbox.setHeight(25);
+    	
     	
     	return hbox;
     }
