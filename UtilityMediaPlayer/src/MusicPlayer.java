@@ -124,7 +124,7 @@ public class MusicPlayer implements Player {
 		volume.valueProperty().addListener(new InvalidationListener() {
 			public void invalidated(Observable ov) {
 				if (volume.isValueChanging()) {
-					volumeChange(player);
+					volumeChange(volume.getValue());
 				}
 			}
 		});
@@ -135,7 +135,7 @@ public class MusicPlayer implements Player {
 		time.valueProperty().addListener(new InvalidationListener() {
 			public void invalidated(Observable o) {
 				if (time.isValueChanging()) {
-					changePosition(player);
+					changePosition((long)time.getValue());
 				}
 			}
 		});
@@ -211,25 +211,8 @@ public class MusicPlayer implements Player {
 		}
 	}
 	
-	/* Changes the volume of the audio track currently playing.
-	 * @param musicPlayer The MediaPlayer associated with this current track.
-	 */
-	private void volumeChange(MediaPlayer musicPlayer) {
-		player.setVolume(volume.getValue() / 100.0);
-	}
-	
-	/* Provides playback seeking for the current track
-	 * @param musicPlayer The MediaPlayer associated with this current track.
-	 */
-	private void changePosition(MediaPlayer musicPlayer) {
-		if (player.getMedia().getDuration() != null) {
-			player.seek(duration.multiply(time.getValue() / 100));
-		}
-		updateValues();
-	}
-	
 	/*This helper method keeps the current time of the song being played updated. */
-	protected void updateValues() {
+	private void updateValues() {
 		if (time != null && volume != null && playTime != null) {
 			Platform.runLater(new Runnable() {
 				public void run() {
@@ -284,13 +267,7 @@ public class MusicPlayer implements Player {
 				return String.format("%02d:%02d", elapsedMinutes, elapsedSeconds);
 			}
 		}
-	}
-
-	//TODO
-	private void skipPlayback(MediaPlayer musicPlayer) {
-		int z = 1;
-	}
-	
+	}	
 	
 	/*The following are methods that serve as the implementation of the Player interface. They call the appropriate methods in the MusicPlayer class. */
 	
@@ -305,7 +282,7 @@ public class MusicPlayer implements Player {
 	
 	public void volumeChange(double newVolume) {
 		if (newVolume >= 0) {
-			player.setVolume(newVolume);
+			player.setVolume(newVolume / 100);
 		}
 		else if (newVolume < 0) {
 			player.setVolume(player.getVolume() + newVolume);
@@ -313,11 +290,18 @@ public class MusicPlayer implements Player {
 	}
 	
 	public void changePosition(long playbackPosition) {
-		changePosition(player);
+		if (player.getMedia().getDuration() != null) {
+			player.seek(duration.multiply(time.getValue() / 100));
+		}
+		updateValues();
 	}
 	
+	
 	public void skipPlayback() {
-		skipPlayback(player);
+		if (player.getMedia().getDuration() != null) {
+			player.seek(duration.divide(100));
+		}
+		updateValues();
 	}
 	
 	public boolean clear() {
@@ -374,13 +358,7 @@ public class MusicPlayer implements Player {
 			HBox.setHgrow(slider, Priority.ALWAYS);
 			slider.setMinWidth(50);
 			slider.setMaxWidth(Double.MAX_VALUE);
-			slider.valueProperty().addListener(new InvalidationListener() {
-			    public void invalidated(Observable ov) {
-			       if (time.isValueChanging()) {
-			    	   changePosition(player);
-			       }
-			    }
-			});
+			
 		}
 		else {
 			slider = null;
@@ -427,11 +405,6 @@ public class MusicPlayer implements Player {
 		grid.setVgap(10);
 		grid.setPadding(new Insets(2,25,25,25));
 			
-//		playTime = new Label();
-//		playTime.setPrefWidth(130);
-//		playTime.setMinWidth(50);
-//		grid.add(playTime, 3, 5);
-			
 		mainScene = new Scene(grid, 300, 300);
 			
 		songTitle = makeLabel("Title: ", 0, 0, grid);
@@ -440,45 +413,17 @@ public class MusicPlayer implements Player {
 			
 		//TODO
 		//set the image section here.
-
-		//Create the play/pause button and add its event handler.
-		Button play = makeButton("Play/Pause", 0, 8, grid);
-		play.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				if (songLoaded) {
-					alternatePlayback(player);
-				}
-				else {
-					open("media libraries/test.mp3");
-					songLoaded = true;
-					duration = player.getMedia().getDuration();
-						
-				}
-			}
-		});
-		testButton = play;
-			
-		//Create the volume slider and add its event handler.
-		volume = createSlider("Volume: ", null, 0, 4, grid);
-		volume.valueProperty().addListener(new InvalidationListener() {
-			public void invalidated(Observable ov) {
-				if (volume.isValueChanging()) {
-					volumeChange(player);
-				}
-			}
-		});
 			
 		//Create the time slider and add its event handler.
-		playTime = new Label("Time :");
-		time = createSlider("Time: ", playTime, 0, 6, grid);
-		time.valueProperty().addListener(new InvalidationListener() {
-			public void invalidated(Observable o) {
-				if (time.isValueChanging()) {
-					changePosition(player);
-				}
-			}
-		});
+//		playTime = new Label("Time :");
+//		time = createSlider("Time: ", playTime, 0, 6, grid);
+//		time.valueProperty().addListener(new InvalidationListener() {
+//			public void invalidated(Observable o) {
+//				if (time.isValueChanging()) {
+//					changePosition((long)time.getValue());
+//				}
+//			}
+//		});
 		mainFrame.setScene(mainScene);
 	}
 	

@@ -398,9 +398,16 @@ public class MainFrame extends JFrame {
 		//runs play action on currentFile
 		else{
 			playbackExecute();
-		}
-		
+		}	
 	}
+	
+	//TODO: Fix volume
+	public void volumeChange() {
+		if ((mode == Mode.AUDIO) || (mode == Mode.VIDEO)) {
+			currentPlayer.volumeChange(volumeSlider.getValue());
+		}
+	}
+
 	
 	//helper method to streamline closing video/music player windows
 	private void updateComponent(Component newComponent){
@@ -506,6 +513,10 @@ public class MainFrame extends JFrame {
 	//sets the volumeSlider reference to selected reference
 	public void setVolumeSlider(Slider volume){
 		this.volumeSlider = volume;
+	}
+	
+	public Slider getVolumeSlider() {
+		return volumeSlider;
 	}
 	
 	/**
