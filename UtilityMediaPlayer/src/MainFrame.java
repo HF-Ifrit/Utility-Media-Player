@@ -20,6 +20,9 @@ import javafx.geometry.Insets;
 import javafx.scene.*;
 import javax.swing.border.BevelBorder;
 import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridBagLayout;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.effect.Reflection;
@@ -412,9 +415,16 @@ public class MainFrame extends JFrame {
 	private void setupViewer(String filename){
 		JFXPanel panel = new JFXPanel();
 		panel.setScene(currentViewer.getScene());
-		getFrame().add(panel, BorderLayout.CENTER);
+		
+		JFXPanel fixedPanel = new JFXPanel();
+		fixedPanel.setLayout(new GridBagLayout());
+		fixedPanel.setPreferredSize(getFrame().getSize());
+		fixedPanel.add(panel);
+		
+		getFrame().add(fixedPanel, BorderLayout.CENTER);
 		
 		updateComponent(panel);
+		updateComponent(fixedPanel);
 		getFrame().setVisible(true);
 		getFrame().validate();		
 		getFrame().repaint();
