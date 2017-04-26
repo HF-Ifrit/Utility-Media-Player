@@ -60,6 +60,9 @@ public class MainFrame extends JFrame {
     private Player currentPlayer;
     private ImageViewer currentViewer;
     
+    //current selected file of the controller
+    private String currentFile;
+    
     //previous file that was played
     private String previousFile;
     private Mode previousMode;

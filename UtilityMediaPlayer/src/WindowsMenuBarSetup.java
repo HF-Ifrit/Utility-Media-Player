@@ -46,30 +46,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.addActionListener(mainFrame.new openFile());
         menu.add(menuItem);
         
-        //OpenMultipleFiles
-        menuItem = new JMenuItem("Open Multiple Files",
-                KeyEvent.VK_M);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_M, ActionEvent.CTRL_MASK ));
-        menuItem.getAccessibleContext().setAccessibleDescription(
-        		"Opens multiple files from explorer");
-        /**
-         * TODO demo
-         * change listener to not be coupled
-         */
-        menuItem.addActionListener(mainFrame.new openMultipleFiles());
-        menu.add(menuItem);
         
-        //SaveFile
-        menuItem = new JMenuItem("Save File",
-                KeyEvent.VK_S);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
-        		"Opens a file explorer to save loaded file into the local space");
-
-        menuItem.addActionListener(mainFrame.new openSaveFile());
-        menu.add(menuItem);
         
       //ConvertFile
         menuItem = new JMenuItem("Convert File",
