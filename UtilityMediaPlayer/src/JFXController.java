@@ -43,6 +43,16 @@ public class JFXController {
 		}
 	}
 	
+	//Controller for the timeStep slider
+	public class timeStampSlider implements InvalidationListener{
+		@Override
+		public void invalidated(Observable ov) {
+			if (stage.getVolumeSlider().isValueChanging()) {
+				stage.timeStampChange();
+			}
+		}
+	}
+	
 	//controller for Forward Button
 	public class forwardFile implements EventHandler<javafx.event.ActionEvent>{
 
