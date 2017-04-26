@@ -139,6 +139,22 @@ public class ImageViewer {
 		return true;
 	}
 	
+	//Flip the image across the horizontal axis.
+	boolean mirrorImageVertically() {
+		if(openImage == false) {
+			return false;
+		}
+		
+		else {
+			//Rotating an image 180 degrees, then mirroring it across the vertical axis,
+			//is equivalent to mirroring it across the horizontal axis.
+			rotateImage(true);
+			rotateImage(true);
+			mirrorImage();
+			return true;
+		}
+	}
+	
 	//Opens a new JOptionPane that displays basic image properties, iff an image is currently open.
 	void imageProperties() {
 		if(openImage == false) {
