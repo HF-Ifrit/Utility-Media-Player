@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.*;
@@ -123,7 +124,7 @@ public class MainFrame extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, 1040, 543);
 		fileChooser = new JFileChooser();
-
+		fileLocationMap = new HashMap<String, String>();
         
 	}
 	
@@ -483,23 +484,40 @@ public class MainFrame extends JFrame {
 		this.previousFile = filename;
 		if(mode == Mode.AUDIO){
 			//TODO testing checks
-			filename = "media libraries/audio/" + filename;
+			String tempFilename = "media libraries/audio/" + filename;
+			filename = verifyFilePath(filename, tempFilename);
 			currentPlayer = new MusicPlayer();
 			setupPlayers(filename);
 		}
 		if(mode == Mode.VIDEO){
 			//TODO testing checks
-			filename = "media libraries/video/" + filename;
+			String tempFilename = "media libraries/video/" + filename;
+			filename = verifyFilePath(filename, tempFilename);
 			currentPlayer = new VideoPlayer();
 			setupPlayers(filename);
 		}
 		if(mode == Mode.IMAGE){
 			//TODO testing checks
-			filename = "media libraries/images/" + filename;
+			String tempFilename = "media libraries/images/" + filename;
+			filename = verifyFilePath(filename, tempFilename);
 			currentViewer.open(filename);
 			setupViewer(filename);
 		}
 		this.paint(this.getGraphics());  
+	}
+	
+	/**
+	 * helper method that convert the filename to the absolute path if the filename is found to be a external file
+	 * @param filename
+	 * @param internalFilePath
+	 * @return gives the absolute file path for external files, otherwise switches to internalFilePath given
+	 */
+	private String verifyFilePath(String filename, String internalFilePath){
+		if(fileLocationMap.get(filename) != null){
+			return fileLocationMap.get(filename);
+		}
+		else 
+			return internalFilePath;
 	}
 	
 	
