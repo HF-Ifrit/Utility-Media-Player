@@ -11,6 +11,7 @@
 	<classpathentry kind="lib" path="jars/vlcj-3.10.1-tests.jar"/>
 	<classpathentry kind="lib" path="jars/vlcj-3.10.1.jar"/>
 	<classpathentry kind="lib" path="jars/jave-1.0.2.jar"/>
+	<classpathentry kind="lib" path="jars/weblaf-complete-1.29.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
