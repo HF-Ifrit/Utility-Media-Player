@@ -409,6 +409,58 @@ public class MainFrame extends JFrame {
 		
 	}
 	
+	public boolean rotateImage(boolean clockwise) {
+		boolean error = currentViewer.rotateImage(clockwise);
+		
+		if(error) {
+			return false;
+		}
+		
+		JFXPanel panel = new JFXPanel();
+		panel.setScene(currentViewer.getScene());
+		
+		JFXPanel fixedPanel = new JFXPanel();
+		fixedPanel.setLayout(new GridBagLayout());
+		fixedPanel.setPreferredSize(getFrame().getSize());
+		fixedPanel.add(panel);
+		
+		getFrame().add(fixedPanel, BorderLayout.CENTER);
+		
+		updateComponent(panel);
+		updateComponent(fixedPanel);
+		getFrame().setVisible(true);
+		getFrame().validate();		
+		getFrame().repaint();
+		
+		return true;
+	}
+	
+	public boolean mirrorImage() {
+		boolean error = currentViewer.mirrorImage();
+		
+		if(error) {
+			return false;
+		}
+		
+		JFXPanel panel = new JFXPanel();
+		panel.setScene(currentViewer.getScene());
+		
+		JFXPanel fixedPanel = new JFXPanel();
+		fixedPanel.setLayout(new GridBagLayout());
+		fixedPanel.setPreferredSize(getFrame().getSize());
+		fixedPanel.add(panel);
+		
+		getFrame().add(fixedPanel, BorderLayout.CENTER);
+		
+		updateComponent(panel);
+		updateComponent(fixedPanel);
+		getFrame().setVisible(true);
+		getFrame().validate();		
+		getFrame().repaint();
+		
+		return true;
+	}
+	
 	//helper method to streamline closing video/music player windows
 	private void updateComponent(Component newComponent){
 		if(previousComponent != null){
