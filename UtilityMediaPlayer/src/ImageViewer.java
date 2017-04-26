@@ -1,8 +1,11 @@
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
@@ -23,6 +26,7 @@ public class ImageViewer {
 
 	private static final double CLOCKWISE = 90;
 	private static final double COUNTERCLOCKWISE = 270;
+	private static final int GIF_TO_VIDEO_ARGUMENTS = 10;
 	
 	String workingDir = System.getProperty("user.dir");
 	String fileSep = System.getProperty("file.separator");
@@ -182,35 +186,58 @@ public class ImageViewer {
 		}
 	}
 	
-	//TODO: this needs to change
 	boolean gifToVideo(VideoPlayer.VideoFormat format) {
 		
+		if(openImage == false) {
+			return false;
+		}
+		
+		String fileName = currentFile.getName();
+		if( ! fileName.endsWith(".gif")) {
+			return false;
+		}
+		
 		String filepath = currentFile.getAbsolutePath();
+		String ffmpegPath = workingDir + fileSep + "jars" + fileSep + "ffmpeg.exe";
 		
 		//Intended format:
-		//ffmpeg -i GIFPATH.GIF -movflags faststart -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" VIDEOPATH.MP4
+		//"FFMPEGPATH.EXE -i GIFPATH.GIF -movflags faststart -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" VIDEOPATH.MP4"
 		
-		//export PATH=$PATH:/cygdrive/c/cygwin64/home/abelk_000/393/UtilityMediaPlayer/jars
-
-		//proc = Runtime.getRuntime().exec(cmd, "PATH=$PATH:/android-sdk-linux_x86/platform-tools", fwrkDir);
-
+		String[] ffmpegCommand = new String[GIF_TO_VIDEO_ARGUMENTS];
 		
-		String ffmpegCommand = "ffmpeg -i "
-				+ filepath
-				+ " -movflags faststart -pix_fmt yuv420p -vf \"scale=trunc(iw/2)*2:trunc(ih/2)*2\" "
-				+ outputPath;
+		ffmpegCommand[0] = (ffmpegPath);
+		ffmpegCommand[1] = ("-i");
+		ffmpegCommand[2] = (filepath);
+		ffmpegCommand[3] = ("-movflags");
+		ffmpegCommand[4] = ("faststart");
+		ffmpegCommand[5] = ("-pix_fmt");
+		ffmpegCommand[6] = ("yuv420p");
+		ffmpegCommand[7] = ("-vf");
+		ffmpegCommand[8] = ("\"scale=trunc(iw/2)*2:trunc(ih/2)*2\"");
+		ffmpegCommand[9] = (outputPath + fileSep + "new_video_" + System.currentTimeMillis() + ".mp4");
 		
-		String[] envp = new String[1];
-		envp[0] = "PATH=$PATH:" + workingDir + fileSep + "jars";
-		
-		//System.out.println(ffmpegCommand);
-		
-		System.out.println(envp[0]);
+		System.out.println(ffmpegCommand);
 		
 		try {
-			Process proc = Runtime.getRuntime().exec("ffmpeg -h", envp);
-			proc.waitFor();
-			return true;
+			Process proc = Runtime.getRuntime().exec((String[]) ffmpegCommand);
+			
+			 // any error message?
+            StreamGobbler errorGobbler = new 
+                StreamGobbler(proc.getErrorStream(), "ERROR");            
+            
+            // any output?
+            StreamGobbler outputGobbler = new 
+                StreamGobbler(proc.getInputStream(), "OUTPUT");
+                
+            // kick them off
+            errorGobbler.start();
+            outputGobbler.start();
+            
+			//Block until ffmpeg has finished and given us an answer
+            int exitVal = proc.waitFor();
+            
+            //exec returns 0 on successful call
+            return (exitVal == 0);
 		} catch (IOException | InterruptedException e1) {
 			System.out.println(e1.getMessage());
 			return false;
@@ -250,5 +277,33 @@ public class ImageViewer {
 	public static void main(String[] args) {
 	Application.launch();
 }*/
+	
+	//This class taken from https://www.javaworld.com/article/2071275/core-java/when-runtime-exec---won-t.html?page=2
+	class StreamGobbler extends Thread
+	{
+	    InputStream is;
+	    String type;
+	    
+	    StreamGobbler(InputStream is, String type)
+	    {
+	        this.is = is;
+	        this.type = type;
+	    }
+	    
+	    public void run()
+	    {
+	        try
+	        {
+	            InputStreamReader isr = new InputStreamReader(is);
+	            BufferedReader br = new BufferedReader(isr);
+	            String line=null;
+	            while ( (line = br.readLine()) != null)
+	                System.out.println(type + ">" + line);    
+	            } catch (IOException ioe)
+	              {
+	                ioe.printStackTrace();  
+	              }
+	    }
+	}
 	
 }
