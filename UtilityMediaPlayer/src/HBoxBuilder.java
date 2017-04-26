@@ -120,15 +120,9 @@ public class HBoxBuilder extends HBox{
 		frame.setVolumeSlider(volume);
 		
 		//responds to slider movements
-		/*
-		volume.valueProperty().addListener(new InvalidationListener() {
-			public void invalidated(Observable ov) {
-				if (volume.isValueChanging()) {
-					currentPlayer.volumeChange((int) volume.getValue());
-				}
-			}
-		});
-		*/
+		
+		volume.valueProperty().addListener(jfxControl.new volumeSlider());
+		
 		
 		//TODO
 		

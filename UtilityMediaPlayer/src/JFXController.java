@@ -1,3 +1,5 @@
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -28,6 +30,17 @@ public class JFXController {
 			stage.play();
 		}
 
+	}
+	
+	//Controller for the volume slider
+	public class volumeSlider implements InvalidationListener {
+		
+		@Override
+		public void invalidated(Observable ov) {
+			if (stage.getVolumeSlider().isValueChanging()) {
+				stage.volumeChange();
+			}
+		}
 	}
 	
 	//controller for Forward Button

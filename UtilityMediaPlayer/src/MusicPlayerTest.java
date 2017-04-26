@@ -19,7 +19,7 @@ public class MusicPlayerTest {
 	String workingDir = System.getProperty("user.dir");
 	String fileSep = System.getProperty("file.separator");
 	
-	String testSong1 = workingDir + fileSep + "media libraries" + fileSep + "test.mp3";
+	String testSong1 = workingDir + fileSep + "media libraries" + fileSep + "audio" + fileSep + "test.mp3";
 	
 	@Rule
 	public JavaFXThreadingRule jfxRule = new JavaFXThreadingRule();
@@ -89,8 +89,8 @@ public class MusicPlayerTest {
 	public void testSetVolumeMedium() {
 		
 		testPlayer.open(testSong1);
-		testPlayer.volumeChange(0.5);
-		assertTrue(testPlayer.player.getVolume() == 0.5);
+		testPlayer.volumeChange(20);
+		assertTrue(testPlayer.player.getVolume() == 0.2);
 	}
 	
 	@Test

@@ -5,10 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-
 import javax.swing.JOptionPane;
-
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
