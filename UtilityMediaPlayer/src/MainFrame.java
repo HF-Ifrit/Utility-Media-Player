@@ -265,6 +265,10 @@ public class MainFrame extends JFrame {
 			public String getElementAt(int index) {
 				return getFileNames().get(index);
 			}
+			
+			public void addElement(String newFile){
+				getFileNames().add(newFile);
+			}
 		});
 		list.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -538,11 +542,12 @@ public class MainFrame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) 
 		{
-			System.out.println("Opening file...");
 			int returnVal = fileChooser.showOpenDialog(contentPane);
 			 if (returnVal == JFileChooser.APPROVE_OPTION) {
 		           File file = fileChooser.getSelectedFile();
-		           parseFileType(file.toString());
+		           String filename = file.getName();
+		           //TODO need to somehow change the underlying model in order to repaint the list
+		           
 			 }
 			
 		}
@@ -644,8 +649,6 @@ public class MainFrame extends JFrame {
 		
 		//returns JList from createFileList
 		public static JList<String> createFileList(){
-			 
-	        
 	        //add list to content pane
 			return MainFrame.createFileList();
 		}
