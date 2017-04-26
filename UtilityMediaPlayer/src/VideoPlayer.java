@@ -60,6 +60,12 @@ public class VideoPlayer implements Player
 	private boolean hasMedia;
 	private String videoPath;
 	private Dimension vidDimension;
+	
+	private final String workingDir = System.getProperty("user.dir");
+	private final String fileSep = System.getProperty("file.separator");
+	private final String outputPath = workingDir + fileSep + "output";
+	private final String ffmpegPath = workingDir + fileSep + "jars" + fileSep + "ffmpeg.exe";
+
 
 	enum VideoFormat 
 	{
@@ -291,41 +297,47 @@ public class VideoPlayer implements Player
 			return false;
 		else
 		{
-			ArrayList<BufferedImage> capturedImages = new ArrayList<BufferedImage>((int)(endTime-startTime));
-			player.addMediaPlayerEventListener(new MediaPlayerEventAdapter()
-					{
-						@Override
-						public void snapshotTaken(MediaPlayer mp, String fileName)
-						{
-							System.out.println("Snapshot successfully taken");
-							System.out.println(capturedImages.size());
-						}
-					});
-			pauseVideo();
-			player.setTime(startTime);
+			//ffmpeg command:
+			// [ffmpeg path] -i [video file] -vf scale=[width]:-1 -t 10 -r 10 image.gif
 			
-			//TODO: GIFs are really slow and have low quality
-			while(player.getTime() <= endTime)
-			{
-				BufferedImage image = player.getVideoSurfaceContents();
-				capturedImages.add(image);
-				player.setTime(player.getTime() + 5);
-			}
+			String[] ffmpegCommands = new String[10];
 			
-			BufferedImage firstImage = capturedImages.get(0);
-			ImageOutputStream output = new FileImageOutputStream(new File("output/clip.gif"));
-			GifSequenceWriter writer = new GifSequenceWriter(output, firstImage.getType(), 1, true);
 			
-			writer.writeToSequence(firstImage);
-			for(int i = 1; i < capturedImages.size(); i++)
-			{
-				writer.writeToSequence(capturedImages.get(i));
-			}
-			
-			writer.close();
-			output.close();
-			
-			System.out.println(String.format("Images from %d to %d captured", startTime,endTime));
+//			ArrayList<BufferedImage> capturedImages = new ArrayList<BufferedImage>((int)(endTime-startTime));
+//			player.addMediaPlayerEventListener(new MediaPlayerEventAdapter()
+//					{
+//						@Override
+//						public void snapshotTaken(MediaPlayer mp, String fileName)
+//						{
+//							System.out.println("Snapshot successfully taken");
+//							System.out.println(capturedImages.size());
+//						}
+//					});
+//			pauseVideo();
+//			player.setTime(startTime);
+//			
+//			//TODO: GIFs are really slow and have low quality
+//			while(player.getTime() <= endTime)
+//			{
+//				BufferedImage image = player.getVideoSurfaceContents();
+//				capturedImages.add(image);
+//				player.setTime(player.getTime() + 5);
+//			}
+//			
+//			BufferedImage firstImage = capturedImages.get(0);
+//			ImageOutputStream output = new FileImageOutputStream(new File("output/clip.gif"));
+//			GifSequenceWriter writer = new GifSequenceWriter(output, firstImage.getType(), 1, true);
+//			
+//			writer.writeToSequence(firstImage);
+//			for(int i = 1; i < capturedImages.size(); i++)
+//			{
+//				writer.writeToSequence(capturedImages.get(i));
+//			}
+//			
+//			writer.close();
+//			output.close();
+//			
+//			System.out.println(String.format("Images from %d to %d captured", startTime,endTime));
 			
 			return true;
 		}
@@ -363,6 +375,12 @@ public class VideoPlayer implements Player
 			
 			String finalSOut =  String.format(sout, bits, scale, dest);
 			player.stop();
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			player.playMedia(videoPath, ":start-time="+start,":stop-time=" + finish, finalSOut);
 
 			System.out.println("Video clipped at " + dest);
@@ -470,6 +488,7 @@ public class VideoPlayer implements Player
 		frame.setContentPane(v.mediaPlayerComponent);
 		frame.setVisible(true);
 		v.playVideo();
+		Thread.sleep(1000);
 		v.clipVideo(1, 4);
 	}
 }
