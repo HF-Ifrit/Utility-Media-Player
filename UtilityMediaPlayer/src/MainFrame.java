@@ -159,8 +159,8 @@ public class MainFrame extends JFrame {
         displayFrame.setContentPane(demo.createContentPane());
         demo.setFileList(createFileList(demo));
         displayFrame.getContentPane().add(demo.fileList, BorderLayout.WEST);
-        displayFrame.add(demo.createTimeControl(), BorderLayout.SOUTH);
-        displayFrame.add(demo.createControlBar(), new BorderLayout(0, 75));
+        //displayFrame.add(demo.createTimeControl(), BorderLayout.SOUTH);
+        displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
        
 
 
@@ -394,6 +394,16 @@ public class MainFrame extends JFrame {
     	JFXPanel fxPanel = new JFXPanel();
     	
     	fxPanel.setScene(new Scene(HBoxBuilder.newTimeStampTrackerBar(this)));
+    	
+    	return fxPanel;
+    }
+    
+    /**
+     * combine both bars
+     */
+    private JFXPanel createBothControls(){
+    	JFXPanel fxPanel = new JFXPanel();
+    	
     	
     	return fxPanel;
     }

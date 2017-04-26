@@ -229,4 +229,8 @@ public class HBoxBuilder extends HBox{
 
     	return hbox;
     }
+    
+    public static void combineBars(){
+    	
+    }
 }
