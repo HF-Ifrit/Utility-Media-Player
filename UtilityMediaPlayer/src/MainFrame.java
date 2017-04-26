@@ -40,6 +40,9 @@ public class MainFrame extends JFrame {
 	private static final String VIDEO_PATH = "media libraries/video/";
 	private static final String IMAGE_PATH = "media libraries/images/";
 	
+	final JFileChooser fileChooser;
+
+	
 	private JPanel contentPane;
 	private JMenuBar menuBar;
 	private JMenu menu, submenu;
@@ -68,6 +71,8 @@ public class MainFrame extends JFrame {
     //player mode that is currently loaded
     private Mode mode;
     
+    //the specific MenuBarBuilder to the OS or type
+    
     
     //enum to determine what mode the current controller is set to
     public enum Mode{
@@ -81,6 +86,7 @@ public class MainFrame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					
 					createAndShowGUI();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -102,6 +108,8 @@ public class MainFrame extends JFrame {
 		currentViewer = new ImageViewer();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, 1040, 543);
+		fileChooser = new JFileChooser();
+
         
 	}
 	
@@ -147,29 +155,75 @@ public class MainFrame extends JFrame {
 	private JMenuBar createTextMenuBar(){
 
 		JMenuBar menuBar;
+		MenuBarSetup menuBarSetup = getMenuBarVersion();
 		
 		//Create the menu bar.
 		menuBar = new JMenuBar();
 
 		//Build the first menu as File tab
-		menuBar = MenuBarSetup.attachFileMenu(menuBar, this);
+		menuBar = menuBarSetup.attachFileMenu(menuBar, this);
 		
 		//build the second menu as a View tab
-		menuBar = MenuBarSetup.attachViewMenu(menuBar);
+		menuBar = menuBarSetup.attachViewMenu(menuBar);
 		
 		//build the third menu as a Video tab
-		menuBar = MenuBarSetup.attachVideoMenu(menuBar);
+		menuBar = menuBarSetup.attachVideoMenu(menuBar);
 		
 		//build fourth menu as Audio tab
-		menuBar = MenuBarSetup.attachAudioMenu(menuBar);
+		menuBar = menuBarSetup.attachAudioMenu(menuBar);
 		
 		//build fifth menu as Image tab
-		menuBar = MenuBarSetup.attachImageMenu(menuBar);
+		menuBar = menuBarSetup.attachImageMenu(menuBar);
 		
 		//build the last menu as help tab
-		menuBar =  MenuBarSetup.attachHelpMenu(menuBar);
+		menuBar =  menuBarSetup.attachHelpMenu(menuBar);
 		
 		return menuBar;
+	}
+	
+	//determines which OS/Menu Bar style to create of an abstarct MenuBarSetup
+	private MenuBarSetup getMenuBarVersion(){
+		if(OsUtils.isWindows()){
+			return new WindowsMenuBarSetup();
+		}
+		else if(OsUtils.isUnix()){
+			return new GenericMenuBarSetup();
+		}
+		else{
+			return new GenericMenuBarSetup();
+		}
+	}
+	
+	
+	private static void removeImproperFileTypes(ArrayList<String> fileList) {
+		ArrayList<String> improper = new ArrayList<String>();
+		for(String file : fileList) {
+			if(file.endsWith(".gif")) {
+				continue;
+			}
+			else if(file.endsWith(".jpg")) {
+				continue;
+			}
+			else if(file.endsWith(".png")) {
+				continue;
+			}
+			else if(file.endsWith(".mp3")) {
+				continue;
+			}
+			else if(file.endsWith(".flac")) {
+				continue;
+			}
+			else if(file.endsWith(".webm")) {
+				continue;
+			}
+			else if(file.endsWith(".mp4")) {
+				continue;
+			}
+			
+			else improper.add(file);
+		}
+		
+		fileList.removeAll(improper);
 	}
 	
 	//creates the sideView for file of lists
@@ -183,6 +237,7 @@ public class MainFrame extends JFrame {
 		fileList.addAll(audio);
 		fileList.addAll(video);
 		fileList.addAll(images);
+		removeImproperFileTypes(fileList);
 		Collections.sort(fileList);
 		list.setModel(new AbstractListModel<String>()
 		{
@@ -467,13 +522,18 @@ public class MainFrame extends JFrame {
 	 */
 	
 	//controller for opening a file
-	public class openFile implements ActionListener
-	{
+	public class openFile implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) 
 		{
 			System.out.println("Opening file...");
+			int returnVal = fileChooser.showOpenDialog(contentPane);
+			 if (returnVal == JFileChooser.APPROVE_OPTION) {
+		           File file = fileChooser.getSelectedFile();
+		           parseFileType(file.toString());
+			 }
+			
 		}
 		
 	}
