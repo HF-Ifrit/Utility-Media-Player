@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -141,7 +143,7 @@ public class MainFrame extends JFrame {
         MainFrame demo = new MainFrame(displayFrame);
         displayFrame.setJMenuBar(demo.createTextMenuBar());
         displayFrame.setContentPane(demo.createContentPane());
-        demo.setFileList(createFileList());
+        demo.setFileList(createFileList(demo));
         displayFrame.getContentPane().add(demo.fileList, BorderLayout.WEST);
         displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
 
@@ -244,7 +246,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	//creates the sideView for file of lists
-	private static JList<String> createFileList(){
+	private static JList<String> createFileList(MainFrame mainFrame){
 		JList<String> list;
 		list = new JList<String>();
 		ArrayList<String> audio = MainFrame.getFolderContents(MainFrame.AUDIO_PATH);
@@ -289,6 +291,17 @@ public class MainFrame extends JFrame {
 			}
 		});
 		*/
+		
+		//listener for double clicks
+		list.addMouseListener(new MouseAdapter(){
+		    @Override
+		    public void mouseClicked(MouseEvent e){
+		        if(e.getClickCount()==2){
+		           mainFrame.play();
+		        }
+		    }
+		});
+		
 		list.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -506,6 +519,8 @@ public class MainFrame extends JFrame {
 		this.paint(this.getGraphics());  
 	}
 	
+	
+	
 	/**
 	 * helper method that convert the filename to the absolute path if the filename is found to be a external file
 	 * @param filename
@@ -591,16 +606,6 @@ public class MainFrame extends JFrame {
 		
 	}
 	
-	//controller for opening multiple files
-	public class openMultipleFiles implements ActionListener{
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Opening multiple files...");
-				
-			}
-			
-	}
 	
 	//controller for opening multiple files
 	public class openSaveFile implements ActionListener{
@@ -675,7 +680,7 @@ public class MainFrame extends JFrame {
 	        mainFrame = demo;
 	        frame.setJMenuBar(demo.createTextMenuBar());
 	        frame.setContentPane(demo.createContentPane());
-	        demo.setFileList(MainFrame.createFileList());
+	        demo.setFileList(MainFrame.createFileList(mainFrame));
 	        frame.getContentPane().add(demo.fileList, BorderLayout.WEST);
 	        frame.add(demo.createControlBar(), BorderLayout.SOUTH);
 	 
@@ -687,9 +692,9 @@ public class MainFrame extends JFrame {
 	    }
 		
 		//returns JList from createFileList
-		public static JList<String> createFileList(){
+		public JList<String> createFileList(){
 	        //add list to content pane
-			return MainFrame.createFileList();
+			return MainFrame.createFileList(mainFrame);
 		}
 		
 		//returns an image icon from the createImageIcon 
