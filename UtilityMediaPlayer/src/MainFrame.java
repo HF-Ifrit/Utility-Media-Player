@@ -435,7 +435,6 @@ public class MainFrame extends JFrame {
 		getFrame().setVisible(true);
 		getFrame().validate();		
 		getFrame().repaint();
-		getFrame().pack();
 	}
 	
 	//helper method to creation for new scene
