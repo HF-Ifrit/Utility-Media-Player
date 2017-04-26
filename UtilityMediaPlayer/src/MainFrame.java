@@ -437,22 +437,7 @@ public class MainFrame extends JFrame {
 			return false;
 		}
 		
-		JFXPanel panel = new JFXPanel();
-		panel.setScene(currentViewer.getScene());
-		
-		JFXPanel fixedPanel = new JFXPanel();
-		fixedPanel.setLayout(new GridBagLayout());
-		fixedPanel.setPreferredSize(getFrame().getSize());
-		fixedPanel.add(panel);
-		
-		getFrame().add(fixedPanel, BorderLayout.CENTER);
-		
-		updateComponent(panel);
-		updateComponent(fixedPanel);
-		getFrame().setVisible(true);
-		getFrame().validate();		
-		getFrame().repaint();
-		
+		else setupViewer();
 		return true;
 	}
 	
@@ -463,22 +448,7 @@ public class MainFrame extends JFrame {
 			return false;
 		}
 		
-		JFXPanel panel = new JFXPanel();
-		panel.setScene(currentViewer.getScene());
-		
-		JFXPanel fixedPanel = new JFXPanel();
-		fixedPanel.setLayout(new GridBagLayout());
-		fixedPanel.setPreferredSize(getFrame().getSize());
-		fixedPanel.add(panel);
-		
-		getFrame().add(fixedPanel, BorderLayout.CENTER);
-		
-		updateComponent(panel);
-		updateComponent(fixedPanel);
-		getFrame().setVisible(true);
-		getFrame().validate();		
-		getFrame().repaint();
-		
+		else setupViewer();	
 		return true;
 	}
 	
@@ -513,19 +483,21 @@ public class MainFrame extends JFrame {
 	}
 	
 	//helper method to creation for new scene
-	private void setupViewer(String filename){
+	private void setupViewer(){
 		JFXPanel panel = new JFXPanel();
 		panel.setScene(currentViewer.getScene());
 		
 		JFXPanel fixedPanel = new JFXPanel();
 		fixedPanel.setLayout(new GridBagLayout());
-		fixedPanel.setPreferredSize(getFrame().getSize());
 		fixedPanel.add(panel);
+		JScrollPane scroll = new JScrollPane(fixedPanel);
+		scroll.setPreferredSize(getFrame().getSize());
 		
-		getFrame().add(fixedPanel, BorderLayout.CENTER);
+		getFrame().add(scroll, BorderLayout.CENTER);
 		
 		updateComponent(panel);
 		updateComponent(fixedPanel);
+		updateComponent(scroll);
 		getFrame().setVisible(true);
 		getFrame().validate();		
 		getFrame().repaint();
@@ -553,7 +525,7 @@ public class MainFrame extends JFrame {
 			String tempFilename = "media libraries/images/" + filename;
 			filename = verifyFilePath(filename, tempFilename);
 			currentViewer.open(filename);
-			setupViewer(filename);
+			setupViewer();
 		}
 		this.paint(this.getGraphics());  
 	}
