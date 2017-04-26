@@ -9,6 +9,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.*;
 
@@ -62,12 +64,19 @@ public class MainFrame extends JFrame {
     JScrollPane scrollPane;
     JList<String> fileList;
     
+     //reference to the file Lists' model for graphics
+    private static DefaultListModel<String> fileListModel;
+    //mappings of external file names to locations
+    private Map<String, String> fileLocationMap;
+    
+    
     //players/viewers
     private Player currentPlayer;
     private ImageViewer currentViewer;
     
     //current selected file of the controller
     private String currentFile;
+
     
     //previous file that was played
     private String previousFile;
@@ -115,7 +124,7 @@ public class MainFrame extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, 1040, 543);
 		fileChooser = new JFileChooser();
-
+		fileLocationMap = new HashMap<String, String>();
         
 	}
 	
@@ -124,6 +133,8 @@ public class MainFrame extends JFrame {
 	private static void createAndShowGUI() {
         //Create and set up the window.
         JFrame displayFrame = new JFrame();
+        displayFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
         displayFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  
         //Create and set up the content pane.
@@ -245,7 +256,14 @@ public class MainFrame extends JFrame {
 		fileList.addAll(images);
 		removeImproperFileTypes(fileList);
 		Collections.sort(fileList);
-		list.setModel(new AbstractListModel<String>()
+		fileListModel = new DefaultListModel<String>();
+		for(String fileName : fileList){
+			fileListModel.addElement(fileName);
+		}
+		list.setModel(fileListModel);
+		
+		/*
+		list.setModel(new DefaultListModel<String>()
 		{
 			String[] values = new String[] {
 					"Video.mp4", "Audio.mp3", "Media.gif", "Image.png"};
@@ -265,7 +283,12 @@ public class MainFrame extends JFrame {
 			public String getElementAt(int index) {
 				return getFileNames().get(index);
 			}
+			
+			public void addElement(String newFile){
+				getFileNames().add(newFile);
+			}
 		});
+		*/
 		list.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -407,6 +430,58 @@ public class MainFrame extends JFrame {
 		
 	}
 	
+	public boolean rotateImage(boolean clockwise) {
+		boolean error = currentViewer.rotateImage(clockwise);
+		
+		if(error) {
+			return false;
+		}
+		
+		JFXPanel panel = new JFXPanel();
+		panel.setScene(currentViewer.getScene());
+		
+		JFXPanel fixedPanel = new JFXPanel();
+		fixedPanel.setLayout(new GridBagLayout());
+		fixedPanel.setPreferredSize(getFrame().getSize());
+		fixedPanel.add(panel);
+		
+		getFrame().add(fixedPanel, BorderLayout.CENTER);
+		
+		updateComponent(panel);
+		updateComponent(fixedPanel);
+		getFrame().setVisible(true);
+		getFrame().validate();		
+		getFrame().repaint();
+		
+		return true;
+	}
+	
+	public boolean mirrorImage() {
+		boolean error = currentViewer.mirrorImage();
+		
+		if(error) {
+			return false;
+		}
+		
+		JFXPanel panel = new JFXPanel();
+		panel.setScene(currentViewer.getScene());
+		
+		JFXPanel fixedPanel = new JFXPanel();
+		fixedPanel.setLayout(new GridBagLayout());
+		fixedPanel.setPreferredSize(getFrame().getSize());
+		fixedPanel.add(panel);
+		
+		getFrame().add(fixedPanel, BorderLayout.CENTER);
+		
+		updateComponent(panel);
+		updateComponent(fixedPanel);
+		getFrame().setVisible(true);
+		getFrame().validate();		
+		getFrame().repaint();
+		
+		return true;
+	}
+	
 	//helper method to streamline closing video/music player windows
 	private void updateComponent(Component newComponent){
 		if(previousComponent != null){
@@ -461,23 +536,40 @@ public class MainFrame extends JFrame {
 		this.previousFile = filename;
 		if(mode == Mode.AUDIO){
 			//TODO testing checks
-			filename = "media libraries/audio/" + filename;
+			String tempFilename = "media libraries/audio/" + filename;
+			filename = verifyFilePath(filename, tempFilename);
 			currentPlayer = new MusicPlayer();
 			setupPlayers(filename);
 		}
 		if(mode == Mode.VIDEO){
 			//TODO testing checks
-			filename = "media libraries/video/" + filename;
+			String tempFilename = "media libraries/video/" + filename;
+			filename = verifyFilePath(filename, tempFilename);
 			currentPlayer = new VideoPlayer();
 			setupPlayers(filename);
 		}
 		if(mode == Mode.IMAGE){
 			//TODO testing checks
-			filename = "media libraries/images/" + filename;
+			String tempFilename = "media libraries/images/" + filename;
+			filename = verifyFilePath(filename, tempFilename);
 			currentViewer.open(filename);
 			setupViewer(filename);
 		}
 		this.paint(this.getGraphics());  
+	}
+	
+	/**
+	 * helper method that convert the filename to the absolute path if the filename is found to be a external file
+	 * @param filename
+	 * @param internalFilePath
+	 * @return gives the absolute file path for external files, otherwise switches to internalFilePath given
+	 */
+	private String verifyFilePath(String filename, String internalFilePath){
+		if(fileLocationMap.get(filename) != null){
+			return fileLocationMap.get(filename);
+		}
+		else 
+			return internalFilePath;
 	}
 	
 	
@@ -538,11 +630,13 @@ public class MainFrame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) 
 		{
-			System.out.println("Opening file...");
 			int returnVal = fileChooser.showOpenDialog(contentPane);
 			 if (returnVal == JFileChooser.APPROVE_OPTION) {
 		           File file = fileChooser.getSelectedFile();
-		           parseFileType(file.toString());
+		           String filename = file.getName();
+		           fileListModel.addElement(filename);
+		           String path = file.getAbsolutePath();
+		           fileLocationMap.put(filename, path);
 			 }
 			
 		}
@@ -624,6 +718,8 @@ public class MainFrame extends JFrame {
 		public JFrame createAndShowGUI() {
 	        //Create and set up the window.
 	        JFrame frame = new JFrame("UMP Controller");
+	        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
 	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	 
 	        //Create and set up the content pane.
@@ -644,8 +740,6 @@ public class MainFrame extends JFrame {
 		
 		//returns JList from createFileList
 		public static JList<String> createFileList(){
-			 
-	        
 	        //add list to content pane
 			return MainFrame.createFileList();
 		}
