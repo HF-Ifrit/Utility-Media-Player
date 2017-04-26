@@ -336,7 +336,7 @@ public class VideoPlayer implements Player
 	 * @param start Time to start clip from in seconds
 	 * @param finish Time to end clip from in seconds
 	 */
-	public boolean clipVideo(int start, int finish, VideoFormat format)
+	public boolean clipVideo(int start, int finish)
 	{
 		if(!hasMedia
 				|| start < 0 
@@ -348,9 +348,7 @@ public class VideoPlayer implements Player
 			return false;
 		}
 		else
-		{
-			vidDimension = player.getVideoDimension();
-			
+		{			
 			int dotIndex = videoPath.indexOf('.');
 			String extension = videoPath.substring(dotIndex+1, videoPath.length());
 			VideoFormat currentFormat = VideoFormat.valueOf(extension.toUpperCase());
@@ -362,47 +360,12 @@ public class VideoPlayer implements Player
 			float scale = 0.5f;
 			long systemTime = System.currentTimeMillis();
 			String dest = "output/clip" + systemTime + "." + currentFormat.toString();
-			File orig = new File(dest);
-			
 			
 			String finalSOut =  String.format(sout, bits, scale, dest);
 			player.stop();
 			player.playMedia(videoPath, ":start-time="+start,":stop-time=" + finish, finalSOut);
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-			File output = new File("output/converted." + format.toString());
-			
-			AudioAttributes audioAtt = new AudioAttributes();
-			audioAtt.setCodec(format.getAudioCodec());
-			audioAtt.setBitRate(EXTRACTION_AUDIO_BITRATE);
-			audioAtt.setChannels(EXTRACTION_CHANNELS);
-			audioAtt.setSamplingRate(EXTRACTION_SAMPLING_RATE);
-			
-			VideoAttributes videoAtt = new VideoAttributes();
-			videoAtt.setCodec(format.getVideoCodec());
-			videoAtt.setBitRate(EXTRACTION_VIDEO_BITRATE);
-			videoAtt.setFrameRate(EXTRACTION_FRAMERATE);
-			videoAtt.setSize(new VideoSize((int)vidDimension.getWidth(), (int)vidDimension.getHeight()));
-			
-			EncodingAttributes encAtt = new EncodingAttributes();
-			encAtt.setFormat(format.toString().toLowerCase());
-			encAtt.setAudioAttributes(audioAtt);
-			encAtt.setVideoAttributes(videoAtt);
-			encAtt.setDuration((float)(finish*1000 - start*1000));
 
-			Encoder encoder = new Encoder();
-			try 
-			{
-				encoder.encode(orig, output, encAtt);
-				System.out.println("Video clipped at " + output.getAbsolutePath());
-			} 
-			catch (IllegalArgumentException | EncoderException e ) 
-			{
-				e.printStackTrace();
-			}
+			System.out.println("Video clipped at " + dest);
 			return true;
 		}
 	}
@@ -507,7 +470,7 @@ public class VideoPlayer implements Player
 		frame.setContentPane(v.mediaPlayerComponent);
 		frame.setVisible(true);
 		v.playVideo();
-		v.clipVideo(1, 4, VideoFormat.MP4);
+		v.clipVideo(1, 4);
 	}
 }
 
