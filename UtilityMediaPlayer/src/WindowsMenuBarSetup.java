@@ -98,7 +98,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
 	/**creates the viewMenu tab and attaches it to input
 	 * @param menuBar the JMenuBar that the function will attach the view menu section to
 	 */
-	public JMenuBar attachViewMenu(JMenuBar menuBar){
+	public JMenuBar attachViewMenu(JMenuBar menuBar, MainFrame mainframe){
 		//temporary loading spaces on creation
 		JMenu menu, submenu;
 		JMenuItem menuItem;
@@ -161,7 +161,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
 	/**creates the videoMenu tab and attaches it to input
 	 * @param menuBar the JMenuBar that the function will attach the video menu section to
 	 */
-	public JMenuBar attachVideoMenu(JMenuBar menuBar){
+	public JMenuBar attachVideoMenu(JMenuBar menuBar, MainFrame mainframe){
 		//temporary loading spaces on creation
 		JMenu menu, submenu;
 		JMenuItem menuItem;
@@ -287,7 +287,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
 		return menuBar;
 	}
 	
-	public JMenuBar attachAudioMenu(JMenuBar menuBar){
+	public JMenuBar attachAudioMenu(JMenuBar menuBar, MainFrame mainframe){
 		//temporary loading spaces on creation
 		JMenu menu, submenu;
 		JMenuItem menuItem;
@@ -380,7 +380,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
 	
 	
 	//Image MenuBar
-	public JMenuBar attachImageMenu(JMenuBar menuBar){
+	public JMenuBar attachImageMenu(JMenuBar menuBar, MainFrame mainFrame){
 		//temporary loading spaces on creation
 		JMenu menu, submenu;
 		JMenuItem menuItem;
@@ -428,6 +428,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		KeyEvent.VK_R, ActionEvent.CTRL_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Opens window with help document/info");
+        menuItem.addActionListener(mainFrame.new imageProperties());
         menu.add(menuItem);
         
         
@@ -444,7 +445,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
 	 * creates the helpMenu tab and attaches it to input
 	 * @param menuBar the JMenuBar that the function will attach the help menu section to
 	 */
-	public JMenuBar attachHelpMenu(JMenuBar menuBar){
+	public JMenuBar attachHelpMenu(JMenuBar menuBar, MainFrame mainframe){
 		//temporary loading spaces on creation
 		JMenu menu, submenu;
 		JMenuItem menuItem;
@@ -481,6 +482,8 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
 		
 		return menuBar;
 	}
+
+
 	
 	/**
 	 * attaches player buttons to lower panel

@@ -398,8 +398,26 @@ public class MusicPlayer implements Player {
 		playTime = null;
 
 		songTitle = null;
-		albumImage = null;
+		albumImage = new ImageView();
 		mainFrame = new JFXPanel();
+		
+		//Initialize the album art to the default value, if it is available in the file system.
+   		String workingDir = System.getProperty("user.dir");
+   		String fileSep = System.getProperty("file.separator");
+   		String pathname = workingDir + fileSep + "src" + fileSep + "internaldata" + fileSep + "Blank_Album_Art.png";
+		File f = new File(pathname);
+		InputStream fileStream;
+		try {
+			fileStream = new FileInputStream(f);
+			Image image = new Image(fileStream);
+			if ( ! image.isError()) {
+				ImageView iv = new ImageView();
+				iv.setImage(image);
+				this.albumImage = iv;
+			}
+		} catch (FileNotFoundException e1) {
+			;
+		}
 			
 		GridPane grid = new GridPane();
 		grid.setAlignment(Pos.CENTER);
@@ -415,7 +433,6 @@ public class MusicPlayer implements Player {
 			
 		//TODO
 		//set the image section here.
-		albumImage = new ImageView();
 		albumImage.setFitHeight(300.0);
 		albumImage.setFitWidth(300.0);
 		grid.add(albumImage, 1, 1);
