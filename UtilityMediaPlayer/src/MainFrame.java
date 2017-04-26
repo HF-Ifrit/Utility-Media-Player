@@ -472,6 +472,16 @@ public class MainFrame extends JFrame {
 		return true;
 	}
 	
+	public boolean mirrorImageVertically() {
+		boolean error = currentViewer.mirrorImageVertically();
+		if(error) {
+			return false;
+		}
+		
+		else setupViewer();
+		return true;
+	}
+	
 	//helper method to streamline closing video/music player windows
 	private void updateComponent(Component newComponent){
 		if(previousComponent != null){
