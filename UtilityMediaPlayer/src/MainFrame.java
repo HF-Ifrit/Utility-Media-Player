@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.*;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -136,6 +137,16 @@ public class MainFrame extends JFrame {
 	
 	//creates gui 
 	private static void createAndShowGUI() {
+
+		
+		try {
+		       UIManager.setLookAndFeel("com.alee.laf.WebLookAndFeel");
+			 }
+		catch (Exception ex) {
+				ex.printStackTrace();
+			 }
+		
+		
         //Create and set up the window.
         JFrame displayFrame = new JFrame();
         displayFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
