@@ -20,6 +20,9 @@ import javafx.geometry.Insets;
 import javafx.scene.*;
 import javax.swing.border.BevelBorder;
 import java.awt.Font;
+import java.awt.Frame;
+import java.awt.GridBagLayout;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.effect.Reflection;
@@ -120,7 +123,6 @@ public class MainFrame extends JFrame {
 	//creates gui 
 	private static void createAndShowGUI() {
         //Create and set up the window.
-		
         JFrame displayFrame = new JFrame();
         displayFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  
@@ -433,15 +435,23 @@ public class MainFrame extends JFrame {
 		getFrame().setVisible(true);
 		getFrame().validate();		
 		getFrame().repaint();
+		getFrame().pack();
 	}
 	
 	//helper method to creation for new scene
 	private void setupViewer(String filename){
 		JFXPanel panel = new JFXPanel();
 		panel.setScene(currentViewer.getScene());
-		getFrame().add(panel, BorderLayout.CENTER);
+		
+		JFXPanel fixedPanel = new JFXPanel();
+		fixedPanel.setLayout(new GridBagLayout());
+		fixedPanel.setPreferredSize(getFrame().getSize());
+		fixedPanel.add(panel);
+		
+		getFrame().add(fixedPanel, BorderLayout.CENTER);
 		
 		updateComponent(panel);
+		updateComponent(fixedPanel);
 		getFrame().setVisible(true);
 		getFrame().validate();		
 		getFrame().repaint();
@@ -490,15 +500,21 @@ public class MainFrame extends JFrame {
 	public Mode parseFileType(String file){
 		
 		//checks if ending filetype is video format
-		if(file.substring(file.lastIndexOf('.')).equals(".gif") || file.substring(file.lastIndexOf('.')).equals(".mp4")){
+		if(file.substring(file.lastIndexOf('.')).equals("." + VideoPlayer.VideoFormat.MP4.toString().toLowerCase()) 
+				|| file.substring(file.lastIndexOf('.')).equals("." + VideoPlayer.VideoFormat.WEBM.toString().toLowerCase()))
+		{
 			return Mode.VIDEO;
 		}
 		//check if ending filetype is audio format
-		else if(file.substring(file.lastIndexOf('.')).equals(".mp3")){
+		else if(file.substring(file.lastIndexOf('.')).equals("." + MusicPlayer.MusicFormat.MP3.toString().toLowerCase())
+				|| file.substring(file.lastIndexOf('.')).equals("." + MusicPlayer.MusicFormat.FLAC.toString().toLowerCase())){
 			return Mode.AUDIO;
 		}
 		//check if ending filetype is image format
-		else if(file.substring(file.lastIndexOf('.')).equals(".png") || file.substring(file.lastIndexOf('.')).equals(".jpg")){
+		else if(file.substring(file.lastIndexOf('.')).equals("." + ImageViewer.ImageFormat.GIF.toString().toLowerCase()) 
+				|| file.substring(file.lastIndexOf('.')).equals("." + ImageViewer.ImageFormat.JPG.toString().toLowerCase())
+				|| file.substring(file.lastIndexOf('.')).equals("." + ImageViewer.ImageFormat.PNG.toString().toLowerCase()))
+		{
 			return Mode.IMAGE;
 		}
 		//otherwise file can't be opened
@@ -521,7 +537,8 @@ public class MainFrame extends JFrame {
 	public class openFile implements ActionListener{
 
 		@Override
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e) 
+		{
 			System.out.println("Opening file...");
 			int returnVal = fileChooser.showOpenDialog(contentPane);
 			 if (returnVal == JFileChooser.APPROVE_OPTION) {
