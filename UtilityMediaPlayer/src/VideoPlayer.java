@@ -60,6 +60,12 @@ public class VideoPlayer implements Player
 	private boolean hasMedia;
 	private String videoPath;
 	private Dimension vidDimension;
+	
+	private final String workingDir = System.getProperty("user.dir");
+	private final String fileSep = System.getProperty("file.separator");
+	private final String outputPath = workingDir + fileSep + "output";
+	private final String ffmpegPath = workingDir + fileSep + "jars" + fileSep + "ffmpeg.exe";
+
 
 	enum VideoFormat 
 	{
@@ -291,41 +297,47 @@ public class VideoPlayer implements Player
 			return false;
 		else
 		{
-			ArrayList<BufferedImage> capturedImages = new ArrayList<BufferedImage>((int)(endTime-startTime));
-			player.addMediaPlayerEventListener(new MediaPlayerEventAdapter()
-					{
-						@Override
-						public void snapshotTaken(MediaPlayer mp, String fileName)
-						{
-							System.out.println("Snapshot successfully taken");
-							System.out.println(capturedImages.size());
-						}
-					});
-			pauseVideo();
-			player.setTime(startTime);
+			//ffmpeg command:
+			// [ffmpeg path] -i [video file] -vf scale=[width]:-1 -t 10 -r 10 image.gif
 			
-			//TODO: GIFs are really slow and have low quality
-			while(player.getTime() <= endTime)
-			{
-				BufferedImage image = player.getVideoSurfaceContents();
-				capturedImages.add(image);
-				player.setTime(player.getTime() + 5);
-			}
+			String[] ffmpegCommands = new String[10];
 			
-			BufferedImage firstImage = capturedImages.get(0);
-			ImageOutputStream output = new FileImageOutputStream(new File("output/clip.gif"));
-			GifSequenceWriter writer = new GifSequenceWriter(output, firstImage.getType(), 1, true);
 			
-			writer.writeToSequence(firstImage);
-			for(int i = 1; i < capturedImages.size(); i++)
-			{
-				writer.writeToSequence(capturedImages.get(i));
-			}
-			
-			writer.close();
-			output.close();
-			
-			System.out.println(String.format("Images from %d to %d captured", startTime,endTime));
+//			ArrayList<BufferedImage> capturedImages = new ArrayList<BufferedImage>((int)(endTime-startTime));
+//			player.addMediaPlayerEventListener(new MediaPlayerEventAdapter()
+//					{
+//						@Override
+//						public void snapshotTaken(MediaPlayer mp, String fileName)
+//						{
+//							System.out.println("Snapshot successfully taken");
+//							System.out.println(capturedImages.size());
+//						}
+//					});
+//			pauseVideo();
+//			player.setTime(startTime);
+//			
+//			//TODO: GIFs are really slow and have low quality
+//			while(player.getTime() <= endTime)
+//			{
+//				BufferedImage image = player.getVideoSurfaceContents();
+//				capturedImages.add(image);
+//				player.setTime(player.getTime() + 5);
+//			}
+//			
+//			BufferedImage firstImage = capturedImages.get(0);
+//			ImageOutputStream output = new FileImageOutputStream(new File("output/clip.gif"));
+//			GifSequenceWriter writer = new GifSequenceWriter(output, firstImage.getType(), 1, true);
+//			
+//			writer.writeToSequence(firstImage);
+//			for(int i = 1; i < capturedImages.size(); i++)
+//			{
+//				writer.writeToSequence(capturedImages.get(i));
+//			}
+//			
+//			writer.close();
+//			output.close();
+//			
+//			System.out.println(String.format("Images from %d to %d captured", startTime,endTime));
 			
 			return true;
 		}
@@ -336,7 +348,7 @@ public class VideoPlayer implements Player
 	 * @param start Time to start clip from in seconds
 	 * @param finish Time to end clip from in seconds
 	 */
-	public boolean clipVideo(int start, int finish, VideoFormat format)
+	public boolean clipVideo(int start, int finish)
 	{
 		if(!hasMedia
 				|| start < 0 
@@ -348,9 +360,7 @@ public class VideoPlayer implements Player
 			return false;
 		}
 		else
-		{
-			vidDimension = player.getVideoDimension();
-			
+		{			
 			int dotIndex = videoPath.indexOf('.');
 			String extension = videoPath.substring(dotIndex+1, videoPath.length());
 			VideoFormat currentFormat = VideoFormat.valueOf(extension.toUpperCase());
@@ -362,47 +372,18 @@ public class VideoPlayer implements Player
 			float scale = 0.5f;
 			long systemTime = System.currentTimeMillis();
 			String dest = "output/clip" + systemTime + "." + currentFormat.toString();
-			File orig = new File(dest);
-			
 			
 			String finalSOut =  String.format(sout, bits, scale, dest);
 			player.stop();
-			player.playMedia(videoPath, ":start-time="+start,":stop-time=" + finish, finalSOut);
 			try {
 				Thread.sleep(2000);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-			File output = new File("output/converted." + format.toString());
-			
-			AudioAttributes audioAtt = new AudioAttributes();
-			audioAtt.setCodec(format.getAudioCodec());
-			audioAtt.setBitRate(EXTRACTION_AUDIO_BITRATE);
-			audioAtt.setChannels(EXTRACTION_CHANNELS);
-			audioAtt.setSamplingRate(EXTRACTION_SAMPLING_RATE);
-			
-			VideoAttributes videoAtt = new VideoAttributes();
-			videoAtt.setCodec(format.getVideoCodec());
-			videoAtt.setBitRate(EXTRACTION_VIDEO_BITRATE);
-			videoAtt.setFrameRate(EXTRACTION_FRAMERATE);
-			videoAtt.setSize(new VideoSize((int)vidDimension.getWidth(), (int)vidDimension.getHeight()));
-			
-			EncodingAttributes encAtt = new EncodingAttributes();
-			encAtt.setFormat(format.toString().toLowerCase());
-			encAtt.setAudioAttributes(audioAtt);
-			encAtt.setVideoAttributes(videoAtt);
-			encAtt.setDuration((float)(finish*1000 - start*1000));
-
-			Encoder encoder = new Encoder();
-			try 
-			{
-				encoder.encode(orig, output, encAtt);
-				System.out.println("Video clipped at " + output.getAbsolutePath());
-			} 
-			catch (IllegalArgumentException | EncoderException e ) 
-			{
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			player.playMedia(videoPath, ":start-time="+start,":stop-time=" + finish, finalSOut);
+
+			System.out.println("Video clipped at " + dest);
 			return true;
 		}
 	}
@@ -507,7 +488,8 @@ public class VideoPlayer implements Player
 		frame.setContentPane(v.mediaPlayerComponent);
 		frame.setVisible(true);
 		v.playVideo();
-		v.clipVideo(1, 4, VideoFormat.MP4);
+		Thread.sleep(1000);
+		v.clipVideo(1, 4);
 	}
 }
 

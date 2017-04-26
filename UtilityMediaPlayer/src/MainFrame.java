@@ -439,8 +439,37 @@ public class MainFrame extends JFrame {
 		//runs play action on currentFile
 		else{
 			playbackExecute();
+		}	
+	}
+	
+	//TODO: Fix volume
+	public void volumeChange() {
+		if ((mode == Mode.AUDIO) || (mode == Mode.VIDEO)) {
+			currentPlayer.volumeChange(volumeSlider.getValue());
+		}
+	}
+
+	
+	public boolean rotateImage(boolean clockwise) {
+		boolean error = currentViewer.rotateImage(clockwise);
+		
+		if(error) {
+			return false;
 		}
 		
+		else setupViewer();
+		return true;
+	}
+	
+	public boolean mirrorImage() {
+		boolean error = currentViewer.mirrorImage();
+		
+		if(error) {
+			return false;
+		}
+		
+		else setupViewer();	
+		return true;
 	}
 	
 	//helper method to streamline closing video/music player windows
@@ -474,19 +503,21 @@ public class MainFrame extends JFrame {
 	}
 	
 	//helper method to creation for new scene
-	private void setupViewer(String filename){
+	private void setupViewer(){
 		JFXPanel panel = new JFXPanel();
 		panel.setScene(currentViewer.getScene());
 		
 		JFXPanel fixedPanel = new JFXPanel();
 		fixedPanel.setLayout(new GridBagLayout());
-		fixedPanel.setPreferredSize(getFrame().getSize());
 		fixedPanel.add(panel);
+		JScrollPane scroll = new JScrollPane(fixedPanel);
+		scroll.setPreferredSize(getFrame().getSize());
 		
-		getFrame().add(fixedPanel, BorderLayout.CENTER);
+		getFrame().add(scroll, BorderLayout.CENTER);
 		
 		updateComponent(panel);
 		updateComponent(fixedPanel);
+		updateComponent(scroll);
 		getFrame().setVisible(true);
 		getFrame().validate();		
 		getFrame().repaint();
@@ -514,7 +545,7 @@ public class MainFrame extends JFrame {
 			String tempFilename = "media libraries/images/" + filename;
 			filename = verifyFilePath(filename, tempFilename);
 			currentViewer.open(filename);
-			setupViewer(filename);
+			setupViewer();
 		}
 		this.paint(this.getGraphics());  
 	}
@@ -579,6 +610,10 @@ public class MainFrame extends JFrame {
 	//sets the volumeSlider reference to selected reference
 	public void setVolumeSlider(Slider volume){
 		this.volumeSlider = volume;
+	}
+	
+	public Slider getVolumeSlider() {
+		return volumeSlider;
 	}
 	
 	/**
