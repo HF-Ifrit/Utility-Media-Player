@@ -21,6 +21,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -41,7 +42,7 @@ public class MusicPlayer implements Player {
 	Label songTitle;
 	Label albumTitle;
 	Label artist;
-	Image albumImage;
+	ImageView albumImage;
 	Scene mainScene;
 	JFXPanel mainFrame;
 	public Button testButton;
@@ -95,8 +96,8 @@ public class MusicPlayer implements Player {
 		mainScene = new Scene(grid, 300, 300);
 		
 		songTitle = makeLabel("Title: ", 0, 0, grid);
-		artist = makeLabel("Artist: ", 1, 0, grid);
-		albumTitle = makeLabel("Album: ", 0, 1, grid);
+		artist = makeLabel("Artist: ", 0, 1, grid);
+		albumTitle = makeLabel("Album: ", 0, 2, grid);
 		
 		//TODO
 		//set the image section here.
@@ -191,6 +192,7 @@ public class MusicPlayer implements Player {
 		}
 		//TODO:
 		if (key.equals("image")) {
+			albumImage.setImage((Image)value);
 		}
 	}
 	
@@ -372,7 +374,7 @@ public class MusicPlayer implements Player {
 		Label label = new Label();
 		label.setId(id);
 		label.setText(id);
-		label.setPrefWidth(200);
+		label.setPrefWidth(300);
 		label.setMinWidth(50);
 		grid.add(label, column, row);
 		return label;
@@ -408,11 +410,15 @@ public class MusicPlayer implements Player {
 		mainScene = new Scene(grid, 300, 300);
 			
 		songTitle = makeLabel("Title: ", 0, 0, grid);
-		artist = makeLabel("Artist: ", 1, 0, grid);
-		albumTitle = makeLabel("Album: ", 0, 1, grid);
+		artist = makeLabel("Artist: ", 0, 1, grid);
+		albumTitle = makeLabel("Album: ", 0, 2, grid);
 			
 		//TODO
 		//set the image section here.
+		albumImage = new ImageView();
+		albumImage.setFitHeight(300.0);
+		albumImage.setFitWidth(300.0);
+		grid.add(albumImage, 1, 1);
 			
 		//Create the time slider and add its event handler.
 //		playTime = new Label("Time :");
