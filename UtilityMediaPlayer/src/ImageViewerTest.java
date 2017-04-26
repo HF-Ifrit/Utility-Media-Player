@@ -147,7 +147,7 @@ public class ImageViewerTest {
 	@Test
 	public void gifToMP4BadFormat() {
 		testViewer.open(imagePath);
-		assertFalse(testViewer.gifToVideo(VideoPlayer.VideoFormat.MP4));
+		assertFalse(testViewer.gifToVideo());
 	}
 
 	@Test
@@ -156,15 +156,16 @@ public class ImageViewerTest {
 		ArrayList<File> oldFiles = new ArrayList<File>(Arrays.asList(outputFile.listFiles()));
 		
 		testViewer.open(gifPath);
-		assertTrue(testViewer.gifToVideo(VideoPlayer.VideoFormat.MP4));
+		assertTrue(testViewer.gifToVideo());
 		
-		ArrayList<File> newFiles = new ArrayList<File>(Arrays.asList(outputFile.listFiles()));
+		ArrayList<File> updatedFiles = new ArrayList<File>(Arrays.asList(outputFile.listFiles()));
 		
 		//cleanup all created files by getting all that were just added to output
-		newFiles.removeAll(oldFiles);
-		assertFalse(newFiles.isEmpty());
+		updatedFiles.removeAll(oldFiles);
+		//check that at least one file was added to output
+		assertFalse(updatedFiles.isEmpty());
 		
-		for(File toDelete : newFiles) {
+		for(File toDelete : updatedFiles) {
 			try {
 				Files.delete(toDelete.toPath());
 			} catch (IOException e) {

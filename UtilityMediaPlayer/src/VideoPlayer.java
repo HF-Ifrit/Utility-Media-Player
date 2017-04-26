@@ -25,8 +25,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import com.sun.java.swing.plaf.windows.WindowsOptionPaneUI;
 
 import it.sauronsoftware.jave.AudioAttributes;
 import it.sauronsoftware.jave.Encoder;
@@ -201,8 +204,8 @@ public class VideoPlayer implements Player
 				stopVideo();
 			loaded = player.prepareMedia(filePath);
 			player.parseMedia();
+			showPlayer();
 			hasMedia = true;
-			//player.start(); //TODO
 		}
 
 		return loaded;
@@ -394,6 +397,7 @@ public class VideoPlayer implements Player
 			try 
 			{
 				encoder.encode(orig, output, encAtt);
+				System.out.println("Video clipped at " + output.getAbsolutePath());
 			} 
 			catch (IllegalArgumentException | EncoderException e ) 
 			{
@@ -484,7 +488,6 @@ public class VideoPlayer implements Player
 	{
 		stopVideo();
 		player.release();
-		//frame.dispose();
 		hasMedia = false;
 		return hasMedia;
 	}
@@ -500,12 +503,11 @@ public class VideoPlayer implements Player
 		JFrame frame = new JFrame("Video Player");
 		VideoPlayer v = new VideoPlayer("media libraries/video/singing_dove.mp4");
 		frame.setBounds(100, 100, 500, 500);
-
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setContentPane(v.mediaPlayerComponent);
 		frame.setVisible(true);
 		v.playVideo();
-		Thread.sleep(2000);
-		v.clear();
+		v.clipVideo(1, 4, VideoFormat.MP4);
 	}
 }
 
