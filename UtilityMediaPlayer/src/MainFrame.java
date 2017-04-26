@@ -183,19 +183,19 @@ public class MainFrame extends JFrame {
 		menuBar = menuBarSetup.attachFileMenu(menuBar, this);
 		
 		//build the second menu as a View tab
-		menuBar = menuBarSetup.attachViewMenu(menuBar);
+		menuBar = menuBarSetup.attachViewMenu(menuBar, this);
 		
 		//build the third menu as a Video tab
-		menuBar = menuBarSetup.attachVideoMenu(menuBar);
+		menuBar = menuBarSetup.attachVideoMenu(menuBar, this);
 		
 		//build fourth menu as Audio tab
-		menuBar = menuBarSetup.attachAudioMenu(menuBar);
+		menuBar = menuBarSetup.attachAudioMenu(menuBar, this);
 		
 		//build fifth menu as Image tab
-		menuBar = menuBarSetup.attachImageMenu(menuBar);
+		menuBar = menuBarSetup.attachImageMenu(menuBar, this);
 		
 		//build the last menu as help tab
-		menuBar =  menuBarSetup.attachHelpMenu(menuBar);
+		menuBar =  menuBarSetup.attachHelpMenu(menuBar, this);
 		
 		return menuBar;
 	}
@@ -397,8 +397,10 @@ public class MainFrame extends JFrame {
     
     
     /**
+     * TODO
      * operations called by actionListeneers
      */
+    
 	//move file selection unit forward one index
 	public void backFile(){
 		int setIndex = fileList.getModel().getSize() - 1;
@@ -406,6 +408,12 @@ public class MainFrame extends JFrame {
 			fileList.setSelectedIndex(fileList.getSelectedIndex() - 1);
 		else
 			fileList.setSelectedIndex(setIndex);
+	}
+	
+	public void imageProperties(){
+		if(currentViewer != null){
+			currentViewer.imageProperties();
+		}
 	}
 	
 	//plays current file at file selection index
@@ -629,6 +637,7 @@ public class MainFrame extends JFrame {
 	/**
 	 *TODO 
 	 *integrate actions with other components
+	 *controllers for listeners to attach to the buttons
 	 *
 	 */
 	
@@ -643,6 +652,7 @@ public class MainFrame extends JFrame {
 		           File file = fileChooser.getSelectedFile();
 		           String filename = file.getName();
 		           fileListModel.addElement(filename);
+		           fileList.setSelectedValue(filename, true);
 		           String path = file.getAbsolutePath();
 		           fileLocationMap.put(filename, path);
 			 }
@@ -651,19 +661,17 @@ public class MainFrame extends JFrame {
 		
 	}
 	
-	
-	//controller for opening multiple files
-	public class openSaveFile implements ActionListener{
 
+	//controller for image viewer Properties
+	public class imageProperties implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			e.getSource();
-			System.out.println("Saving file...");
-
+			currentViewer.imageProperties();
 		}
-
 	}
-
+	
+	
+	
 	
 	public JFrame getFrame()
 	{

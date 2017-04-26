@@ -23,17 +23,17 @@ public interface MenuBarSetup {
 	/**creates the viewMenu tab and attaches it to input
 	 * @param menuBar the JMenuBar that the function will attach the view menu section to
 	 */
-	public JMenuBar attachViewMenu(JMenuBar menuBar);
+	public JMenuBar attachViewMenu(JMenuBar menuBar, MainFrame mainFrame);
 	
 	/**creates the videoMenu tab and attaches it to input
 	 * @param menuBar the JMenuBar that the function will attach the video menu section to
 	 */
-	public JMenuBar attachVideoMenu(JMenuBar menuBar);
+	public JMenuBar attachVideoMenu(JMenuBar menuBar, MainFrame mainFrame);
 	
-	public JMenuBar attachAudioMenu(JMenuBar menuBar);
+	public JMenuBar attachAudioMenu(JMenuBar menuBar, MainFrame mainFrame);
 	
 	//Image MenuBar
-	public JMenuBar attachImageMenu(JMenuBar menuBar);
+	public JMenuBar attachImageMenu(JMenuBar menuBar, MainFrame mainFrame);
 	
 	
 	
@@ -41,7 +41,7 @@ public interface MenuBarSetup {
 	 * creates the helpMenu tab and attaches it to input
 	 * @param menuBar the JMenuBar that the function will attach the help menu section to
 	 */
-	public JMenuBar attachHelpMenu(JMenuBar menuBar);
+	public JMenuBar attachHelpMenu(JMenuBar menuBar, MainFrame mainframe);
 	
 	/**
 	 * attaches player buttons to lower panel
