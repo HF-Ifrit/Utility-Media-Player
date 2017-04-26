@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 
 import javax.swing.*;
 
@@ -62,12 +63,19 @@ public class MainFrame extends JFrame {
     JScrollPane scrollPane;
     JList<String> fileList;
     
+     //reference to the file Lists' model for graphics
+    private static DefaultListModel<String> fileListModel;
+    //mappings of external file names to locations
+    private Map<String, String> fileLocationMap;
+    
+    
     //players/viewers
     private Player currentPlayer;
     private ImageViewer currentViewer;
     
     //current selected file of the controller
     private String currentFile;
+
     
     //previous file that was played
     private String previousFile;
@@ -247,7 +255,14 @@ public class MainFrame extends JFrame {
 		fileList.addAll(images);
 		removeImproperFileTypes(fileList);
 		Collections.sort(fileList);
-		list.setModel(new AbstractListModel<String>()
+		fileListModel = new DefaultListModel<String>();
+		for(String fileName : fileList){
+			fileListModel.addElement(fileName);
+		}
+		list.setModel(fileListModel);
+		
+		/*
+		list.setModel(new DefaultListModel<String>()
 		{
 			String[] values = new String[] {
 					"Video.mp4", "Audio.mp3", "Media.gif", "Image.png"};
@@ -272,6 +287,7 @@ public class MainFrame extends JFrame {
 				getFileNames().add(newFile);
 			}
 		});
+		*/
 		list.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -548,8 +564,9 @@ public class MainFrame extends JFrame {
 			 if (returnVal == JFileChooser.APPROVE_OPTION) {
 		           File file = fileChooser.getSelectedFile();
 		           String filename = file.getName();
-		           //TODO need to somehow change the underlying model in order to repaint the list
-		           
+		           fileListModel.addElement(filename);
+		           String path = file.getAbsolutePath();
+		           fileLocationMap.put(filename, path);
 			 }
 			
 		}
