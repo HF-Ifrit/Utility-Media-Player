@@ -431,7 +431,6 @@ public class MusicPlayer implements Player {
 		artist = makeLabel("Artist: ", 0, 1, grid);
 		albumTitle = makeLabel("Album: ", 0, 2, grid);
 			
-		albumImage = new ImageView();
 		albumImage.setFitHeight(300.0);
 		albumImage.setFitWidth(300.0);
 		grid.add(albumImage, 1, 1);
