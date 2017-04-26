@@ -48,15 +48,6 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         
         
         
-      //ConvertFile
-        menuItem = new JMenuItem("Convert File",
-                KeyEvent.VK_C);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_C, ActionEvent.CTRL_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
-        		"Allows a current loaded file to be converted to another format");
-        menu.add(menuItem);
-        
         //AddToPlaylist
         menuItem = new JMenuItem("Add To Playlist",
                 KeyEvent.VK_A);
@@ -129,14 +120,6 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		"Opens a file explorer to find file location");
         menu.add(menuItem);
         
-      //SwapScreens
-        menuItem = new JMenuItem("Swap Screens",
-                KeyEvent.VK_W);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_W, ActionEvent.CTRL_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
-        		"Swaps Left Window location with Right Window location");
-        menu.add(menuItem);
         
         //View Options directly added into the GUI
         menu.addSeparator();
@@ -152,7 +135,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menu.add(cbMenuItem);
         
         //ShowFiles
-        cbMenuItem = new JCheckBoxMenuItem("File Items");
+        cbMenuItem = new JCheckBoxMenuItem("Hide Items");
         cbMenuItem.setMnemonic(KeyEvent.VK_I);
         cbMenuItem.setAccelerator(KeyStroke.getKeyStroke(
         		KeyEvent.VK_I, ActionEvent.CTRL_MASK));
@@ -160,12 +143,6 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		"Displays the available files in the left sidebar");
         menu.add(cbMenuItem);
         
-        //ShowSatuses
-        cbMenuItem = new JCheckBoxMenuItem("Statuses");
-        cbMenuItem.setMnemonic(KeyEvent.VK_U);
-        cbMenuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_U, ActionEvent.CTRL_MASK));
-        menu.add(cbMenuItem);
 
         //ShowPlaylists Bar
         cbMenuItem = new JCheckBoxMenuItem("Playlists");
@@ -230,65 +207,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         //Video display options
         menu.addSeparator();
         
-        /**
-         * Zoom 
-         */
-        submenu = new JMenu("Zoom");
-        submenu.setMnemonic(KeyEvent.VK_Z);
-
-        //Zoom rates
-
-        ButtonGroup group = new ButtonGroup();
         
-        rbMenuItem = new JRadioButtonMenuItem("10%");
-        group.add(rbMenuItem);
-        submenu.add(rbMenuItem);
- 
-        rbMenuItem = new JRadioButtonMenuItem("25%");
-        group.add(rbMenuItem);
-        submenu.add(rbMenuItem);
-
-        rbMenuItem = new JRadioButtonMenuItem("50%");
-        group.add(rbMenuItem);
-        submenu.add(rbMenuItem);
-        
-        rbMenuItem = new JRadioButtonMenuItem("75%");
-        group.add(rbMenuItem);
-        submenu.add(rbMenuItem);
-        
-        rbMenuItem = new JRadioButtonMenuItem("100%");
-        rbMenuItem.setSelected(true);
-        group.add(rbMenuItem);
-        submenu.add(rbMenuItem);
-        
-        rbMenuItem = new JRadioButtonMenuItem("125%");
-        group.add(rbMenuItem);
-        submenu.add(rbMenuItem);
-        
-        rbMenuItem = new JRadioButtonMenuItem("150%");
-        group.add(rbMenuItem);
-        submenu.add(rbMenuItem);
-        
-        rbMenuItem = new JRadioButtonMenuItem("200%");
-        group.add(rbMenuItem);
-        submenu.add(rbMenuItem);
-        
-        rbMenuItem = new JRadioButtonMenuItem("300%");
-        group.add(rbMenuItem);
-        submenu.add(rbMenuItem);
-        
-        rbMenuItem = new JRadioButtonMenuItem("400%");
-        group.add(rbMenuItem);
-        submenu.add(rbMenuItem);
-        
-        rbMenuItem = new JRadioButtonMenuItem("500%");
-        group.add(rbMenuItem);
-        submenu.add(rbMenuItem);
-        
-        
-        
-        //add Zoom to main view
-        menu.add(submenu);
         
         
         /**
@@ -476,34 +395,6 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menu.getAccessibleContext().setAccessibleDescription(
                 "GUI Image options");
         menuBar.add(menu);
-        
-      //Mute
-        cbMenuItem = new JCheckBoxMenuItem("Duplicate");
-        cbMenuItem.setMnemonic(KeyEvent.VK_M);
-        cbMenuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_8, ActionEvent.ALT_MASK));
-        cbMenuItem.getAccessibleContext().setAccessibleDescription(
-        		"Mutes audio player");
-        menu.add(cbMenuItem);
-        
-        
-        //Colormode submenu
-        submenu = new JMenu("Mode");
-        submenu.setMnemonic(KeyEvent.VK_M);
-        
-        ButtonGroup group = new ButtonGroup();
-        
-        rbMenuItem = new JRadioButtonMenuItem("RGB");
-        rbMenuItem.setSelected(true);
-        group.add(rbMenuItem);
-        submenu.add(rbMenuItem);
-        
-        rbMenuItem = new JRadioButtonMenuItem("Grayscale");
-        group.add(rbMenuItem);
-        submenu.add(rbMenuItem);
-        
-        menu.add(submenu);
-        
         
         //Transform submenu
         submenu = new JMenu("Transform");
