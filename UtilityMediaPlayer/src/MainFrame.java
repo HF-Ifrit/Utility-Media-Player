@@ -137,11 +137,7 @@ public class MainFrame extends JFrame {
 
 		
 		try {
-		            // Set System L&F
-			System.out.println(System.getProperty("java.class.path"));
-				String workingDir = System.getProperty("user.dir");
-				String fileSep = System.getProperty("file.separator");
-		        UIManager.setLookAndFeel("com.alee.laf.WebLookAndFeel");
+		       UIManager.setLookAndFeel("com.alee.laf.WebLookAndFeel");
 			 }
 		catch (Exception ex) {
 				ex.printStackTrace();
