@@ -160,10 +160,6 @@ public class ImageViewerTest {
 		
 		ArrayList<File> updatedFiles = new ArrayList<File>(Arrays.asList(outputFile.listFiles()));
 		
-		for(File f : updatedFiles) {
-			System.out.println(f.getName());
-		}
-		
 		//cleanup all created files by getting all that were just added to output
 		updatedFiles.removeAll(oldFiles);
 		//check that at least one file was added to output

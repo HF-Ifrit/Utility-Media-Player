@@ -216,8 +216,6 @@ public class ImageViewer {
 		ffmpegCommand[8] = ("\"scale=trunc(iw/2)*2:trunc(ih/2)*2\"");
 		ffmpegCommand[9] = (outputPath + fileSep + "new_video_" + System.currentTimeMillis() + ".mp4");
 		
-		System.out.println(ffmpegCommand);
-		
 		try {
 			Process proc = Runtime.getRuntime().exec((String[]) ffmpegCommand);
 			
@@ -298,7 +296,8 @@ public class ImageViewer {
 	            BufferedReader br = new BufferedReader(isr);
 	            String line=null;
 	            while ( (line = br.readLine()) != null)
-	                System.out.println(type + ">" + line);    
+	            	;
+	                //System.out.println(type + ">" + line);    
 	            } catch (IOException ioe)
 	              {
 	                ioe.printStackTrace();  
