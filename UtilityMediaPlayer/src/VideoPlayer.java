@@ -49,13 +49,16 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 public class VideoPlayer implements Player
 {		
+	
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	private final EmbeddedMediaPlayer player;
+	
 	private final Integer EXTRACTION_AUDIO_BITRATE = new Integer(128000);
 	private final Integer EXTRACTION_VIDEO_BITRATE = new Integer(39000);
 	private final Integer EXTRACTION_CHANNELS = new Integer(2);
 	private final Integer EXTRACTION_SAMPLING_RATE = new Integer(44100);
 	private final Integer EXTRACTION_FRAMERATE = new Integer(15);
+	private final Integer FFMPEG_GIF_PARAMETERS = new Integer(12);
 	
 	private boolean hasMedia;
 	private String videoPath;
@@ -246,33 +249,39 @@ public class VideoPlayer implements Player
 			return false;
 		else
 		{
-			String fileName = "extracted" + System.currentTimeMillis() + "." + format.toString();
-			File audioFile = new File("output/" + fileName);
-			File currentVideoFile = new File(getVideoFilePath());
-
-			AudioAttributes audioAtt = new AudioAttributes();
-			audioAtt.setCodec(format.getCodec());
-			audioAtt.setBitRate(EXTRACTION_AUDIO_BITRATE);
-			audioAtt.setChannels(EXTRACTION_CHANNELS);
-			audioAtt.setSamplingRate(EXTRACTION_SAMPLING_RATE);
-
-			EncodingAttributes encAtt = new EncodingAttributes();
-			encAtt.setFormat(format.toString().toLowerCase());
-			encAtt.setAudioAttributes(audioAtt);
-
-			Encoder encoder = new Encoder();
-
-			try 
-			{
-				System.out.println("Extracting audio, please wait....");
-				encoder.encode(currentVideoFile, audioFile, encAtt);
-			} 
-			catch (IllegalArgumentException | EncoderException e) 
-			{
-				e.printStackTrace();
-				return false;
-			}
-			System.out.println("Audio successfully extracted. File created at " + audioFile.getAbsolutePath());
+			//ffmpeg command for extracting audio from video:
+			// [ffmpeg path] -ss [HH:MM:SS] -i [video file] -vf scale=[width]:-1 -t [endTime - startTime] -r 10 [output path]
+			
+			String[] ffmpegCommands = new String[FFMPEG_GIF_PARAMETERS];
+			
+			
+//			String fileName = "extracted" + System.currentTimeMillis() + "." + format.toString();
+//			File audioFile = new File("output/" + fileName);
+//			File currentVideoFile = new File(getVideoFilePath());
+//
+//			AudioAttributes audioAtt = new AudioAttributes();
+//			audioAtt.setCodec(format.getCodec());
+//			audioAtt.setBitRate(EXTRACTION_AUDIO_BITRATE);
+//			audioAtt.setChannels(EXTRACTION_CHANNELS);
+//			audioAtt.setSamplingRate(EXTRACTION_SAMPLING_RATE);
+//
+//			EncodingAttributes encAtt = new EncodingAttributes();
+//			encAtt.setFormat(format.toString().toLowerCase());
+//			encAtt.setAudioAttributes(audioAtt);
+//
+//			Encoder encoder = new Encoder();
+//
+//			try 
+//			{
+//				System.out.println("Extracting audio, please wait....");
+//				encoder.encode(currentVideoFile, audioFile, encAtt);
+//			} 
+//			catch (IllegalArgumentException | EncoderException e) 
+//			{
+//				e.printStackTrace();
+//				return false;
+//			}
+//			System.out.println("Audio successfully extracted. File created at " + audioFile.getAbsolutePath());
 			return true;
 		}	
 	}
@@ -297,11 +306,54 @@ public class VideoPlayer implements Player
 			return false;
 		else
 		{
-			//ffmpeg command:
-			// [ffmpeg path] -i [video file] -vf scale=[width]:-1 -t 10 -r 10 image.gif
+			//ffmpeg command for converting video to gif:
+			// [ffmpeg path] -ss [HH:MM:SS] -i [video file] -vf scale=[width]:-1 -t [endTime - startTime] -r 10 [output path]
 			
-			String[] ffmpegCommands = new String[10];
+			String[] ffmpegCommands = new String[FFMPEG_GIF_PARAMETERS];
+			ffmpegCommands[0] = ffmpegPath;
+			ffmpegCommands[1] = "-ss";
+			ffmpegCommands[2] = Long.toString(startTime);
+			ffmpegCommands[3] = "-i";
+			ffmpegCommands[4] = "\""+ videoPath + "\"";
+			ffmpegCommands[5] = "-vf";
+			ffmpegCommands[6] = "scale=500:-1";
+			ffmpegCommands[7] = "-t";
+			ffmpegCommands[8] = Long.toString(endTime-startTime);
+			ffmpegCommands[9] = "-r";
 			
+			int frameRate = 30;
+			ffmpegCommands[10] = Integer.toString(frameRate);
+			
+			String output = outputPath + fileSep + "new_gif_" + System.currentTimeMillis() + ".gif";
+			ffmpegCommands[11] = output;
+			
+			try 
+			{
+				Process proc = Runtime.getRuntime().exec((String[]) ffmpegCommands);
+				
+				 // any error message?
+	            StreamGobbler errorGobbler = new 
+	                StreamGobbler(proc.getErrorStream(), "ERROR");            
+	            
+	            // any output?
+	            StreamGobbler outputGobbler = new 
+	                StreamGobbler(proc.getInputStream(), "OUTPUT");
+	                
+	            // kick them off
+	            errorGobbler.start();
+	            outputGobbler.start();
+	            
+				//Block until ffmpeg has finished and given us an answer
+	            int exitVal = proc.waitFor();
+	            System.out.println("Gif created at " + output);
+	            //exec returns 0 on successful call
+	            return (exitVal == 0);
+			} 
+			catch (IOException | InterruptedException e1) 
+			{
+				System.out.println(e1.getMessage());
+				return false;
+			}
 			
 //			ArrayList<BufferedImage> capturedImages = new ArrayList<BufferedImage>((int)(endTime-startTime));
 //			player.addMediaPlayerEventListener(new MediaPlayerEventAdapter()
@@ -338,8 +390,6 @@ public class VideoPlayer implements Player
 //			output.close();
 //			
 //			System.out.println(String.format("Images from %d to %d captured", startTime,endTime));
-			
-			return true;
 		}
 	}
 	
@@ -489,7 +539,8 @@ public class VideoPlayer implements Player
 		frame.setVisible(true);
 		v.playVideo();
 		Thread.sleep(1000);
-		v.clipVideo(1, 4);
+		//v.clipVideo(1, 4);
+		v.gifClip(1, 4);
 	}
 }
 
