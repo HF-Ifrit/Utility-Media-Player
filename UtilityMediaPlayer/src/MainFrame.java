@@ -40,6 +40,9 @@ public class MainFrame extends JFrame {
 	private static final String VIDEO_PATH = "media libraries/video/";
 	private static final String IMAGE_PATH = "media libraries/images/";
 	
+	final JFileChooser fileChooser;
+
+	
 	private JPanel contentPane;
 	private JMenuBar menuBar;
 	private JMenu menu, submenu;
@@ -86,6 +89,7 @@ public class MainFrame extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					
 					createAndShowGUI();
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -107,6 +111,8 @@ public class MainFrame extends JFrame {
 		currentViewer = new ImageViewer();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, 1040, 543);
+		fileChooser = new JFileChooser();
+
         
 	}
 	
@@ -114,6 +120,7 @@ public class MainFrame extends JFrame {
 	//creates gui 
 	private static void createAndShowGUI() {
         //Create and set up the window.
+		
         JFrame displayFrame = new JFrame();
         displayFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  
@@ -516,6 +523,11 @@ public class MainFrame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			System.out.println("Opening file...");
+			int returnVal = fileChooser.showOpenDialog(contentPane);
+			 if (returnVal == JFileChooser.APPROVE_OPTION) {
+		           File file = fileChooser.getSelectedFile();
+		           parseFileType(file.toString());
+			 }
 			
 		}
 		
