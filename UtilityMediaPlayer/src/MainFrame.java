@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.*;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -133,6 +134,20 @@ public class MainFrame extends JFrame {
 	
 	//creates gui 
 	private static void createAndShowGUI() {
+
+		
+		try {
+		            // Set System L&F
+			System.out.println(System.getProperty("java.class.path"));
+				String workingDir = System.getProperty("user.dir");
+				String fileSep = System.getProperty("file.separator");
+		        UIManager.setLookAndFeel("com.alee.laf.WebLookAndFeel");
+			 }
+		catch (Exception ex) {
+				ex.printStackTrace();
+			 }
+		
+		
         //Create and set up the window.
         JFrame displayFrame = new JFrame();
         displayFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
