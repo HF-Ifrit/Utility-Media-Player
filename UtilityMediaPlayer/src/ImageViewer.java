@@ -216,6 +216,7 @@ public class ImageViewer {
 		ffmpegCommand[8] = ("\"scale=trunc(iw/2)*2:trunc(ih/2)*2\"");
 		ffmpegCommand[9] = (outputPath + fileSep + "new_video_" + System.currentTimeMillis() + ".mp4");
 		
+		//StreamGobbler code is, as mentioned below, taken from https://www.javaworld.com/article/2071275/core-java/when-runtime-exec---won-t.html?page=2
 		try {
 			Process proc = Runtime.getRuntime().exec((String[]) ffmpegCommand);
 			
