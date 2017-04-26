@@ -124,6 +124,8 @@ public class MainFrame extends JFrame {
 	private static void createAndShowGUI() {
         //Create and set up the window.
         JFrame displayFrame = new JFrame();
+        displayFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
         displayFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  
         //Create and set up the content pane.
@@ -624,6 +626,8 @@ public class MainFrame extends JFrame {
 		public JFrame createAndShowGUI() {
 	        //Create and set up the window.
 	        JFrame frame = new JFrame("UMP Controller");
+	        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
 	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	 
 	        //Create and set up the content pane.
