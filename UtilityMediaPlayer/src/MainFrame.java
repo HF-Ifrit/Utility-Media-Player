@@ -189,6 +189,37 @@ public class MainFrame extends JFrame {
 	}
 	
 	
+	private static void removeImproperFileTypes(ArrayList<String> fileList) {
+		ArrayList<String> improper = new ArrayList<String>();
+		for(String file : fileList) {
+			if(file.endsWith(".gif")) {
+				continue;
+			}
+			else if(file.endsWith(".jpg")) {
+				continue;
+			}
+			else if(file.endsWith(".png")) {
+				continue;
+			}
+			else if(file.endsWith(".mp3")) {
+				continue;
+			}
+			else if(file.endsWith(".flac")) {
+				continue;
+			}
+			else if(file.endsWith(".webm")) {
+				continue;
+			}
+			else if(file.endsWith(".mp4")) {
+				continue;
+			}
+			
+			else improper.add(file);
+		}
+		
+		fileList.removeAll(improper);
+	}
+	
 	//creates the sideView for file of lists
 	private static JList<String> createFileList(){
 		JList<String> list;
@@ -200,6 +231,7 @@ public class MainFrame extends JFrame {
 		fileList.addAll(audio);
 		fileList.addAll(video);
 		fileList.addAll(images);
+		removeImproperFileTypes(fileList);
 		Collections.sort(fileList);
 		list.setModel(new AbstractListModel<String>()
 		{

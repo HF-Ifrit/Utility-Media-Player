@@ -1,12 +1,9 @@
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import javafx.scene.Group;
@@ -22,6 +19,7 @@ public class ImageViewer {
 	private ImageView currentIV;
 	private boolean openImage = false;
 	private File currentFile;
+	private boolean test = false;
 
 	private static final double CLOCKWISE = 90;
 	private static final double COUNTERCLOCKWISE = 270;
@@ -29,6 +27,16 @@ public class ImageViewer {
 	String workingDir = System.getProperty("user.dir");
 	String fileSep = System.getProperty("file.separator");
 	String outputPath = workingDir + fileSep + "output";
+	
+	ImageViewer(boolean testing) {
+		if(testing) {
+			this.test = true;
+		}
+	}
+	
+	public ImageViewer() {
+		
+	}
 	
 	enum ImageFormat {
 		JPG, PNG, GIF
@@ -144,7 +152,17 @@ public class ImageViewer {
 			String properties = "Path: " + currentPath + "\n"
 					+ "Height (px): " + height + "\n"
 					+ "Width (px): " + width;
-	        JOptionPane.showMessageDialog(null, properties,"Image Properties", JOptionPane.INFORMATION_MESSAGE);
+	        
+	        Thread t1 = new Thread(new Runnable() {
+	        	public void run() {
+	    	        JOptionPane.showMessageDialog(null, properties,"Image Properties", JOptionPane.INFORMATION_MESSAGE);
+	    	        if(test) {
+	                    JOptionPane.getRootFrame().dispose();
+
+	    	        }
+	        	}
+	        });
+	        t1.start();
 		}
 	}
 	
