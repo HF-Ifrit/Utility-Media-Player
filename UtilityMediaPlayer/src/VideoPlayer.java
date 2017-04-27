@@ -355,8 +355,6 @@ public class VideoPlayer implements Player
 	{
 		if(hasVideo())
 			player.play();
-		
-		
 	}
 
 	/**
@@ -434,6 +432,7 @@ public class VideoPlayer implements Player
 	public boolean extractAudio(long startTime, long endTime, MusicPlayer.MusicFormat format)
 	{
 		if(!player.isPlayable()
+				|| startTime == endTime
 				|| startTime < 0 
 				|| startTime > player.getLength() 
 				|| endTime < 0 
@@ -546,15 +545,20 @@ public class VideoPlayer implements Player
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	public boolean gifClip(long startTime, long endTime) throws IOException
+	public boolean gifClip(long startTime, long endTime)
 	{
 		if(!hasMedia
+				|| startTime == endTime
 				|| startTime < 0 
-				|| startTime > player.getLength() 
+				|| startTime * 1000 > player.getLength() 
 				|| endTime < 0 
-				|| endTime > player.getLength()
+				|| endTime * 1000> player.getLength()
 				|| startTime > endTime)
+		{
+			System.out.println("Invalid time input. Either not within length of video (" + (player.getLength()/1000) + "s)"
+					+ "or start and end times are equal / swapped");
 			return false;
+		}
 		else
 		{
 			//ffmpeg command for converting video to gif:
@@ -616,13 +620,15 @@ public class VideoPlayer implements Player
 	public boolean clipVideo(int start, int finish)
 	{
 		if(!hasMedia
+				|| start == finish
 				|| start < 0 
 				|| start*1000 > player.getLength() 
 				|| finish < 0 
 				|| finish*1000 > player.getLength()
 				|| start > finish)
 		{
-			System.out.println("Invalid time parameters. Video has a maximum length of " + (player.getLength()/1000) + "s");
+			System.out.println("Invalid time input. Either not within length of video (" + (player.getLength()/1000) + "s)"
+					+ "or start and end times are equal / swapped");
 			return false;
 		}
 		else

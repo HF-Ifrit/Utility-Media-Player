@@ -33,7 +33,7 @@ public class Playlist {
 			if (!playlists.exists()) {
 				playlists.mkdirs();
 			}
-			BufferedWriter writer = new BufferedWriter(new FileWriter( new File("directories" + System.getProperty("file.separator") + fileName)));
+			BufferedWriter writer = new BufferedWriter(new FileWriter( new File("playlists" + System.getProperty("file.separator") + fileName + ".txt")));
 			for (URI track : tracks) {
 				writer.write(track.toString());
 				writer.newLine();
@@ -49,7 +49,8 @@ public class Playlist {
 	
 	public Playlist loadPlaylist(String fileName) {
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(new File(fileName)));
+			BufferedReader reader = new BufferedReader(new FileReader(new File("playlists" + System.getProperty("file.separator") +
+					fileName)));
 			String currentLine = null;
 			while ((currentLine = reader.readLine()) != null) {
 				if (! (currentLine = currentLine.trim()).equals("")) {
@@ -61,6 +62,7 @@ public class Playlist {
 					}
 				}
 			}
+			this.name = fileName;
 			reader.close();
 			return this;
 		}
@@ -76,6 +78,10 @@ public class Playlist {
 		return tracks;
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
 	public Playlist(ArrayList<URI> uriList, MainFrame frame, String name) {
 		this.tracks = uriList;
 		this.frame = frame;
@@ -86,6 +92,11 @@ public class Playlist {
 		this.frame = frame;
 		this.tracks = new ArrayList<>();
 		this.name = name;
+	}
+	
+	public Playlist(MainFrame frame) {
+		this.frame = frame;
+		this.tracks = new ArrayList<>();
 	}
 	
 }
