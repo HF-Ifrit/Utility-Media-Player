@@ -35,7 +35,7 @@ public class MusicPlayer implements Player {
 	boolean songLoaded;
 	boolean isPaused;
 	boolean playing;
-	boolean mediaFinished;
+	MainFrame frame;
 	MediaPlayer player;
 	Slider volume;
 	Slider time;
@@ -169,7 +169,7 @@ public class MusicPlayer implements Player {
 							playing = true;
 							player.setOnEndOfMedia(new Runnable() {
 								public void run() {
-									mediaFinished = true;
+									frame.advancePlaylist();
 								}
 							});
 							musicPlayer.play();
@@ -315,10 +315,6 @@ public class MusicPlayer implements Player {
 		}
 	}
 	
-	public boolean finishedPlaying() {
-		return mediaFinished;
-	}
-	
 	public Component showView() {
 		return mainFrame;
 	}
@@ -375,7 +371,8 @@ public class MusicPlayer implements Player {
 	
 	
 	/* The commented out section is used if the MusicPlayer is not implemented as an Application. However, as of release time, it will be an Application. */
-	public MusicPlayer() {
+	public MusicPlayer(MainFrame frame) {
+		this.frame = null;
 		player = null;
 		songLoaded = false;
 		volume = null;
