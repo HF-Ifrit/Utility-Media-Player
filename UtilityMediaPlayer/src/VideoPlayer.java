@@ -186,17 +186,13 @@ public class VideoPlayer implements Player
 			}
 		}
 
-		private void registerListeners() {
-			mediaPlayer.addMediaPlayerEventListener(new MediaPlayerEventAdapter() {
+		private void registerListeners() 
+		{
+			positionSlider.addMouseListener(new MouseAdapter() 
+			{
 				@Override
-				public void playing(MediaPlayer mediaPlayer) {
-					//		                updateVolume(mediaPlayer.getVolume());
-				}
-			});
-
-			positionSlider.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
+				public void mousePressed(MouseEvent e) 
+				{
 					if(mediaPlayer.isPlaying()) {
 						mousePressedPlaying = true;
 						mediaPlayer.pause();
@@ -208,7 +204,8 @@ public class VideoPlayer implements Player
 				}
 
 				@Override
-				public void mouseReleased(MouseEvent e) {
+				public void mouseReleased(MouseEvent e) 
+				{
 					setSliderBasedPosition();
 					updateUIState();
 				}
@@ -283,6 +280,7 @@ public class VideoPlayer implements Player
 					}	
 				});
 		controlPanel = new PlayerControlsPanel(player);
+		mediaPlayerComponent.add(controlPanel, BorderLayout.SOUTH);
 	}
 
 	public VideoPlayer(String filePath)
@@ -754,9 +752,9 @@ public class VideoPlayer implements Player
 	public Component showView() 
 	{
 		Canvas c = mediaPlayerComponent.getVideoSurface();
+		 
 		
-		
-		return c;
+		return mediaPlayerComponent;
 		//return mediaPlayerComponent.getVideoSurface();
 	}
 	
