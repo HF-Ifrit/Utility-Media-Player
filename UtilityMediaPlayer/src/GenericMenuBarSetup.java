@@ -465,6 +465,7 @@ public class GenericMenuBarSetup implements MenuBarSetup{
         		KeyEvent.VK_F1, 0));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Opens window with help document/info");
+        menuItem.addActionListener(mainframe.new openHelpMenu());
         menu.add(menuItem);
         
         menu.addSeparator();
@@ -476,6 +477,7 @@ public class GenericMenuBarSetup implements MenuBarSetup{
         		KeyEvent.VK_F1, ActionEvent.SHIFT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Opens window with information about product and creators");
+        menuItem.addActionListener(mainframe.new openAboutInfo());
         menu.add(menuItem);
         
         menu.addSeparator();
