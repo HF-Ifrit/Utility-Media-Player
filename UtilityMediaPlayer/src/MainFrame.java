@@ -1003,6 +1003,7 @@ public class MainFrame extends JFrame {
 			if(mode.equals(MainFrame.Mode.VIDEO))
 			{
 				VideoPlayer vPlayer = (VideoPlayer)currentPlayer;
+				
 				MusicPlayer.MusicFormat[] values = MusicPlayer.MusicFormat.values();
 				
 				//create options for the joptionpane from our list of available music formats
@@ -1012,6 +1013,7 @@ public class MainFrame extends JFrame {
 				
 				options[options.length - 1] = "Cancel"; //adding cancel to the list of options
 				
+				
 				//based on which index is clicked from the options, use the corresponding format index for extraction, unless it's the cancel button
 				int formatIndex = JOptionPane.showOptionDialog(getFrame(), 
 						"What format would you like to save the audio track as?", 
@@ -1019,7 +1021,43 @@ public class MainFrame extends JFrame {
 						JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 				
 				if(formatIndex != options.length-1)
-					vPlayer.extractAudio(values[formatIndex]);
+				{
+					String[] choices = {"Full", "Clip", "Cancel"};
+					
+					//decide if user wants to save the entire audio track or a clip, or cancel
+					int fullOrClip = JOptionPane.showOptionDialog(getFrame(), 
+							"Save the full track or a specific time frame?", 
+							"Length Option", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
+					
+					if(fullOrClip == 0)
+					{
+						vPlayer.extractAudio(values[formatIndex]);
+					}
+					else if(fullOrClip == 1)
+					{
+						String start = JOptionPane.showInputDialog(getFrame(),
+								"Input the start time for the audio clip in the following format:", 
+								"HH:MM:SS");
+						
+						String end = JOptionPane.showInputDialog(getFrame(),
+								"Input the end time for the audio clip in the following format:",
+								"HH:MM:SS");
+						
+						int startHour = Integer.parseInt(start.substring(0,2));
+						int startMinutes = Integer.parseInt(start.substring(3,5));
+						int startSeconds = Integer.parseInt(start.substring(6,8));
+						
+						int startTime = (startHour * 3600) + (startMinutes * 60) + startSeconds;
+						
+						int endHour = Integer.parseInt(end.substring(0,2));
+						int endMinutes = Integer.parseInt(end.substring(3,5));
+						int endSeconds = Integer.parseInt(end.substring(6,8));
+						
+						int endTime = (endHour * 3600) + (endMinutes * 60) + endSeconds;
+						
+						vPlayer.extractAudio(startTime, endTime, values[formatIndex]);
+					}
+				}	
 			}
 		}
 	}
@@ -1053,8 +1091,8 @@ public class MainFrame extends JFrame {
 					int startTime = (startHour * 3600) + (startMinutes * 60) + startSeconds;
 					
 					int endHour = Integer.parseInt(end.substring(0,2));
-					int endMinutes = Integer.parseInt(start.substring(3,5));
-					int endSeconds = Integer.parseInt(start.substring(6,8));
+					int endMinutes = Integer.parseInt(end.substring(3,5));
+					int endSeconds = Integer.parseInt(end.substring(6,8));
 					
 					int endTime = (endHour * 3600) + (endMinutes * 60) + endSeconds;
 					
@@ -1065,13 +1103,19 @@ public class MainFrame extends JFrame {
 				}
 					
 			}
-
-				
-					
-			
+	
 		}
 	}
 
+	//controller for creating GIF
+	public class gifClip implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			
+		}
+	}
 	//controller for image viewer Properties
 	public class imageProperties implements ActionListener{
 		@Override
