@@ -39,6 +39,7 @@ import java.awt.GridBagLayout;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 
 
 //primary GUI window that will interact and control other modules
@@ -946,6 +947,8 @@ public class MainFrame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) 
 		{
+			File dir = new File(System.getProperty("user.dir"));
+			fileChooser.setCurrentDirectory(dir);
 			int returnVal = fileChooser.showOpenDialog(contentPane);
 			 if (returnVal == JFileChooser.APPROVE_OPTION) {
 		           File file = fileChooser.getSelectedFile();
@@ -1026,8 +1029,15 @@ public class MainFrame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) 
 		{
-			//TODO give openPlaylist a file name
-			openPlaylist("Playlist");
+			File dir = new File(System.getProperty("user.dir"));
+			fileChooser.setCurrentDirectory(dir);
+			int returnVal = fileChooser.showOpenDialog(contentPane);
+			 if (returnVal == JFileChooser.APPROVE_OPTION) {
+		           File file = fileChooser.getSelectedFile();
+		           String filename = file.getName();
+		           openPlaylist(filename);
+		           playListModel.addElement(filename);
+			 }
 		}
 	}
 		
