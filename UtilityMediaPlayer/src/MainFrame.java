@@ -908,6 +908,26 @@ public class MainFrame extends JFrame {
 	 *
 	 */
 	
+	//Controller for ordering file list by type
+	public class orderFileListByType implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) 
+		{
+			orderFileListByType();
+		}
+	}
+	
+	//Controller for ordering file list by name
+		public class orderFileListByName implements ActionListener{
+
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				orderFileListByName();
+			}
+		}
+	
 	//controller for opening a file
 	public class openFile implements ActionListener{
 
