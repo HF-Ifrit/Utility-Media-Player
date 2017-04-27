@@ -27,7 +27,7 @@ public class JFXController {
 
 		@Override
 		public void handle(javafx.event.ActionEvent event) {
-			stage.play();
+			stage.playPause();
 		}
 
 	}
