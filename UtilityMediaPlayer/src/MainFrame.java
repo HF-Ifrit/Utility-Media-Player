@@ -81,6 +81,9 @@ public class MainFrame extends JFrame {
     //mappings of external file names to locations
     private Map<String, String> fileLocationMap;
     
+    //PlayList we are on
+    private Playlist playlist;
+    
     
     //players/viewers
     private Player currentPlayer;
@@ -254,7 +257,7 @@ public class MainFrame extends JFrame {
 			else if(file.endsWith(".mp3")) {
 				continue;
 			}
-			else if(file.endsWith(".flac")) {
+			else if(file.endsWith(".wav")) {
 				continue;
 			}
 			else if(file.endsWith(".webm")) {
@@ -460,44 +463,31 @@ public class MainFrame extends JFrame {
 			fileList.setSelectedIndex(setIndex);
 	}
 	
+	//creates a image properties pop-up
 	public void imageProperties(){
 		if(currentViewer != null){
 			currentViewer.imageProperties();
 		}
 	}
 	
-	//plays current file at file selection index
-	public void play(){
-		String filename = "";
-		Mode tempmode = Mode.EMPTY;
-		int selectedindex = fileList.getSelectedIndex();
-		if(selectedindex < 0){
-			mode = Mode.EMPTY;
-			return;
+
+	
+	//adds the current file to the playlist
+	
+	//call to rotate image
+	public void rotate(boolean clockwise){
+		if(currentViewer != null)
+			rotateImage(clockwise);
+	}
+	
+	//call to flip image
+	public void flip(boolean horizontal){
+		if(currentViewer != null){
+			if(horizontal)
+				mirrorImage();
+			else
+				mirrorImageVertically();
 		}
-		else{
-			filename = fileList.getModel().getElementAt(selectedindex);
-			tempmode = parseFileType(filename);
-		}
-		/**
-		 * TODO
-		 * call respective player depending on mode
-		 */
-		//creates a new player for new file
-		if(filename != previousFile){
-			mode = tempmode;
-			if(currentPlayer != null){
-				currentPlayer.clear();
-				currentPlayer = null;
-			}
-			createViews(filename);
-			
-			
-		}
-		//runs play action on currentFile
-		else{
-			playbackExecute();
-		}	
 	}
 	
 	//changes volume to slider value
@@ -532,7 +522,7 @@ public class MainFrame extends JFrame {
 				return true;
 			}
 			
-			else if (toSave.getName().endsWith(".mp3") || toSave.getName().endsWith(".flac")) {
+			else if (toSave.getName().endsWith(".mp3") || toSave.getName().endsWith(".wav")) {
 				String pathname = AUDIO_PATH + toSave.getName();
 				
 				Files.copy(Paths.get(toSave.getAbsolutePath()), Paths.get(pathname), StandardCopyOption.REPLACE_EXISTING);
@@ -545,6 +535,16 @@ public class MainFrame extends JFrame {
 		
 		return false;
 	}
+	
+	//adds current file to playlist
+	public void addToPlaylist(){
+		if(playlist == null){
+			new Playlist(this);
+		}
+		playlist.addTrack(currentFile);
+	}
+	
+	//save playlist
 	
 	public boolean rotateImage(boolean clockwise) {
 		boolean error = currentViewer.rotateImage(clockwise);
@@ -635,7 +635,7 @@ public class MainFrame extends JFrame {
 	}
 	
 	private boolean isAudio(String filename) {
-		return (filename.endsWith(".mp3") || filename.endsWith(".flac"));
+		return (filename.endsWith(".mp3") || filename.endsWith(".wav"));
 	}
 	
 	private boolean isImage(String filename) {
@@ -656,6 +656,40 @@ public class MainFrame extends JFrame {
 		if((mode == Mode.AUDIO) || (mode == Mode.VIDEO)){
 			currentPlayer.alternatePlayback();
 		}
+	}
+	
+	//plays current file at file selection index
+	public void play(){
+		String filename = "";
+		Mode tempmode = Mode.EMPTY;
+		int selectedindex = fileList.getSelectedIndex();
+		if(selectedindex < 0){
+			mode = Mode.EMPTY;
+			return;
+		}
+		else{
+			filename = fileList.getModel().getElementAt(selectedindex);
+			tempmode = parseFileType(filename);
+		}
+		/**
+		 * TODO
+		 * call respective player depending on mode
+		 */
+		//creates a new player for new file
+		if(filename != previousFile){
+			mode = tempmode;
+			if(currentPlayer != null){
+				currentPlayer.clear();
+				currentPlayer = null;
+			}
+			createViews(filename);
+			
+			
+		}
+		//runs play action on currentFile
+		else{
+			playbackExecute();
+		}	
 	}
 	
 	//helper method to streamline creation of generic Players
@@ -700,6 +734,7 @@ public class MainFrame extends JFrame {
 		if(mode == Mode.AUDIO){
 			String tempFilename = "media libraries/audio/" + filename;
 			filename = verifyFilePath(filename, tempFilename);
+			currentFile = filename;
 			currentPlayer = new MusicPlayer();
 			setupPlayers(filename);
 		}
@@ -707,11 +742,13 @@ public class MainFrame extends JFrame {
 			String tempFilename = "media libraries/video/" + filename;
 			filename = verifyFilePath(filename, tempFilename);
 			currentPlayer = new VideoPlayer();
+			currentFile = filename;
 			setupPlayers(filename);
 		}
 		if(mode == Mode.IMAGE){
 			String tempFilename = "media libraries/images/" + filename;
 			filename = verifyFilePath(filename, tempFilename);
+			currentFile =  filename;
 			currentViewer.open(filename);
 			setupViewer();
 		}
@@ -821,6 +858,8 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
+	//controller for adding items to playlist
+	
 	//controller for play menu option
 	public class play implements ActionListener
 	{
@@ -905,8 +944,7 @@ public class MainFrame extends JFrame {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if(currentViewer != null)
-				currentViewer.rotateImage(true);
+			rotate(clockwise);
 			
 		}
 	}
@@ -922,12 +960,7 @@ public class MainFrame extends JFrame {
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if(currentViewer != null){
-				if(direction)
-					currentViewer.mirrorImage();
-				else
-					currentViewer.mirrorImageVertically();
-			}
+			flip(direction);
 				
 			
 		}
