@@ -69,7 +69,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menu.add(menuItem);
         
         
-        
+        /*
         //AddToPlaylist
         menuItem = new JMenuItem("Add To Playlist",
                 KeyEvent.VK_A);
@@ -91,6 +91,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.addActionListener(mainFrame.new savePlaylist());
         menu.add(menuItem);
         
+        
         //ViewPlaylist
         menuItem = new JMenuItem("Open Playlist",
                 KeyEvent.VK_P);
@@ -100,6 +101,8 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		"Opens a file explorer to find file location");
         menuItem.addActionListener(mainFrame.new openPlaylist());
         menu.add(menuItem);
+        */
+        
         
 
         
@@ -193,7 +196,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         cbMenuItem.addActionListener(mainFrame.new hideItems());
         menu.add(cbMenuItem);
         
-
+/*
         //ShowPlaylists Bar
         cbMenuItem = new JCheckBoxMenuItem("Playlists");
         cbMenuItem.setMnemonic(KeyEvent.VK_L);
@@ -201,6 +204,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		KeyEvent.VK_L, ActionEvent.CTRL_MASK));
         cbMenuItem.addActionListener(mainFrame.new hidePlaylist());
         menu.add(cbMenuItem);
+        */
         
        
         

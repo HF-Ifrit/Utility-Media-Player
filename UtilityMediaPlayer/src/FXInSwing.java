@@ -13,9 +13,6 @@ import javax.swing.SwingUtilities;
 
 public class FXInSwing extends JFrame{
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	JFXPanel panel;
     Scene scene;

@@ -42,12 +42,12 @@ public class VideoPlayer implements Player
 	private boolean hasMedia;
 	private boolean finishedPlaying;
 	private String videoPath;
+	private MainFrame controller;
 	
 	private final String workingDir = System.getProperty("user.dir");
 	private final String fileSep = System.getProperty("file.separator");
 	private final String outputPath = workingDir + fileSep + "output";
 	private final String ffmpegPath = workingDir + fileSep + "jars" + fileSep + "ffmpeg.exe";
-
 
 	enum VideoFormat 
 	{
@@ -255,12 +255,12 @@ public class VideoPlayer implements Player
 	}
 	
 	//Constructors
-	public VideoPlayer()
+	public VideoPlayer(MainFrame controller)
 	{
 		new NativeDiscovery().discover();
 		
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-		
+		this.controller = controller;
 		hasMedia = false;
 		finishedPlaying = false;
 		player = mediaPlayerComponent.getMediaPlayer();	
@@ -269,12 +269,13 @@ public class VideoPlayer implements Player
 					@Override
 					public void finished(MediaPlayer mediaPlayer)
 					{
+						
 						SwingUtilities.invokeLater(new Runnable()
 								{
 									@Override
 									public void run()
 									{
-										finishedPlaying = true;
+										controller.forwardFile();
 									}
 								});
 					}	
@@ -283,9 +284,9 @@ public class VideoPlayer implements Player
 		mediaPlayerComponent.add(controlPanel, BorderLayout.SOUTH);
 	}
 
-	public VideoPlayer(String filePath)
+	public VideoPlayer(MainFrame controller, String filePath)
 	{
-		this();
+		this(controller);
 		loadVideo(filePath);
 	}
 
@@ -315,7 +316,7 @@ public class VideoPlayer implements Player
 			@Override
 			public void run()
 			{
-				new VideoPlayer();
+				new VideoPlayer(controller);
 			}
 		});
 		controlPanel.setVisible(true);
@@ -785,15 +786,7 @@ public class VideoPlayer implements Player
 	
 	public static void main(String[] args) throws InterruptedException, AWTException, FileNotFoundException, IOException
 	{
-		JFrame frame = new JFrame("Video Player");
-		VideoPlayer v = new VideoPlayer("media libraries/video/singing_dove.mp4");
-		frame.setBounds(100, 100, 500, 500);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setContentPane(v.mediaPlayerComponent);
-		frame.setVisible(true);
-		v.playVideo();
-		Thread.sleep(1000);
-		v.clipVideo(5, 10);
+		
 	}
 }
 
