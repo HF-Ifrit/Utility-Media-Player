@@ -233,15 +233,16 @@ public class MainFrame extends JFrame {
 	
 	//determines which OS/Menu Bar style to create of an abstarct MenuBarSetup
 	private MenuBarSetup getMenuBarVersion(){
-		if(OsUtils.isWindows()){
+		//if(OsUtils.isWindows()){
 			return new WindowsMenuBarSetup();
-		}
-		else if(OsUtils.isUnix()){
+		//}
+		//NOTE: inserted for possible support of 
+/*		else if(OsUtils.isUnix()){
 			return new GenericMenuBarSetup();
 		}
 		else{
 			return new GenericMenuBarSetup();
-		}
+		}*/
 	}
 	
 	
