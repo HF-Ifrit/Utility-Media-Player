@@ -14,25 +14,17 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
-import javax.swing.UIManager.LookAndFeelInfo;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.*;
 import javax.swing.border.BevelBorder;
-import javax.swing.text.html.Option;
 
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagLayout;
@@ -40,7 +32,7 @@ import java.awt.GridBagLayout;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
-import javafx.stage.FileChooser;
+
 
 
 //primary GUI window that will interact and control other modules
@@ -415,31 +407,6 @@ public class MainFrame extends JFrame {
     }
     
     /**
-     * creates a time controller for the frame
-     * @return JFXPanel holding the timeStamp slider
-     */
-    private JFXPanel createTimeControl(){
-    	/**
-    	 * creates player interface panel
-    	 */
-    	JFXPanel fxPanel = new JFXPanel();
-    	
-    	fxPanel.setScene(new Scene(HBoxBuilder.newTimeStampTrackerBar(this)));
-    	
-    	return fxPanel;
-    }
-    
-    /**
-     * combine both bars
-     */
-    private JFXPanel createBothControls(){
-    	JFXPanel fxPanel = new JFXPanel();
-    	
-    	
-    	return fxPanel;
-    }
-    
-    /**
      * Getters and Setters
      */
     
@@ -544,13 +511,6 @@ public class MainFrame extends JFrame {
 	void volumeChange() {
 		if ((mode == Mode.AUDIO) || (mode == Mode.VIDEO)) {
 			currentPlayer.volumeChange(volumeSlider.getValue());
-		}
-	}
-	
-	//changes time to slider value
-	void timeStampChange(){
-		if ((mode == Mode.AUDIO) || (mode == Mode.VIDEO)) {
-			//TODO
 		}
 	}
 	
@@ -745,14 +705,13 @@ public class MainFrame extends JFrame {
 	
 	//plays the current playList
 	public void playListStart(){
-		String filename = "";
 		int selectedindex = playListView.getSelectedIndex();
 		if(selectedindex < 0){
 			mode = Mode.EMPTY;
 			return;
 		}
 		else{
-			filename = playListView.getModel().getElementAt(selectedindex);
+			String filename = playListView.getModel().getElementAt(selectedindex);
 		}
 		ArrayList<URI> tracks = playlist.getTracks();
 		String fileToPlay = tracks.get(0).getPath();
@@ -856,7 +815,7 @@ public class MainFrame extends JFrame {
 			String tempFilename = "media libraries/audio/" + filename;
 			filename = verifyFilePath(filename, tempFilename);
 			currentFile = filename;
-			currentPlayer = new MusicPlayer();
+			currentPlayer = new MusicPlayer(this);
 			setupPlayers(filename);
 		}
 		if(mode == Mode.VIDEO){
@@ -880,7 +839,7 @@ public class MainFrame extends JFrame {
 	private void createPlayListViews(String filename){
 		if(mode == Mode.AUDIO){
 			currentFile = filename;
-			currentPlayer = new MusicPlayer();
+			currentPlayer = new MusicPlayer(this);
 			setupPlayers(filename);
 		}
 		if(mode == Mode.VIDEO){
@@ -940,11 +899,8 @@ public class MainFrame extends JFrame {
 		}
 	
 	
-	//temporary parse file system for supported formats
-	/**
-	 * TODO
-	 * will be implemented in a separate file management class
-	 */
+	//Parse file system for supported formats
+	
 	public Mode parseFileType(String file){
 		
 		//checks if ending filetype is video format
@@ -1100,7 +1056,6 @@ public class MainFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) 
 		{
 			String fileName;
-			//TODO give savePlaylist a file name
 			if (MainFrame.this.playlist.getName().isEmpty()) {
 				fileName = JOptionPane.showInputDialog("Please name your playlist: ");
 			}
