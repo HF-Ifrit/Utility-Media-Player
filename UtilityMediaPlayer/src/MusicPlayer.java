@@ -148,7 +148,7 @@ public class MusicPlayer implements Player {
 	private void openSong (String fileName) {
 		if (fileName != null) {
 			String uri = new File(fileName).toURI().toString();	
-			if (uri.endsWith("mp3")) {
+			if (uri.endsWith("mp3") || uri.endsWith("wav")) {
 				Media media = new Media(uri);
 				media.getMetadata().addListener( new MapChangeListener<String, Object>() {
 					@Override
