@@ -760,7 +760,7 @@ public class MainFrame extends JFrame {
 		}
 		//check if ending filetype is audio format
 		else if(file.substring(file.lastIndexOf('.')).equals("." + MusicPlayer.MusicFormat.MP3.toString().toLowerCase())
-				|| file.substring(file.lastIndexOf('.')).equals("." + MusicPlayer.MusicFormat.FLAC.toString().toLowerCase())){
+				|| file.substring(file.lastIndexOf('.')).equals("." + MusicPlayer.MusicFormat.WAV.toString().toLowerCase())){
 			return Mode.AUDIO;
 		}
 		//check if ending filetype is image format
