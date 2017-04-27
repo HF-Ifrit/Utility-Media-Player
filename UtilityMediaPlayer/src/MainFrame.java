@@ -133,7 +133,7 @@ public class MainFrame extends JFrame {
 		currentPlayer = null;
 		previousFile = "";
 		mode = Mode.EMPTY;
-		listMode = Mode.EMPTY;
+		listMode = Mode.FILELIST;
 		jfxControl = new JFXController(this);
 		currentViewer = new ImageViewer();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -847,7 +847,7 @@ public class MainFrame extends JFrame {
 			String tempFilename = "media libraries/audio/" + filename;
 			filename = verifyFilePath(filename, tempFilename);
 			currentFile = filename;
-			currentPlayer = new MusicPlayer();
+			currentPlayer = new MusicPlayer(this);
 			setupPlayers(filename);
 		}
 		if(mode == Mode.VIDEO){
@@ -871,7 +871,7 @@ public class MainFrame extends JFrame {
 	private void createPlayListViews(String filename){
 		if(mode == Mode.AUDIO){
 			currentFile = filename;
-			currentPlayer = new MusicPlayer();
+			currentPlayer = new MusicPlayer(this);
 			setupPlayers(filename);
 		}
 		if(mode == Mode.VIDEO){
