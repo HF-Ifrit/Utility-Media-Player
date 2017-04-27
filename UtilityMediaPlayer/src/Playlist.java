@@ -43,8 +43,6 @@ public class Playlist {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(frame, "Error saving playlist.");
 		}
-		
-		
 	}
 	
 	public Playlist loadPlaylist(String fileName) {
