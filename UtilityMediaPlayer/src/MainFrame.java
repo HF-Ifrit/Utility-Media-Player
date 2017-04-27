@@ -540,6 +540,8 @@ public class MainFrame extends JFrame {
 	private boolean saveInLibrary(File toSave) {
 		if(toSave == null) return false;
 		
+		
+		
 		try {
 			if(toSave.getName().endsWith(".gif") || toSave.getName().endsWith(".png") || toSave.getName().endsWith(".jpg")) {
 				String pathname = IMAGE_PATH + toSave.getName();
@@ -944,6 +946,37 @@ public class MainFrame extends JFrame {
 		           fileLocationMap.put(filename, path);
 		           play();
 			 }
+		}
+	}
+	
+	//controller for saving a file to library
+	public class saveFile implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) 
+		{
+			if(previousFile != null && ( ! previousFile.equals(""))) {
+				
+				if(fileLocationMap.containsKey(previousFile)) {
+					boolean success = saveInLibrary(new File(fileLocationMap.get(previousFile)));
+					
+					if(success ) {
+						JOptionPane.showMessageDialog(null, "File saved in the UMP media library.","File Saved", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else {
+						JOptionPane.showMessageDialog(null, "Could not save file to the media library.","Save Failed", JOptionPane.WARNING_MESSAGE);
+					}
+				}
+				
+				else {
+					JOptionPane.showMessageDialog(null, "Open file wasn't an external file, so nothing changed.","Save Failed", JOptionPane.WARNING_MESSAGE);
+
+				}
+			}
+			
+			else {
+				JOptionPane.showMessageDialog(null, "Error: no file open to save.","Save Failed", JOptionPane.WARNING_MESSAGE);
+			}
 		}
 	}
 	

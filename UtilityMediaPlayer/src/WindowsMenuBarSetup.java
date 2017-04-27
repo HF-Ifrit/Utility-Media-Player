@@ -46,6 +46,17 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.addActionListener(mainFrame.new openFile());
         menu.add(menuItem);
         
+        //OpenFile
+        menuItem = new JMenuItem("Import File to Library",
+                KeyEvent.VK_O);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"Save the current file to the UMP library.");
+
+        menuItem.addActionListener(mainFrame.new saveFile());
+        menu.add(menuItem);
+        
         //Play option
         menuItem = new JMenuItem("Play",
                 KeyEvent.VK_1);
