@@ -1,45 +1,13 @@
 import java.awt.AWTException;
-import java.awt.BorderLayout;
-import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Robot;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
-import javax.imageio.stream.FileImageOutputStream;
-import javax.imageio.stream.ImageOutputStream;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
-import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import com.sun.java.swing.plaf.windows.WindowsOptionPaneUI;
-
-import it.sauronsoftware.jave.AudioAttributes;
-import it.sauronsoftware.jave.Encoder;
-import it.sauronsoftware.jave.EncoderException;
-import it.sauronsoftware.jave.EncodingAttributes;
-import it.sauronsoftware.jave.InputFormatException;
-import it.sauronsoftware.jave.VideoAttributes;
-import it.sauronsoftware.jave.VideoSize;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.layout.GridPane;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.player.MediaPlayer;
@@ -49,20 +17,16 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 public class VideoPlayer implements Player
 {		
-	
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	private final EmbeddedMediaPlayer player;
 	
-	private final Integer EXTRACTION_AUDIO_BITRATE = new Integer(128000);
-	private final Integer EXTRACTION_VIDEO_BITRATE = new Integer(39000);
-	private final Integer EXTRACTION_CHANNELS = new Integer(2);
-	private final Integer EXTRACTION_SAMPLING_RATE = new Integer(44100);
-	private final Integer EXTRACTION_FRAMERATE = new Integer(15);
 	private final Integer FFMPEG_GIF_PARAMETERS = new Integer(12);
+	private final Integer FFMPEG_EXTRACT_AUDIO_PARAMETERS = new Integer(7);
+	private final Integer FFMPEG_CROP_AUDIO_PARAMETERS = new Integer(10);
 	
 	private boolean hasMedia;
+	private boolean finishedPlaying;
 	private String videoPath;
-	private Dimension vidDimension;
 	
 	private final String workingDir = System.getProperty("user.dir");
 	private final String fileSep = System.getProperty("file.separator");
@@ -102,9 +66,25 @@ public class VideoPlayer implements Player
 		
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		
-		vidDimension = null;
 		hasMedia = false;
+		finishedPlaying = false;
 		player = mediaPlayerComponent.getMediaPlayer();	
+		player.addMediaPlayerEventListener(new MediaPlayerEventAdapter()
+				{
+					@Override
+					public void finished(MediaPlayer mediaPlayer)
+					{
+						SwingUtilities.invokeLater(new Runnable()
+								{
+									@Override
+									public void run()
+									{
+										finishedPlaying = true;
+									}
+								});
+					}
+					
+				});
 	}
 
 	public VideoPlayer(String filePath)
@@ -226,7 +206,7 @@ public class VideoPlayer implements Player
 	 */
 	public void seekVideo(long time)
 	{
-		if(player.isSeekable() && time > 0.0 && time < player.getLength())
+		if(player.isSeekable() && time >= 0.0 && time <= player.getLength())
 			player.setTime(time);
 	}
 
@@ -240,49 +220,123 @@ public class VideoPlayer implements Player
 	}
 
 	/**
-	 * Extract audio from the current video, and save it in the output folder using the input format
+	 * Extracts the entire audio clip from the video
 	 * @param format The supported audio file format to save the file as. Supported formats are MP3 and FLAC
 	 */
 	public boolean extractAudio(MusicPlayer.MusicFormat format)
 	{
-		if(!player.isPlayable())
+		return extractAudio(0, (long)(player.getLength()/1000), format);
+	}
+	
+	/**
+	 * Extract audio from the current video at an input time, and save it in the output folder using the input format
+	 * @param startTime The time in seconds to create the clip from
+	 * @param endTime The time in seconds to end the audio clip
+	 * @param format The supported audio file format to save the file as. Supported formats are MP3 and FLAC
+	 */
+	public boolean extractAudio(long startTime, long endTime, MusicPlayer.MusicFormat format)
+	{
+		if(!player.isPlayable()
+				|| startTime < 0 
+				|| startTime > player.getLength() 
+				|| endTime < 0 
+				|| endTime > player.getLength()
+				|| startTime > endTime)
 			return false;
 		else
 		{
 			//ffmpeg command for extracting audio from video:
-			// [ffmpeg path] -ss [HH:MM:SS] -i [video file] -vf scale=[width]:-1 -t [endTime - startTime] -r 10 [output path]
+			// [ffmpeg path] -i [video path] -vn -ab 256 [output.mp3]
 			
-			String[] ffmpegCommands = new String[FFMPEG_GIF_PARAMETERS];
+			String[] ffmpegCommands = new String[FFMPEG_EXTRACT_AUDIO_PARAMETERS];
+			ffmpegCommands[0] = ffmpegPath;
+			ffmpegCommands[1] = "-i";
+			ffmpegCommands[2] = videoPath;
+			ffmpegCommands[3] = "-vn";
+			ffmpegCommands[4] = "-ab";
+			ffmpegCommands[5] = Integer.toString(256);
 			
+			String output = outputPath + fileSep + "extracted_audio_" + System.currentTimeMillis() + "." + format.toString().toLowerCase();
+			ffmpegCommands[6] = output;
 			
-//			String fileName = "extracted" + System.currentTimeMillis() + "." + format.toString();
-//			File audioFile = new File("output/" + fileName);
-//			File currentVideoFile = new File(getVideoFilePath());
-//
-//			AudioAttributes audioAtt = new AudioAttributes();
-//			audioAtt.setCodec(format.getCodec());
-//			audioAtt.setBitRate(EXTRACTION_AUDIO_BITRATE);
-//			audioAtt.setChannels(EXTRACTION_CHANNELS);
-//			audioAtt.setSamplingRate(EXTRACTION_SAMPLING_RATE);
-//
-//			EncodingAttributes encAtt = new EncodingAttributes();
-//			encAtt.setFormat(format.toString().toLowerCase());
-//			encAtt.setAudioAttributes(audioAtt);
-//
-//			Encoder encoder = new Encoder();
-//
-//			try 
-//			{
-//				System.out.println("Extracting audio, please wait....");
-//				encoder.encode(currentVideoFile, audioFile, encAtt);
-//			} 
-//			catch (IllegalArgumentException | EncoderException e) 
-//			{
-//				e.printStackTrace();
-//				return false;
-//			}
-//			System.out.println("Audio successfully extracted. File created at " + audioFile.getAbsolutePath());
-			return true;
+			int exitVal = 1;
+			try 
+			{
+				Process proc = Runtime.getRuntime().exec(ffmpegCommands);
+				
+				 // any error message?
+	            StreamGobbler errorGobbler = new 
+	                StreamGobbler(proc.getErrorStream(), "ERROR");            
+	            
+	            // any output?
+	            StreamGobbler outputGobbler = new 
+	                StreamGobbler(proc.getInputStream(), "OUTPUT");
+	                
+	            // kick them off
+	            errorGobbler.start();
+	            outputGobbler.start();
+	            
+				//Block until ffmpeg has finished and given us an answer
+	            exitVal = proc.waitFor();
+	             
+			} 
+			catch (IOException | InterruptedException e1) 
+			{
+				System.out.println(e1.getMessage());
+				return false;
+			}
+			
+			if(startTime == endTime)
+			{
+				System.out.println("Audio extracted to " + output);
+				return (exitVal == 0);
+			}
+				
+			else
+			{
+				//ffmpeg for cropping an audio file
+				//ffmpeg -ss 00:01:30 -t 30 -acodec copy -i inputfile.mp3 outputfile.mp3
+
+				ffmpegCommands = new String[FFMPEG_CROP_AUDIO_PARAMETERS];
+				ffmpegCommands[0] = ffmpegPath;
+				ffmpegCommands[1] = "-ss";
+				ffmpegCommands[2] = Long.toString(startTime);
+				ffmpegCommands[3] = "-t";
+				ffmpegCommands[4] = Long.toString(endTime - startTime);
+				ffmpegCommands[5] = "-acodec";
+				ffmpegCommands[6] = "copy";
+				ffmpegCommands[7] = "-i";
+				ffmpegCommands[8] = output;
+				ffmpegCommands[9] = output;
+
+				//exec returns 0 on successful call
+				try 
+				{
+					Process proc = Runtime.getRuntime().exec(ffmpegCommands);
+
+					// any error message?
+					StreamGobbler errorGobbler = new 
+							StreamGobbler(proc.getErrorStream(), "ERROR");            
+
+					// any output?
+					StreamGobbler outputGobbler = new 
+							StreamGobbler(proc.getInputStream(), "OUTPUT");
+
+					// kick them off
+					errorGobbler.start();
+					outputGobbler.start();
+
+					//Block until ffmpeg has finished and given us an answer
+					exitVal = proc.waitFor();
+					System.out.println("Audio extracted to " + output);
+					return (exitVal == 0);
+				} 
+				catch (IOException | InterruptedException e1) 
+				{
+					System.out.println(e1.getMessage());
+					return false;
+				}
+			}		
 		}	
 	}
 
@@ -329,7 +383,7 @@ public class VideoPlayer implements Player
 			
 			try 
 			{
-				Process proc = Runtime.getRuntime().exec((String[]) ffmpegCommands);
+				Process proc = Runtime.getRuntime().exec(ffmpegCommands);
 				
 				 // any error message?
 	            StreamGobbler errorGobbler = new 
@@ -354,42 +408,6 @@ public class VideoPlayer implements Player
 				System.out.println(e1.getMessage());
 				return false;
 			}
-			
-//			ArrayList<BufferedImage> capturedImages = new ArrayList<BufferedImage>((int)(endTime-startTime));
-//			player.addMediaPlayerEventListener(new MediaPlayerEventAdapter()
-//					{
-//						@Override
-//						public void snapshotTaken(MediaPlayer mp, String fileName)
-//						{
-//							System.out.println("Snapshot successfully taken");
-//							System.out.println(capturedImages.size());
-//						}
-//					});
-//			pauseVideo();
-//			player.setTime(startTime);
-//			
-//			//TODO: GIFs are really slow and have low quality
-//			while(player.getTime() <= endTime)
-//			{
-//				BufferedImage image = player.getVideoSurfaceContents();
-//				capturedImages.add(image);
-//				player.setTime(player.getTime() + 5);
-//			}
-//			
-//			BufferedImage firstImage = capturedImages.get(0);
-//			ImageOutputStream output = new FileImageOutputStream(new File("output/clip.gif"));
-//			GifSequenceWriter writer = new GifSequenceWriter(output, firstImage.getType(), 1, true);
-//			
-//			writer.writeToSequence(firstImage);
-//			for(int i = 1; i < capturedImages.size(); i++)
-//			{
-//				writer.writeToSequence(capturedImages.get(i));
-//			}
-//			
-//			writer.close();
-//			output.close();
-//			
-//			System.out.println(String.format("Images from %d to %d captured", startTime,endTime));
 		}
 	}
 	
@@ -425,10 +443,12 @@ public class VideoPlayer implements Player
 			
 			String finalSOut =  String.format(sout, bits, scale, dest);
 			player.stop();
-			try {
+			try
+			{
 				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+			} 
+			catch (InterruptedException e) 
+			{
 				e.printStackTrace();
 			}
 			player.playMedia(videoPath, ":start-time="+start,":stop-time=" + finish, finalSOut);
@@ -478,6 +498,14 @@ public class VideoPlayer implements Player
 	public boolean hasVideo()
 	{
 		return hasMedia;
+	}
+	
+	/**
+	 * Determine if player has finished playing a video
+	 */
+	public boolean finishedPlaying()
+	{
+		return finishedPlaying;
 	}
 
 	//Player interface implementation
@@ -532,15 +560,16 @@ public class VideoPlayer implements Player
 	public static void main(String[] args) throws InterruptedException, AWTException, FileNotFoundException, IOException
 	{
 		JFrame frame = new JFrame("Video Player");
-		VideoPlayer v = new VideoPlayer("media libraries/video/singing_dove.mp4");
+		VideoPlayer v = new VideoPlayer("media libraries/video/kaius_presentation.mp4");
 		frame.setBounds(100, 100, 500, 500);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setContentPane(v.mediaPlayerComponent);
 		frame.setVisible(true);
 		v.playVideo();
 		Thread.sleep(1000);
-		//v.clipVideo(1, 4);
-		v.gifClip(1, 4);
+		v.skipPlayback();
+		Thread.sleep(1000);		
+		System.out.println(v.finishedPlaying());
 	}
 }
 

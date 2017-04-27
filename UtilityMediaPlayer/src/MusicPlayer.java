@@ -315,7 +315,7 @@ public class MusicPlayer implements Player {
 		}
 	}
 	
-	public boolean finishedMedia() {
+	public boolean finishedPlaying() {
 		return mediaFinished;
 	}
 	
