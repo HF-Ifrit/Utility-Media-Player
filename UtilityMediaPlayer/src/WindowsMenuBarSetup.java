@@ -259,14 +259,14 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.addActionListener(mainFrame.new clipVideo());
         menu.add(menuItem);
         //Video display options
-        menu.addSeparator();
+        //menu.addSeparator();
         
         
         
         
-        /**
+/*        *//**
          * Aspect Ratio
-         */
+         *//*
         submenu = new JMenu("Aspect Ratio");
         submenu.setMnemonic(KeyEvent.VK_R);
 
@@ -298,9 +298,9 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         //add Aspect Ratios to main view
         menu.add(submenu);
         
-        /**
+        *//**
          * Crop Ratios
-         */
+         *//*
         submenu = new JMenu("Crop");
         submenu.setMnemonic(KeyEvent.VK_C);
 
@@ -334,7 +334,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         submenu.add(rbMenuItem);
         
         //add Crop Ratios to main view
-        menu.add(submenu);
+        menu.add(submenu);*/
         
         
 		
