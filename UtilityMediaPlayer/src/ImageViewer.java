@@ -247,6 +247,7 @@ public class ImageViewer {
             
             //exec returns 0 on successful call
             return (exitVal == 0);
+            
 		} catch (IOException | InterruptedException e1) {
 			System.out.println(e1.getMessage());
 			return false;
