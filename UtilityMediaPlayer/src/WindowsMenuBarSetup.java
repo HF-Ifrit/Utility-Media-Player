@@ -221,6 +221,12 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.getAccessibleContext().setAccessibleDescription("Saves the audio track of the currently playing video to the output folder");
         menuItem.addActionListener(mainframe.new extractAudio());
         menu.add(menuItem);
+        
+        //Clip video
+        menuItem = new JMenuItem("Clip Video");
+        menuItem.getAccessibleContext().setAccessibleDescription("Create a clip of the currently playing video");
+        menuItem.addActionListener(mainframe.new clipVideo());
+        menu.add(menuItem);
         //Video display options
         menu.addSeparator();
         

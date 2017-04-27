@@ -921,6 +921,44 @@ public class MainFrame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
+			if(mode.equals(MainFrame.Mode.VIDEO))
+			{
+				String start = JOptionPane.showInputDialog(getFrame(),
+						"Input the start time for the video clip in the following format:", 
+						"HH:MM:SS");
+				
+				String end = JOptionPane.showInputDialog(getFrame(),
+						"Input the end time for the video clip in the following format:",
+						"HH:MM:SS");
+				
+				if(!start.contains(":") || !end.contains(":"))
+				{
+					JOptionPane.showMessageDialog(getFrame(), "Invalid time format");
+				}
+				else
+				{
+					int startHour = Integer.parseInt(start.substring(0,2));
+					int startMinutes = Integer.parseInt(start.substring(3,5));
+					int startSeconds = Integer.parseInt(start.substring(6,8));
+					
+					int startTime = (startHour * 3600) + (startMinutes * 60) + startSeconds;
+					
+					int endHour = Integer.parseInt(end.substring(0,2));
+					int endMinutes = Integer.parseInt(start.substring(3,5));
+					int endSeconds = Integer.parseInt(start.substring(6,8));
+					
+					int endTime = (endHour * 3600) + (endMinutes * 60) + endSeconds;
+					
+					VideoPlayer vPlayer = (VideoPlayer)currentPlayer;
+					vPlayer.clipVideo(startTime, endTime);
+					
+							
+				}
+					
+			}
+
+				
+					
 			
 		}
 	}
