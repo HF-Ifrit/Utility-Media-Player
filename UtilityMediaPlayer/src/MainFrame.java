@@ -835,21 +835,46 @@ public class MainFrame extends JFrame {
 	public class imageProperties implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			currentViewer.imageProperties();
+			if(currentViewer != null)
+				currentViewer.imageProperties();
 		}
 	}
 	
 	//controller to rotate the image
 	public class rotate implements ActionListener{
-		private int degrees;
+		private boolean clockwise;
 		
-		rotate(int degrees){
-			this.degrees = degrees;
+		rotate(boolean clockwise){
+			this.clockwise = clockwise;
 		}
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			currentViewer.imageProperties();
+			if(currentViewer != null)
+				currentViewer.rotateImage(true);
+			
+		}
+	}
+	
+	//controller to flip the image
+	public class flip implements ActionListener{
+		//whether to flip horizontally or not
+		private boolean direction;
+		
+		flip(boolean direction){
+			this.direction = direction;
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentViewer != null){
+				if(direction)
+					currentViewer.mirrorImage();
+				else
+					currentViewer.mirrorImageVertically();
+			}
+				
+			
 		}
 	}
 	
