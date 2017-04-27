@@ -80,25 +80,17 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.addActionListener(mainFrame.new savePlaylist());
         menu.add(menuItem);
         
-        //Order files by type
-        menuItem = new JMenuItem("Order by Type",
-                KeyEvent.VK_S);
+        //ViewPlaylist
+        menuItem = new JMenuItem("Open Playlist",
+                KeyEvent.VK_P);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+        		KeyEvent.VK_P, ActionEvent.CTRL_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
-        		"Rearranges the file list in order of media types.");
-        menuItem.addActionListener(mainFrame.new orderFileListByType());
+        		"Opens a file explorer to find file location");
+        menuItem.addActionListener(mainFrame.new openPlaylist());
         menu.add(menuItem);
         
-        //Order files by name
-        menuItem = new JMenuItem("Order by Name",
-                KeyEvent.VK_S);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_S, ActionEvent.CTRL_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
-        		"Rearranges the file list in alphabetical order.");
-        menuItem.addActionListener(mainFrame.new orderFileListByName());
-        menu.add(menuItem);
+
         
         //
         
@@ -134,15 +126,35 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menu.getAccessibleContext().setAccessibleDescription(
                 "GUI View options");
         menuBar.add(menu);
- 
-        //ViewPlaylist
-        menuItem = new JMenuItem("Open Playlist",
-                KeyEvent.VK_P);
+        
+        //
+        menuItem = new JMenuItem("Remove From Items",
+                KeyEvent.VK_R);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_P, ActionEvent.CTRL_MASK));
+        		KeyEvent.VK_R, ActionEvent.CTRL_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
-        		"Opens a file explorer to find file location");
-        menuItem.addActionListener(mainFrame.new openPlaylist());
+        		"Remove file name from fileList");
+        menuItem.addActionListener(mainFrame.new removeFromFileList());
+        menu.add(menuItem);
+ 
+        //Order files by type
+        menuItem = new JMenuItem("Order by Type",
+                KeyEvent.VK_T);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_T, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"Rearranges the file list in order of media types.");
+        menuItem.addActionListener(mainFrame.new orderFileListByType());
+        menu.add(menuItem);
+        
+        //Order files by name
+        menuItem = new JMenuItem("Order by Name",
+                KeyEvent.VK_N);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"Rearranges the file list in alphabetical order.");
+        menuItem.addActionListener(mainFrame.new orderFileListByName());
         menu.add(menuItem);
         
         
@@ -176,6 +188,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         cbMenuItem.setMnemonic(KeyEvent.VK_L);
         cbMenuItem.setAccelerator(KeyStroke.getKeyStroke(
         		KeyEvent.VK_L, ActionEvent.CTRL_MASK));
+        cbMenuItem.addActionListener(mainFrame.new hidePlaylist());
         menu.add(cbMenuItem);
         
        
@@ -202,6 +215,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
                 "GUI View options");
         menuBar.add(menu);
         
+        /*
         //ShowFullScreen
         cbMenuItem = new JCheckBoxMenuItem("Fullscreen");
         cbMenuItem.setMnemonic(KeyEvent.VK_F);
@@ -212,6 +226,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menu.add(cbMenuItem);
         
         menu.addSeparator();
+        */
         
         //Take Snap Shot
         menuItem = new JMenuItem("Snap Shot");

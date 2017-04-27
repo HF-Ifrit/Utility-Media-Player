@@ -506,6 +506,15 @@ public class MainFrame extends JFrame {
 			scrollPane.setVisible(true);
 	}
 	
+	//hides playlist items
+	private void hidePlaylist(){
+		if(playListScroll.isVisible() ){
+			playListScroll.setVisible(false);
+		}
+		else 
+			playListScroll.setVisible(true);
+	}
+	
 	
 	
 	//creates a image properties pop-up
@@ -637,6 +646,20 @@ public class MainFrame extends JFrame {
 		
 		else setupViewer();
 		return true;
+	}
+	
+	//removes selected file from fileList
+	public void removeFromFileList(){
+		int index = fileList.getSelectedIndex();
+		String removed = fileListModel.remove(index);
+		if(this.fileLocationMap.containsKey(removed)){
+			fileLocationMap.remove(removed);
+		}
+		if(index >= fileListModel.size()){
+			index--;
+		}
+		fileList.setSelectedIndex(index);
+		
 	}
 	
 	public void orderFileListByType() {
@@ -917,6 +940,15 @@ public class MainFrame extends JFrame {
 	 *
 	 */
 	
+	//Controller for remove files from fileList
+	public class removeFromFileList implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) 
+		{
+			removeFromFileList();
+		}
+	}
+	
 	//Controller for ordering file list by type
 	public class orderFileListByType implements ActionListener{
 
@@ -1023,14 +1055,23 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
-	//sets window to fullscreen mode
+	//hides fileList items
 	public class hideItems implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) 
 		{
 			hideItems();
 		}
-	}	
+	}
+	
+	//hides PlayList items
+		public class hidePlaylist implements ActionListener{
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				hidePlaylist();
+			}
+		}	
 	
 	//controller for video player screen capture
 	public class capture implements ActionListener
@@ -1257,7 +1298,7 @@ public class MainFrame extends JFrame {
 		
 		//returns frame created by createAndShowGUI for testing purposes
 		//creates gui 
-		private static void createAndShowGUI() {
+		static MainFrame createAndShowGUI() {
 
 			
 			try {
@@ -1315,7 +1356,8 @@ public class MainFrame extends JFrame {
 	        displayFrame.setSize(1600, 900);
 	        displayFrame.setVisible(true);
 	        displayFrame.setMinimumSize(new Dimension(600, 400));
-
+	        
+	        return demo;
 	    }
 		
 		//returns JList from createFileList
