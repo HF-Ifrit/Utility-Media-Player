@@ -412,18 +412,21 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         submenu.setMnemonic(KeyEvent.VK_T);
         
         menuItem = new JMenuItem("Flip Horizontally");
+        menuItem.addActionListener(mainFrame.new rotate(true));
         submenu.add(menuItem);
         
         menuItem = new JMenuItem("Flip Vertically");
+        menuItem.addActionListener(mainFrame.new rotate(false));
         submenu.add(menuItem);
         
         submenu.addSeparator();
         
         menuItem = new JMenuItem("Rotate Clockwise 90°");
+        menuItem.addActionListener(mainFrame.new rotate(true));
         submenu.add(menuItem);
         
         menuItem = new JMenuItem("Rotate Counter-Clockwise 90°");
-        menuItem.addActionListener(mainFrame.new rotate(90));
+        menuItem.addActionListener(mainFrame.new rotate(false));
         
         submenu.add(menuItem);
         
