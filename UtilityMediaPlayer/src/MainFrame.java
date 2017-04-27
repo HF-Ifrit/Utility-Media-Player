@@ -24,6 +24,8 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.*;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import java.awt.Font;
 import java.awt.GraphicsDevice;
@@ -74,6 +76,7 @@ public class MainFrame extends JFrame {
     //PlayList we are on
     private Playlist playlist;
     
+    //current index of the playlist
     
     //players/viewers
     private Player currentPlayer;
@@ -96,6 +99,7 @@ public class MainFrame extends JFrame {
     
     //player mode for either fileList or playList
     private Mode listMode;
+    
     
     //display modes
     private boolean fullscreenMode;
@@ -294,10 +298,21 @@ public class MainFrame extends JFrame {
 		list.addMouseListener(new MouseAdapter(){
 		    @Override
 		    public void mouseClicked(MouseEvent e){
+		    	
 		        if(e.getClickCount()==2){
 		           mainFrame.play();
 		        }
 		    }
+		});
+		
+		list.addListSelectionListener(new ListSelectionListener(){
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if(list.getSelectedIndex() >= 0){
+					mainFrame.playListView.clearSelection();
+				}
+			}
 		});
 		
 		list.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -313,6 +328,7 @@ public class MainFrame extends JFrame {
 		list = new JList<String>();
 		//TODO add file names here
 		ArrayList<String> playList = new ArrayList<String>();
+		playList.add("Play Lists");
 		
 		playListModel = new DefaultListModel<String>();
 		
@@ -327,9 +343,19 @@ public class MainFrame extends JFrame {
 		    @Override
 		    public void mouseClicked(MouseEvent e){
 		        if(e.getClickCount()==2){
-		           mainFrame.playListStart();
+		           
 		        }
 		    }
+		});
+		
+		list.addListSelectionListener(new ListSelectionListener(){
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if(list.getSelectedIndex() >= 0){
+					mainFrame.fileList.clearSelection();
+				}
+			}
 		});
 
 		list.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -748,6 +774,14 @@ public class MainFrame extends JFrame {
 		ArrayList<URI> tracks = playlist.getTracks();
 		String fileToPlay = tracks.get(0).getPath();
 		play(fileToPlay);
+	}
+	
+	//advances playlist to next unit
+	public void advancePlaylist(){
+		String filename = "";
+		if(listMode == Mode.PLAYLIST){
+			
+		}
 	}
 	
 	//plays current file at file selection index
