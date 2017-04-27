@@ -15,6 +15,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
@@ -163,7 +164,10 @@ public class MainFrame extends JFrame {
         displayFrame.setJMenuBar(demo.createTextMenuBar());
         displayFrame.setContentPane(demo.createContentPane());
         demo.setFileList(createFileList(demo));
-        displayFrame.getContentPane().add(demo.fileList, BorderLayout.WEST);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setPreferredSize(new Dimension(200,demo.fileList.getHeight() ));
+        scrollPane.setViewportView(demo.fileList);
+        displayFrame.getContentPane().add(scrollPane, BorderLayout.WEST);
         //displayFrame.add(demo.createTimeControl(), BorderLayout.SOUTH);
         displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
        
@@ -210,7 +214,7 @@ public class MainFrame extends JFrame {
 		menuBar = menuBarSetup.attachVideoMenu(menuBar, this);
 		
 		//build fourth menu as Audio tab
-		menuBar = menuBarSetup.attachAudioMenu(menuBar, this);
+		//menuBar = menuBarSetup.attachAudioMenu(menuBar, this);
 		
 		//build fifth menu as Image tab
 		menuBar = menuBarSetup.attachImageMenu(menuBar, this);
@@ -284,6 +288,7 @@ public class MainFrame extends JFrame {
 			fileListModel.addElement(fileName);
 		}
 		list.setModel(fileListModel);
+		
 		
 		/*
 		list.setModel(new DefaultListModel<String>()
@@ -565,6 +570,7 @@ public class MainFrame extends JFrame {
 	
 	public boolean mirrorImageVertically() {
 		boolean error = currentViewer.mirrorImageVertically();
+		
 		if(error) {
 			return false;
 		}
@@ -573,6 +579,94 @@ public class MainFrame extends JFrame {
 		return true;
 	}
 	
+	public void orderFileListByType() {
+		Enumeration<String> fileListEnum = fileListModel.elements();
+		
+		ArrayList<String> videos = new ArrayList<String>();
+		ArrayList<String> audio = new ArrayList<String>();
+		ArrayList<String> images = new ArrayList<String>();
+		
+		while(fileListEnum.hasMoreElements()) {
+			String next = fileListEnum.nextElement();
+			if(isVideo(next)) {
+				videos.add(next);
+			}
+			else if(isAudio(next)) {
+				audio.add(next);
+			}
+			else if(isImage(next)) {
+				images.add(next);
+			}
+		}
+		
+		fileListModel.clear();
+		
+		for(String s : videos) {
+			fileListModel.addElement(s);
+		}
+		for(String s : audio) {
+			fileListModel.addElement(s);
+		}
+		for(String s : images) {
+			fileListModel.addElement(s);
+		}
+	}
+	
+	public void orderFileListByName() {
+		Enumeration<String> fileListEnum = fileListModel.elements();
+		ArrayList<String> toOrder = new ArrayList<String>();
+		
+		while(fileListEnum.hasMoreElements()) {
+			String next = fileListEnum.nextElement();
+			toOrder.add(next);
+		}
+		
+		//Sort by the natural ordering; for strings, this is lexicographical order.
+		toOrder.sort(null);
+		
+		fileListModel.clear();
+		for(String s : toOrder) {
+			fileListModel.addElement(s);
+		}
+	}
+	
+	private boolean isVideo(String filename) {
+		return (filename.endsWith(".mp4") || filename.endsWith(".webm"));
+	}
+	
+	private boolean isAudio(String filename) {
+		return (filename.endsWith(".mp3") || filename.endsWith(".flac"));
+	}
+	
+	private boolean isImage(String filename) {
+		return (filename.endsWith(".gif") || filename.endsWith(".png") || filename.endsWith(".jpg"));
+	}
+	
+/*	public void filterFileList(String toFind) {
+		
+		
+		int size = fileListModel.size();
+		
+		for(int i = 0; i < size; i++) {
+			String test = fileListModel.get(0);
+			if( ! test.contains(toFind)) {
+				fileListModel.removeElement(obj)
+			}
+		}
+		
+        fileListModel.addElement(filename);
+        fileList.setSelectedValue(filename, true);
+        String path = file.getAbsolutePath();
+        fileLocationMap.put(filename, path);
+		
+		fileList.getModel().
+		for(String x : fileList) {
+			
+		}
+        getFrame().remove(this.fileList);
+        
+	}
+	*/
 	//helper method to streamline closing video/music player windows
 	private void updateComponent(Component newComponent){
 		if(previousComponent != null){
@@ -808,6 +902,20 @@ public class MainFrame extends JFrame {
 
 	//controller for image viewer Properties
 	public class imageProperties implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			currentViewer.imageProperties();
+		}
+	}
+	
+	//controller to rotate the image
+	public class rotate implements ActionListener{
+		private int degrees;
+		
+		rotate(int degrees){
+			this.degrees = degrees;
+		}
+		
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			currentViewer.imageProperties();

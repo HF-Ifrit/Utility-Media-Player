@@ -120,6 +120,17 @@ public class ImageViewerTest {
 	}
 	
 	@Test
+	public void mirrorVertUninitialized() {
+		assertFalse(testViewer.mirrorImageVertically());
+	}
+	
+	@Test
+	public void mirrorVertInitialized() {
+		testViewer.open(imagePath);
+		assertTrue(testViewer.mirrorImageVertically());
+	}
+	
+	@Test
 	public void clearUninitialized() {
 		assertTrue(testViewer.clear());
 		assertTrue(testViewer.clear());
@@ -137,6 +148,12 @@ public class ImageViewerTest {
 		
 		assertNull(testViewer.getScene());
 	}
+	
+	@Test
+	public void imagePropertiesUninit() {
+		testViewer.imageProperties();
+	}
+	
 	
 	@Test
 	public void imageProperties() {

@@ -32,6 +32,10 @@ public class HBoxBuilder extends HBox{
 		this.frame = newFrame;
 	}
 	
+	public MainFrame getMainFrame(){
+		return this.frame;
+	}
+	
     //helper method that adds the HBox Pane to the JFXPanel
     public static HBox newHBoxBar(MainFrame newFrame){
     	Button currentButton;
@@ -202,6 +206,7 @@ public class HBoxBuilder extends HBox{
 
     			hbox.prefTileSize.set(Math.max(SPACING, hbox.getWidth()));
     			double edge = SPACING + LEFT_EDGE;
+    			edge = edge;
     			for (Node child : swatch.getChildrenUnmodifiable()) {
     				Control tile = (Control) child;
     				if(!(child instanceof Label)){

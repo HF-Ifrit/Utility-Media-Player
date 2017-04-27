@@ -429,6 +429,8 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         submenu.add(menuItem);
         
         menuItem = new JMenuItem("Rotate Counter-Clockwise 90°");
+        menuItem.addActionListener(mainFrame.new rotate(90));
+        
         submenu.add(menuItem);
         
         
@@ -494,9 +496,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Opens window with information about product and creators");
         menu.add(menuItem);
-        
-        menu.addSeparator();
-		
+
 		return menuBar;
 	}
 

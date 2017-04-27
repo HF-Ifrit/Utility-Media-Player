@@ -1,5 +1,7 @@
 import java.awt.Component;
 import java.io.*;
+
+
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -8,6 +10,8 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.MapChangeListener;
 import javafx.embed.swing.JFXPanel;
 import javafx.event.ActionEvent;
@@ -32,11 +36,12 @@ public class MusicPlayer implements Player {
 	boolean songLoaded;
 	boolean isPaused;
 	boolean playing;
+	boolean mediaFinished;
 	MediaPlayer player;
 	Slider volume;
 	Slider time;
 	Duration duration;
-	Label playTime;
+	Text playTime;
 	Text songTitle;
 	Text albumTitle;
 	Text artist;
@@ -63,9 +68,9 @@ public class MusicPlayer implements Player {
    	 }
     }
 	
-	/*The method that starts when the MusicPlayer is run. Used for testing purposes.
-	 * @see javafx.application.Application#start(javafx.stage.Stage)
-	 */
+//	/*The method that starts when the MusicPlayer is run. Used for testing purposes/if implementing as Application.
+//	 * @see javafx.application.Application#start(javafx.stage.Stage)
+//	 */
 	public void start(Stage primaryStage) {
 		
 		primaryStage.setTitle("Music Player");
@@ -93,9 +98,9 @@ public class MusicPlayer implements Player {
 		
 		mainScene = new Scene(grid, 300, 300);
 		
-//		songTitle = makeLabel("Title: ", 0, 0, grid);
-//		artist = makeLabel("Artist: ", 0, 1, grid);
-//		albumTitle = makeLabel("Album: ", 0, 2, grid);
+		songTitle = makeLabel("Title: ", 0, 0, 0, grid);
+		artist = makeLabel("Artist: ", 0, 1, 0, grid);
+		albumTitle = makeLabel("Album: ", 0, 2, 0, grid);
 
 		//Create the play/pause button and add its event handler.
 		Button play = makeButton("Play/Pause", 0, 8, grid);
@@ -116,7 +121,7 @@ public class MusicPlayer implements Player {
 		testButton = play;
 		
 		//Create the volume slider and add its event handler.
-		volume = createSlider("Volume: ", null, 0, 4, grid);
+		volume = createSlider("Volume: ", 0, 4, grid);
 		volume.valueProperty().addListener(new InvalidationListener() {
 			public void invalidated(Observable ov) {
 				if (volume.isValueChanging()) {
@@ -126,8 +131,7 @@ public class MusicPlayer implements Player {
 		});
 		
 		//Create the time slider and add its event handler.
-		playTime = new Label("Time :");
-		time = createSlider("Time: ", playTime, 0, 6, grid);
+		time = createSlider("Time: ", 0, 6, grid);
 		time.valueProperty().addListener(new InvalidationListener() {
 			public void invalidated(Observable o) {
 				if (time.isValueChanging()) {
@@ -164,11 +168,22 @@ public class MusicPlayer implements Player {
 							updateValues();
 							songLoaded = true;
 							playing = true;
+							player.setOnEndOfMedia(new Runnable() {
+								public void run() {
+									mediaFinished = true;
+								}
+							});
 							musicPlayer.play();
 	        				}
 						}
 				});
 				}
+				player.currentTimeProperty().addListener(new ChangeListener<Duration>() {
+			    @Override
+			        public void changed(ObservableValue<? extends Duration> observable, Duration oldValue, Duration newValue) {
+			            updateValues();
+			    }
+			});
 		}
 	}
 		
@@ -206,22 +221,14 @@ public class MusicPlayer implements Player {
 	
 	/*This helper method keeps the current time of the song being played updated. */
 	private void updateValues() {
-		if (time != null && volume != null && playTime != null) {
+		if (time != null && playTime != null && duration != null) {
 			Platform.runLater(new Runnable() {
 				public void run() {
 					Duration currentTime = player.getCurrentTime();
 					playTime.setText(formatTime(currentTime, duration));
 					time.setDisable(duration.isUnknown());
 					if (!time.isDisabled() && duration.greaterThan(Duration.ZERO) && !time.isValueChanging()) {
-						double dur = currentTime.toMillis();
-						double ation;
-						if (dur <= 0) {
-							ation = 0.0;
-						}
-						else {
-							ation = currentTime.divide(dur).toMillis();
-						}
-						time.setValue(ation * 100.0);
+						time.setValue(currentTime.divide(duration.toMillis()).toMillis() * 100.0);
 					}
 				}
 			});
@@ -309,6 +316,10 @@ public class MusicPlayer implements Player {
 		}
 	}
 	
+	public boolean finishedPlaying() {
+		return mediaFinished;
+	}
+	
 	public Component showView() {
 		return mainFrame;
 	}
@@ -331,15 +342,8 @@ public class MusicPlayer implements Player {
 		return button;
 	}
 	
-	private Slider createSlider(String name, Label preLabel, int column, int row, GridPane grid) {
-		Label label = null;
+	private Slider createSlider(String name, int column, int row, GridPane grid) {
 		Slider slider = null;
-		if (preLabel == null) {
-			label = new Label(name);
-		}
-		else {
-			label = preLabel;
-		}
 		if (name.equals("Volume: ")) { 
 			slider = new Slider(0, 100, 100);
 			slider.setPrefWidth(70);
@@ -356,7 +360,6 @@ public class MusicPlayer implements Player {
 		else {
 			slider = null;
 		}
-		grid.add(label, column, row - 1);
 		grid.add(slider, column, row);
 		return slider;
 	}
@@ -379,7 +382,6 @@ public class MusicPlayer implements Player {
 		volume = null;
 		duration = null;
 		playTime = null;
-
 		songTitle = null;
 		albumImage = new ImageView();
 		mainFrame = new JFXPanel();
@@ -419,15 +421,17 @@ public class MusicPlayer implements Player {
 		grid.add(albumImage, 1, 0);
 			
 		//Create the time slider and add its event handler.
-//		playTime = new Label("Time :");
-//		time = createSlider("Time: ", playTime, 0, 6, grid);
-//		time.valueProperty().addListener(new InvalidationListener() {
-//			public void invalidated(Observable o) {
-//				if (time.isValueChanging()) {
-//					changePosition((long)time.getValue());
-//				}
-//			}
-//		});
+		playTime = new Text();
+		playTime.setFont(new Font(15));
+		time = createSlider("Time: ", 2, 5, grid);
+		time.valueProperty().addListener(new InvalidationListener() {
+			public void invalidated(Observable o) {
+				if (time.isValueChanging()) {
+					changePosition((long)time.getValue());
+				}
+			}
+		});
+		grid.add(playTime, 1, 5);
 		mainFrame.setScene(mainScene);
 	}
 	
