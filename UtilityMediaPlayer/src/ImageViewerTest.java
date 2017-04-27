@@ -47,6 +47,11 @@ public class ImageViewerTest {
 	}
 	
 	@Test
+	public void openDNE() {
+		assertFalse(testViewer.open("nonsense pathname \n"));
+	}
+	
+	@Test
 	public void openWrongFormat() {
 		assertEquals(false, testViewer.open(badFormatPath));
 	}
@@ -159,6 +164,11 @@ public class ImageViewerTest {
 	public void imageProperties() {
 		testViewer.open(imagePath);
 		testViewer.imageProperties();
+	}
+	
+	@Test
+	public void gifToMP4NotOpen() {
+		assertFalse(testViewer.gifToVideo());
 	}
 	
 	@Test
