@@ -263,29 +263,4 @@ public class ImageViewer {
 		return true;
 	}
 	
-	
-	//TODO: manual testing package; requires ImageViewer to extend Application
-/*	String workingDir = System.getProperty("user.dir");
-	String fileSep = System.getProperty("file.separator");
-	
-	String gifPath = workingDir + fileSep + "media libraries" + fileSep + "images" + fileSep + "gif.gif";
-	
-	@Override
-	public void start(Stage stage) {
-		
-		open(gifPath);
-		
-		rotateImage(false);
-		
-		stage.setTitle("ImageView");
-		stage.setWidth(600);
-		stage.setHeight(800);
-		stage.setScene(mainScene); 
-		stage.sizeToScene(); 
-		stage.show(); 
-	}
-	
-	public static void main(String[] args) {
-	Application.launch();
-}*/	
 }

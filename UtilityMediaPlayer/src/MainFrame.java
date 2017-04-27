@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -166,7 +167,7 @@ public class MainFrame extends JFrame {
 		
 		
         //Create and set up the window.
-        JFrame displayFrame = new JFrame();
+        JFrame displayFrame = new JFrame("Utility Media Player");
         displayFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         displayFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -191,21 +192,6 @@ public class MainFrame extends JFrame {
         //displayFrame.add(demo.createTimeControl(), BorderLayout.SOUTH);
         displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
        
-
-
-        /*
-        StackPane stack = new StackPane();
-        Scene scene = new Scene(stack,300,300);
-        Text hello = new Text("Hello");
-        
-        scene.setFill(Color.BLACK);
-        hello.setFill(Color.WHEAT);
-        hello.setEffect(new Reflection());
-        JFXPanel panel = new JFXPanel();
-        panel.setScene(scene);
-        stack.getChildren().add(hello);
-        displayFrame.getContentPane().add(panel, BorderLayout.EAST);
-        */
         
         
         //Display the window.
@@ -247,15 +233,16 @@ public class MainFrame extends JFrame {
 	
 	//determines which OS/Menu Bar style to create of an abstarct MenuBarSetup
 	private MenuBarSetup getMenuBarVersion(){
-		if(OsUtils.isWindows()){
+		//if(OsUtils.isWindows()){
 			return new WindowsMenuBarSetup();
-		}
-		else if(OsUtils.isUnix()){
+		//}
+		//NOTE: inserted for possible support of 
+/*		else if(OsUtils.isUnix()){
 			return new GenericMenuBarSetup();
 		}
 		else{
 			return new GenericMenuBarSetup();
-		}
+		}*/
 	}
 	
 	
@@ -344,6 +331,16 @@ public class MainFrame extends JFrame {
 		}
 		
 		list.setModel(playListModel);
+		
+		//listener for double clicks
+		list.addMouseListener(new MouseAdapter(){
+		    @Override
+		    public void mouseClicked(MouseEvent e){
+		        if(e.getClickCount()==2){
+		           mainFrame.playListStart();
+		        }
+		    }
+		});
 
 		list.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
@@ -475,13 +472,14 @@ public class MainFrame extends JFrame {
      * operations called by actionListeneers
      */
     
-	//move file selection unit forward one index
+	//move file selection unit back one index
 	void backFile(){
 		int setIndex = fileList.getModel().getSize() - 1;
 		if(fileList.getSelectedIndex() > 0)
 			fileList.setSelectedIndex(fileList.getSelectedIndex() - 1);
 		else
 			fileList.setSelectedIndex(setIndex);
+		play();
 	}
 	
 	//sets window to fullscreen
@@ -609,14 +607,14 @@ public class MainFrame extends JFrame {
 	
 	//save playlist
 	private void openPlaylist(String filename){
-			if(filename != null){
-				if (playlist == null) {
-					Playlist temp = new Playlist(this);
-					playlist = temp;
-				}
-				playlist = playlist.loadPlaylist(filename);
+		if(filename != null){
+			if (playlist == null) {
+				Playlist temp = new Playlist(this);
+				playlist = temp;
 			}
+			playlist = playlist.loadPlaylist(filename);
 		}
+	}
 	
 	private boolean rotateImage(boolean clockwise) {
 		boolean success = currentViewer.rotateImage(clockwise);
@@ -745,6 +743,22 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
+	//plays the current playList
+	public void playListStart(){
+		String filename = "";
+		int selectedindex = playListView.getSelectedIndex();
+		if(selectedindex < 0){
+			mode = Mode.EMPTY;
+			return;
+		}
+		else{
+			filename = playListView.getModel().getElementAt(selectedindex);
+		}
+		ArrayList<URI> tracks = playlist.getTracks();
+		String fileToPlay = tracks.get(0).getPath();
+		play(fileToPlay);
+	}
+	
 	//plays current file at file selection index
 	public void play(){
 		String filename = "";
@@ -770,6 +784,25 @@ public class MainFrame extends JFrame {
 				currentPlayer = null;
 			}
 			createViews(filename);
+			
+			
+		}
+		//runs play action on currentFile
+		else{
+			playbackExecute();
+		}	
+	}
+	
+	//overload that takes in a file name
+	public void play(String filename){
+		Mode tempmode = parseFileType(filename);
+		if(filename != previousFile){
+			mode = tempmode;
+			if(currentPlayer != null){
+				currentPlayer.clear();
+				currentPlayer = null;
+			}
+			createPlayListViews(filename);
 			
 			
 		}
@@ -843,6 +876,26 @@ public class MainFrame extends JFrame {
 		this.paint(this.getGraphics());  
 	}
 	
+	//helper method to streamline creation of new video/music players for playlists
+	private void createPlayListViews(String filename){
+		if(mode == Mode.AUDIO){
+			currentFile = filename;
+			currentPlayer = new MusicPlayer();
+			setupPlayers(filename);
+		}
+		if(mode == Mode.VIDEO){
+			currentPlayer = new VideoPlayer();
+			currentFile = filename;
+			setupPlayers(filename);
+		}
+		if(mode == Mode.IMAGE){
+			currentFile =  filename;
+			currentViewer.open(filename);
+			setupViewer();
+		}
+		this.paint(this.getGraphics());  
+	}
+	
 	
 	
 	/**
@@ -867,6 +920,8 @@ public class MainFrame extends JFrame {
 			fileList.setSelectedIndex(fileList.getSelectedIndex() + 1);
 		else
 			fileList.setSelectedIndex(setIndex);
+		
+		play();
 	}
 	
 	//pop up help info
