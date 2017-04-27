@@ -617,11 +617,12 @@ public class VideoPlayer implements Player
 	{
 		if(!hasMedia
 				|| start < 0 
-				|| start > player.getLength() 
+				|| start*1000 > player.getLength() 
 				|| finish < 0 
-				|| finish > player.getLength()
+				|| finish*1000 > player.getLength()
 				|| start > finish)
 		{
+			System.out.println("Invalid time parameters. Video has a maximum length of " + (player.getLength()/1000) + "s");
 			return false;
 		}
 		else
@@ -779,14 +780,14 @@ public class VideoPlayer implements Player
 	public static void main(String[] args) throws InterruptedException, AWTException, FileNotFoundException, IOException
 	{
 		JFrame frame = new JFrame("Video Player");
-		VideoPlayer v = new VideoPlayer("media libraries/video/kaius_presentation.mp4");
+		VideoPlayer v = new VideoPlayer("media libraries/video/singing_dove.mp4");
 		frame.setBounds(100, 100, 500, 500);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setContentPane(v.mediaPlayerComponent);
 		frame.setVisible(true);
 		v.playVideo();
 		Thread.sleep(1000);
-		v.clipVideo(100, 200);
+		v.clipVideo(5, 10);
 	}
 }
 
