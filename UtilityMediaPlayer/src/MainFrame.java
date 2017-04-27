@@ -161,7 +161,10 @@ public class MainFrame extends JFrame {
         displayFrame.setJMenuBar(demo.createTextMenuBar());
         displayFrame.setContentPane(demo.createContentPane());
         demo.setFileList(createFileList(demo));
-        displayFrame.getContentPane().add(demo.fileList, BorderLayout.WEST);
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setPreferredSize(new Dimension(200,demo.fileList.getHeight() ));
+        scrollPane.setViewportView(demo.fileList);
+        displayFrame.getContentPane().add(scrollPane, BorderLayout.WEST);
         //displayFrame.add(demo.createTimeControl(), BorderLayout.SOUTH);
         displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
        
@@ -282,6 +285,7 @@ public class MainFrame extends JFrame {
 			fileListModel.addElement(fileName);
 		}
 		list.setModel(fileListModel);
+		
 		
 		/*
 		list.setModel(new DefaultListModel<String>()
