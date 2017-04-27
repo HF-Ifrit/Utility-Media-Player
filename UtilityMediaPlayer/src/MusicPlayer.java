@@ -52,7 +52,7 @@ public class MusicPlayer implements Player {
 	
 	enum MusicFormat {
    	 MP3("libmp3lame"),
-   	 FLAC("flac");
+   	 WAV("lpcm");
    	 
    	 private MusicFormat(String encoder)
    	 {

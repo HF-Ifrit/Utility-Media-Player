@@ -2,6 +2,7 @@ import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -33,9 +34,10 @@ public class VideoPlayer implements Player
 	private final EmbeddedMediaPlayer player;
 	private PlayerControlsPanel controlPanel;
 	
-	private final Integer FFMPEG_GIF_PARAMETERS = new Integer(12);
-	private final Integer FFMPEG_EXTRACT_AUDIO_PARAMETERS = new Integer(7);
-	private final Integer FFMPEG_CROP_AUDIO_PARAMETERS = new Integer(10);
+	private final int FFMPEG_GIF_PARAMETERS = 12;
+	private final int FFMPEG_EXTRACT_AUDIO_PARAMETERS = 7;
+	private final int FFMPEG_CROP_AUDIO_PARAMETERS = 10;
+	private final int FFMPEG_CLIP_VIDEO_PARAMETERS = 10;
 	
 	private boolean hasMedia;
 	private boolean finishedPlaying;
@@ -106,19 +108,11 @@ public class VideoPlayer implements Player
 		private void createControls() {
 			timeLabel = new JLabel("hh:mm:ss");
 
-			// positionProgressBar = new JProgressBar();
-			// positionProgressBar.setMinimum(0);
-			// positionProgressBar.setMaximum(1000);
-			// positionProgressBar.setValue(0);
-			// positionProgressBar.setToolTipText("Time");
-
 			positionSlider = new JSlider();
 			positionSlider.setMinimum(0);
 			positionSlider.setMaximum(1000);
 			positionSlider.setValue(0);
 			positionSlider.setToolTipText("Position");
-
-
 		}
 
 		private void layoutControls() 
@@ -144,8 +138,10 @@ public class VideoPlayer implements Player
 		/**
 		 * Broken out position setting, handles updating mediaPlayer
 		 */
-		private void setSliderBasedPosition() {
-			if(!mediaPlayer.isSeekable()) {
+		private void setSliderBasedPosition() 
+		{
+			if(!mediaPlayer.isSeekable())
+			{
 				return;
 			}
 			float positionValue = positionSlider.getValue() / 1000.0f;
@@ -156,16 +152,21 @@ public class VideoPlayer implements Player
 			mediaPlayer.setPosition(positionValue);
 		}
 
-		private void updateUIState() {
-			if(!mediaPlayer.isPlaying()) {
+		private void updateUIState() 
+		{
+			if(!mediaPlayer.isPlaying()) 
+			{
 				// Resume play or play a few frames then pause to show current position in video
 				mediaPlayer.play();
-				if(!mousePressedPlaying) {
-					try {
+				if(!mousePressedPlaying) 
+				{
+					try 
+					{
 						// Half a second probably gets an iframe
 						Thread.sleep(500);
 					}
-					catch(InterruptedException e) {
+					catch(InterruptedException e) 
+					{
 						// Don't care if unblocked early
 					}
 					mediaPlayer.pause();
@@ -249,7 +250,6 @@ public class VideoPlayer implements Player
 		}
 
 		private void updatePosition(int value) {
-			// positionProgressBar.setValue(value);
 			positionSlider.setValue(value);
 		}
 	}
@@ -625,33 +625,51 @@ public class VideoPlayer implements Player
 			return false;
 		}
 		else
-		{			
-			int dotIndex = videoPath.indexOf('.');
-			String extension = videoPath.substring(dotIndex+1, videoPath.length());
-			VideoFormat currentFormat = VideoFormat.valueOf(extension.toUpperCase());
+		{		
+			//ffmpeg command for clipping a video:
+			// [ffmpeg path] -i [input path] -ss [start time] -codec copy -t [finish - start] [output path]
 			
-			//String sout = ":sout=#transcode{vcodec=" + format.getVideoCodec() + ",vb=%d,scale=%f}:duplicate{dst=file{dst=%s}}";
-			String sout = ":sout=#transcode{vcodec=" + currentFormat.getVideoCodec() + ",vb=%d,scale=%f}:duplicate{dst=file{dst=%s}}";
-
-			int bits = 4096;
-			float scale = 0.5f;
-			long systemTime = System.currentTimeMillis();
-			String dest = "output/clip" + systemTime + "." + currentFormat.toString();
+			String extension = videoPath.substring(videoPath.lastIndexOf('.'));
+			String[] ffmpegCommands = new String[FFMPEG_CLIP_VIDEO_PARAMETERS];
+			ffmpegCommands[0] = ffmpegPath;
+			ffmpegCommands[1] = "-i";
+			ffmpegCommands[2] = "\"" + videoPath + "\"";
+			ffmpegCommands[3] = "-ss";
+			ffmpegCommands[4] = Integer.toString(start);
+			ffmpegCommands[5] = "-codec";
+			ffmpegCommands[6] = "copy";
+			ffmpegCommands[7] = "-t";
+			ffmpegCommands[8] = Integer.toString(finish - start);
+			String output = outputPath + fileSep + "new_video_clip" + System.currentTimeMillis() + extension;
+			ffmpegCommands[9] = output;
 			
-			String finalSOut =  String.format(sout, bits, scale, dest);
-			player.stop();
-			try
+			try 
 			{
-				Thread.sleep(2000);
+				Process proc = Runtime.getRuntime().exec(ffmpegCommands);
+				
+				 // any error message?
+	            StreamGobbler errorGobbler = new 
+	                StreamGobbler(proc.getErrorStream(), "ERROR");            
+	            
+	            // any output?
+	            StreamGobbler outputGobbler = new 
+	                StreamGobbler(proc.getInputStream(), "OUTPUT");
+	                
+	            // kick them off
+	            errorGobbler.start();
+	            outputGobbler.start();
+	            
+				//Block until ffmpeg has finished and given us an answer
+	            int exitVal = proc.waitFor();
+	            System.out.println("Video clip created at " + output);
+	            //exec returns 0 on successful call
+	            return (exitVal == 0);
 			} 
-			catch (InterruptedException e) 
+			catch (IOException | InterruptedException e1) 
 			{
-				e.printStackTrace();
+				System.out.println(e1.getMessage());
+				return false;
 			}
-			player.playMedia(videoPath, ":start-time="+start,":stop-time=" + finish, finalSOut);
-
-			System.out.println("Video clipped at " + dest);
-			return true;
 		}
 	}
 
@@ -767,6 +785,8 @@ public class VideoPlayer implements Player
 		frame.setContentPane(v.mediaPlayerComponent);
 		frame.setVisible(true);
 		v.playVideo();
+		Thread.sleep(1000);
+		v.clipVideo(100, 200);
 	}
 }
 

@@ -760,7 +760,7 @@ public class MainFrame extends JFrame {
 		}
 		//check if ending filetype is audio format
 		else if(file.substring(file.lastIndexOf('.')).equals("." + MusicPlayer.MusicFormat.MP3.toString().toLowerCase())
-				|| file.substring(file.lastIndexOf('.')).equals("." + MusicPlayer.MusicFormat.FLAC.toString().toLowerCase())){
+				|| file.substring(file.lastIndexOf('.')).equals("." + MusicPlayer.MusicFormat.WAV.toString().toLowerCase())){
 			return Mode.AUDIO;
 		}
 		//check if ending filetype is image format
@@ -822,8 +822,8 @@ public class MainFrame extends JFrame {
 	}
 	
 	//controller for play menu option
-	public class play implements ActionListener{
-
+	public class play implements ActionListener
+	{
 		@Override
 		public void actionPerformed(ActionEvent e) 
 		{
@@ -873,6 +873,16 @@ public class MainFrame extends JFrame {
 				if(formatIndex != options.length-1)
 					vPlayer.extractAudio(values[formatIndex]);
 			}
+		}
+	}
+	
+	//controller for clipping videos
+	public class clipVideo implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			
 		}
 	}
 
