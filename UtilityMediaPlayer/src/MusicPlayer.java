@@ -52,7 +52,7 @@ public class MusicPlayer implements Player {
 	
 	enum MusicFormat {
    	 MP3("libmp3lame"),
-   	 FLAC("flac");
+   	 WAV("wav");
    	 
    	 private MusicFormat(String encoder)
    	 {
@@ -188,7 +188,7 @@ public class MusicPlayer implements Player {
 		
 	private void setMetadata(String key, Object value) {
 		if (key.equals("title")) {
-			songTitle.setText(songTitle.getText() + value.toString());
+			songTitle.setText(value.toString());
 		}
 		if (key.equals("album")) {
 			albumTitle.setText(albumTitle.getText() + value.toString());
@@ -412,6 +412,7 @@ public class MusicPlayer implements Player {
 		mainScene = new Scene(grid, 400, 400);
 			
 		songTitle = makeLabel("", 1, 1, 20, grid);
+		songTitle.setText("untitled");
 		artist = makeLabel("Artist: ", 2, 1, 15, grid);
 		albumTitle = makeLabel("Album: ", 2, 2, 15, grid);
 			

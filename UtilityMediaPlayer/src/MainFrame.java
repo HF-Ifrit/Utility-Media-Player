@@ -254,7 +254,7 @@ public class MainFrame extends JFrame {
 			else if(file.endsWith(".mp3")) {
 				continue;
 			}
-			else if(file.endsWith(".flac")) {
+			else if(file.endsWith(".wav")) {
 				continue;
 			}
 			else if(file.endsWith(".webm")) {
