@@ -13,6 +13,9 @@ import javafx.util.Duration;
 
 public class MusicPlayerTest {
 	MusicPlayer testPlayer;	
+	private MainFrame frame;
+	private static MainFrame.TestSuite tester = new MainFrame.TestSuite();
+
 	Stage mainStage;
 	String workingDir = System.getProperty("user.dir");
 	String fileSep = System.getProperty("file.separator");
@@ -25,7 +28,9 @@ public class MusicPlayerTest {
 	@Before
 	public void before() {
 		mainStage = new Stage();
-		testPlayer = new MusicPlayer();
+		tester.newMainFrame();
+		frame = tester.getMainFrame();
+		testPlayer = new MusicPlayer(frame);
 		testPlayer.start(mainStage);
 	}
 	

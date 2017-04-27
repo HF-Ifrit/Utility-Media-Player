@@ -15,7 +15,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
 public class HBoxBuilder extends HBox{
@@ -189,9 +188,6 @@ public class HBoxBuilder extends HBox{
     	timeStamp .setMinWidth(100);
     	timeStamp .setAccessibleRoleDescription("TimeTracker");
     	frame.setTimeStampSlider(timeStamp);
-
-    	//responds to slider movements
-    	timeStamp.valueProperty().addListener(jfxControl.new timeStampSlider());
     	
     	//add elements to the hBox
     	swatch.getChildren().add(timeStamp);
