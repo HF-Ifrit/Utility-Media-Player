@@ -917,6 +917,26 @@ public class MainFrame extends JFrame {
 	 *
 	 */
 	
+	//Controller for ordering file list by type
+	public class orderFileListByType implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) 
+		{
+			orderFileListByType();
+		}
+	}
+	
+	//Controller for ordering file list by name
+		public class orderFileListByName implements ActionListener{
+
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				orderFileListByName();
+			}
+		}
+	
 	//controller for opening a file
 	public class openFile implements ActionListener{
 
@@ -1052,6 +1072,28 @@ public class MainFrame extends JFrame {
 				
 				if(formatIndex != options.length-1)
 					vPlayer.extractAudio(values[formatIndex]);
+			}
+		}
+	}
+	
+	//controller for videoing gifs
+	public class gifToVideo implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentViewer == null) {
+				JOptionPane.showMessageDialog(null, "Gif-to-Video conversion failed; an image must be open first.","Video Conversion Warning", JOptionPane.WARNING_MESSAGE);
+			}
+			
+			else {
+				boolean success = currentViewer.gifToVideo();
+				if( ! success) {
+					JOptionPane.showMessageDialog(null, "Gif-to-Video conversion failed; ensure your image is of the proper type and accessible.","Video Conversion Warning", JOptionPane.WARNING_MESSAGE);
+				}
+				
+				else {
+					JOptionPane.showMessageDialog(null, "Gif-to-Video finished; your video is in the Output folder.","Video Conversion", JOptionPane.INFORMATION_MESSAGE);
+				}
 			}
 		}
 	}

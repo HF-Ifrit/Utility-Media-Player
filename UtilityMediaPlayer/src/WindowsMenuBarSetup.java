@@ -80,6 +80,26 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.addActionListener(mainFrame.new savePlaylist());
         menu.add(menuItem);
         
+        //Order files by type
+        menuItem = new JMenuItem("Order by Type",
+                KeyEvent.VK_S);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"Rearranges the file list in order of media types.");
+        menuItem.addActionListener(mainFrame.new orderFileListByType());
+        menu.add(menuItem);
+        
+        //Order files by name
+        menuItem = new JMenuItem("Order by Name",
+                KeyEvent.VK_S);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"Rearranges the file list in alphabetical order.");
+        menuItem.addActionListener(mainFrame.new orderFileListByName());
+        menu.add(menuItem);
+        
         //
         
         /**
@@ -458,6 +478,17 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.addActionListener(mainFrame.new imageProperties());
         menu.add(menuItem);
         
+        menu.addSeparator();
+        
+      	//Gif to Video
+        menuItem = new JMenuItem("Convert Gif to Video",
+                KeyEvent.VK_V);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"If a .gif file is open, convert it to a new .mp4.");
+        menuItem.addActionListener(mainFrame.new gifToVideo());
+        menu.add(menuItem);
         
         
        
