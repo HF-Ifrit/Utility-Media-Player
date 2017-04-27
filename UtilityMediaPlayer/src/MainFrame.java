@@ -187,26 +187,11 @@ public class MainFrame extends JFrame {
         demo.playListScroll =  new JScrollPane();
         demo.playListScroll.setPreferredSize(new Dimension(200, demo.playListView.getHeight()));
         demo.playListScroll.setViewportView(demo.playListView);
-        //displayFrame.getContentPane().add(demo.playListScroll, BorderLayout.EAST);
+        displayFrame.getContentPane().add(demo.playListScroll, BorderLayout.EAST);
         
         //displayFrame.add(demo.createTimeControl(), BorderLayout.SOUTH);
         displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
        
-
-
-        /*
-        StackPane stack = new StackPane();
-        Scene scene = new Scene(stack,300,300);
-        Text hello = new Text("Hello");
-        
-        scene.setFill(Color.BLACK);
-        hello.setFill(Color.WHEAT);
-        hello.setEffect(new Reflection());
-        JFXPanel panel = new JFXPanel();
-        panel.setScene(scene);
-        stack.getChildren().add(hello);
-        displayFrame.getContentPane().add(panel, BorderLayout.EAST);
-        */
         
         
         //Display the window.
