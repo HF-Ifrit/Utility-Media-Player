@@ -600,10 +600,11 @@ public class MainFrame extends JFrame {
 	//save playlist
 	private void openPlaylist(String filename){
 			if(filename != null){
-				if(playlist == null){
-					JOptionPane.showMessageDialog(frame, "No playlist selected.");
+				if (playlist == null) {
+					Playlist temp = new Playlist(this);
+					playlist = temp;
 				}
-				playlist.loadPlaylist(filename);
+				playlist = playlist.loadPlaylist(filename);
 			}
 		}
 	
@@ -991,15 +992,13 @@ public class MainFrame extends JFrame {
 	
 	//controller for adding items to playlist
 	public class addToPlaylist implements ActionListener{
-		MainFrame frame = this.frame;
+
 		@Override
-		
 		public void actionPerformed(ActionEvent e) 
 		{
 			if (playlist == null) {
 				String fileName = JOptionPane.showInputDialog("Please name your playlist: ");
-				playlist = new Playlist(frame, fileName);
-				savePlaylist(fileName);
+				playlist = new Playlist(MainFrame.this, fileName);
 			}
 			addToPlaylist();
 		}
@@ -1010,8 +1009,14 @@ public class MainFrame extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) 
 		{
+			String fileName;
 			//TODO give savePlaylist a file name
-			String fileName = JOptionPane.showInputDialog("Please name your playlist: ");
+			if (MainFrame.this.playlist.getName().isEmpty()) {
+				fileName = JOptionPane.showInputDialog("Please name your playlist: ");
+			}
+			else {
+				fileName = MainFrame.this.playlist.getName();
+			}
 			savePlaylist(fileName);
 		}
 	}
