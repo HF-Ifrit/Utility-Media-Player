@@ -224,7 +224,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         //Clip video
         menuItem = new JMenuItem("Clip Video");
         menuItem.getAccessibleContext().setAccessibleDescription("Create a clip of the currently playing video");
-        menuItem.addActionListener(mainframe.new clipVideo());
+        menuItem.addActionListener(mainFrame.new clipVideo());
         menu.add(menuItem);
         //Video display options
         menu.addSeparator();
