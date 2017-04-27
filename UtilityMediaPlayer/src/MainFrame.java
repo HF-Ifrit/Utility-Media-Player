@@ -642,31 +642,7 @@ public class MainFrame extends JFrame {
 		return (filename.endsWith(".gif") || filename.endsWith(".png") || filename.endsWith(".jpg"));
 	}
 	
-/*	public void filterFileList(String toFind) {
-		
-		
-		int size = fileListModel.size();
-		
-		for(int i = 0; i < size; i++) {
-			String test = fileListModel.get(0);
-			if( ! test.contains(toFind)) {
-				fileListModel.removeElement(obj)
-			}
-		}
-		
-        fileListModel.addElement(filename);
-        fileList.setSelectedValue(filename, true);
-        String path = file.getAbsolutePath();
-        fileLocationMap.put(filename, path);
-		
-		fileList.getModel().
-		for(String x : fileList) {
-			
-		}
-        getFrame().remove(this.fileList);
-        
-	}
-	*/
+	
 	//helper method to streamline closing video/music player windows
 	private void updateComponent(Component newComponent){
 		if(previousComponent != null){
@@ -904,21 +880,46 @@ public class MainFrame extends JFrame {
 	public class imageProperties implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			currentViewer.imageProperties();
+			if(currentViewer != null)
+				currentViewer.imageProperties();
 		}
 	}
 	
 	//controller to rotate the image
 	public class rotate implements ActionListener{
-		private int degrees;
+		private boolean clockwise;
 		
-		rotate(int degrees){
-			this.degrees = degrees;
+		rotate(boolean clockwise){
+			this.clockwise = clockwise;
 		}
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			currentViewer.imageProperties();
+			if(currentViewer != null)
+				currentViewer.rotateImage(true);
+			
+		}
+	}
+	
+	//controller to flip the image
+	public class flip implements ActionListener{
+		//whether to flip horizontally or not
+		private boolean direction;
+		
+		flip(boolean direction){
+			this.direction = direction;
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentViewer != null){
+				if(direction)
+					currentViewer.mirrorImage();
+				else
+					currentViewer.mirrorImageVertically();
+			}
+				
+			
 		}
 	}
 	

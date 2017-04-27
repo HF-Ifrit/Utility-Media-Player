@@ -205,8 +205,7 @@ public class HBoxBuilder extends HBox{
 
 
     			hbox.prefTileSize.set(Math.max(SPACING, hbox.getWidth()));
-    			double edge = SPACING + LEFT_EDGE;
-    			edge = edge;
+    			double edge = SPACING + hbox.prefTileSize.get();
     			for (Node child : swatch.getChildrenUnmodifiable()) {
     				Control tile = (Control) child;
     				if(!(child instanceof Label)){
