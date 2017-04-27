@@ -839,8 +839,10 @@ public class MainFrame extends JFrame {
 	
 	//pop up about info
 	private void openAboutInfo(){
-		//TODO create a pop-up
-	}
+		String about = "Utility Media Player" + "\n"
+				+ "Prerelease Version";
+		JOptionPane.showMessageDialog(null, about,"About", JOptionPane.INFORMATION_MESSAGE);
+		}
 	
 	
 	//temporary parse file system for supported formats
