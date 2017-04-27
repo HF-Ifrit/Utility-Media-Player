@@ -48,9 +48,9 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         
         //OpenFile
         menuItem = new JMenuItem("Import File to Library",
-                KeyEvent.VK_O);
+                KeyEvent.VK_I);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+        		KeyEvent.VK_I, ActionEvent.CTRL_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Save the current file to the UMP library.");
 
@@ -93,9 +93,9 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         
         //Order files by type
         menuItem = new JMenuItem("Order by Type",
-                KeyEvent.VK_S);
+                KeyEvent.VK_M);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+        		KeyEvent.VK_M, ActionEvent.CTRL_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Rearranges the file list in order of media types.");
         menuItem.addActionListener(mainFrame.new orderFileListByType());
@@ -103,9 +103,9 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         
         //Order files by name
         menuItem = new JMenuItem("Order by Name",
-                KeyEvent.VK_S);
+                KeyEvent.VK_N);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+        		KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Rearranges the file list in alphabetical order.");
         menuItem.addActionListener(mainFrame.new orderFileListByName());
