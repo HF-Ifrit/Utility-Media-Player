@@ -1029,6 +1029,28 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
+	//controller for videoing gifs
+	public class gifToVideo implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentViewer == null) {
+				JOptionPane.showMessageDialog(null, "Gif-to-Video conversion failed; an image must be open first.","Video Conversion Warning", JOptionPane.WARNING_MESSAGE);
+			}
+			
+			else {
+				boolean success = currentViewer.gifToVideo();
+				if( ! success) {
+					JOptionPane.showMessageDialog(null, "Gif-to-Video conversion failed; ensure your image is of the proper type and accessible.","Video Conversion Warning", JOptionPane.WARNING_MESSAGE);
+				}
+				
+				else {
+					JOptionPane.showMessageDialog(null, "Gif-to-Video finished; your video is in the Output folder.","Video Conversion", JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
+		}
+	}
+	
 	//controller for clipping videos
 	public class clipVideo implements ActionListener
 	{
