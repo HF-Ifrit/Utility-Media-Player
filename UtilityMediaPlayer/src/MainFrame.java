@@ -834,7 +834,10 @@ public class MainFrame extends JFrame {
 	
 	//pop up help info
 	private void openHelpMenu(){
-		//TODO create a pop-up
+		String about = "New media can be imported directly by inserting it in the \"media libraries\" folder." + "\n"
+				+ "External media can be opened using File >> Open File. " + "\n"
+				+ "Double-click media to play it.";
+		JOptionPane.showMessageDialog(null, about,"About", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	//pop up about info
