@@ -38,14 +38,7 @@ import java.awt.GridBagLayout;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
-import javafx.scene.effect.Reflection;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 
 
 //primary GUI window that will interact and control other modules
@@ -78,10 +71,14 @@ public class MainFrame extends JFrame {
 	
 	JTextArea output;
     JScrollPane scrollPane;
+    JScrollPane playListScroll;
     JList<String> fileList;
+    JList<String> playListView;
     
      //reference to the file Lists' model for graphics
     private static DefaultListModel<String> fileListModel;
+    //reference to the playList's model for graphics
+    private static DefaultListModel<String> playListModel;
     //mappings of external file names to locations
     private Map<String, String> fileLocationMap;
     
@@ -177,11 +174,19 @@ public class MainFrame extends JFrame {
         MainFrame demo = new MainFrame(displayFrame);
         displayFrame.setJMenuBar(demo.createTextMenuBar());
         displayFrame.setContentPane(demo.createContentPane());
+        
         demo.setFileList(createFileList(demo));
         demo.scrollPane = new JScrollPane();
         demo.scrollPane.setPreferredSize(new Dimension(200,demo.fileList.getHeight() ));
         demo.scrollPane.setViewportView(demo.fileList);
         displayFrame.getContentPane().add(demo.scrollPane, BorderLayout.WEST);
+        
+        demo.setPlayListView(createPlayListView(demo));
+        demo.playListScroll =  new JScrollPane();
+        demo.playListScroll.setPreferredSize(new Dimension(200, demo.playListView.getHeight()));
+        demo.playListScroll.setViewportView(demo.playListView);
+        displayFrame.getContentPane().add(demo.playListScroll, BorderLayout.EAST);
+        
         //displayFrame.add(demo.createTimeControl(), BorderLayout.SOUTH);
         displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
        
@@ -284,7 +289,7 @@ public class MainFrame extends JFrame {
 		fileList.removeAll(improper);
 	}
 	
-	//creates the sideView for file of lists
+	//creates the listView for file of lists
 	private static JList<String> createFileList(MainFrame mainFrame){
 		JList<String> list;
 		list = new JList<String>();
@@ -292,6 +297,7 @@ public class MainFrame extends JFrame {
 		ArrayList<String> video = MainFrame.getFolderContents(MainFrame.VIDEO_PATH);
 		ArrayList<String> images = MainFrame.getFolderContents(MainFrame.IMAGE_PATH);
 		ArrayList<String> fileList = new ArrayList<String>();
+		
 		fileList.addAll(audio);
 		fileList.addAll(video);
 		fileList.addAll(images);
@@ -304,33 +310,6 @@ public class MainFrame extends JFrame {
 		list.setModel(fileListModel);
 		
 		
-		/*
-		list.setModel(new DefaultListModel<String>()
-		{
-			String[] values = new String[] {
-					"Video.mp4", "Audio.mp3", "Media.gif", "Image.png"};
-			
-			ArrayList<String> fileNames = fileList;
-			
-			public ArrayList<String> getFileNames() 
-			{
-				return fileNames;
-			}
-			
-			public int getSize() 
-			{
-				return fileNames.size();
-			}
-			
-			public String getElementAt(int index) {
-				return getFileNames().get(index);
-			}
-			
-			public void addElement(String newFile){
-				getFileNames().add(newFile);
-			}
-		});
-		*/
 		
 		//listener for double clicks
 		list.addMouseListener(new MouseAdapter(){
@@ -342,16 +321,46 @@ public class MainFrame extends JFrame {
 		    }
 		});
 		
-		list.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		list.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		return list;
 	}
 	
+	//create the listView for playlist files
+	private static JList<String> createPlayListView(MainFrame mainFrame){
+		JList<String> list;
+		list = new JList<String>();
+		//TODO add file names here
+		ArrayList<String> playList = new ArrayList<String>();
+		
+		playListModel = new DefaultListModel<String>();
+		playListModel.addElement("playList");
+		
+		for(String fileName : playList){
+			playListModel.addElement(fileName);
+		}
+		
+		list.setModel(playListModel);
+
+		list.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		return list;
+	}
+	
+
+	
 	//sets the MainFrame's fileList variable
 	public void setFileList(JList<String> fileList){
 		this.fileList = fileList;
+	}
+	
+	//sets MainFrame's playList variable
+	public void setPlayListView(JList<String> playListView){
+		this.playListView = playListView;
 	}
 	
 	
@@ -540,6 +549,8 @@ public class MainFrame extends JFrame {
 	private boolean saveInLibrary(File toSave) {
 		if(toSave == null) return false;
 		
+		
+		
 		try {
 			if(toSave.getName().endsWith(".gif") || toSave.getName().endsWith(".png") || toSave.getName().endsWith(".jpg")) {
 				String pathname = IMAGE_PATH + toSave.getName();
@@ -614,8 +625,9 @@ public class MainFrame extends JFrame {
 		if( ! success) {
 			return false;
 		}
+		else 
+			setupViewer();
 		
-		else setupViewer();
 		return true;
 	}
 	
@@ -908,6 +920,26 @@ public class MainFrame extends JFrame {
 	 *
 	 */
 	
+	//Controller for ordering file list by type
+	public class orderFileListByType implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) 
+		{
+			orderFileListByType();
+		}
+	}
+	
+	//Controller for ordering file list by name
+		public class orderFileListByName implements ActionListener{
+
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				orderFileListByName();
+			}
+		}
+	
 	//controller for opening a file
 	public class openFile implements ActionListener{
 
@@ -924,6 +956,37 @@ public class MainFrame extends JFrame {
 		           fileLocationMap.put(filename, path);
 		           play();
 			 }
+		}
+	}
+	
+	//controller for saving a file to library
+	public class saveFile implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) 
+		{
+			if(previousFile != null && ( ! previousFile.equals(""))) {
+				
+				if(fileLocationMap.containsKey(previousFile)) {
+					boolean success = saveInLibrary(new File(fileLocationMap.get(previousFile)));
+					
+					if(success ) {
+						JOptionPane.showMessageDialog(null, "File saved in the UMP media library.","File Saved", JOptionPane.INFORMATION_MESSAGE);
+					}
+					else {
+						JOptionPane.showMessageDialog(null, "Could not save file to the media library.","Save Failed", JOptionPane.WARNING_MESSAGE);
+					}
+				}
+				
+				else {
+					JOptionPane.showMessageDialog(null, "Open file wasn't an external file, so nothing changed.","Save Failed", JOptionPane.WARNING_MESSAGE);
+
+				}
+			}
+			
+			else {
+				JOptionPane.showMessageDialog(null, "Error: no file open to save.","Save Failed", JOptionPane.WARNING_MESSAGE);
+			}
 		}
 	}
 	
@@ -964,16 +1027,7 @@ public class MainFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) 
 		{
 			//TODO give openPlaylist a file name
-			int returnVal = fileChooser.showOpenDialog(contentPane);
-			 if (returnVal == JFileChooser.APPROVE_OPTION) {
-		           File file = fileChooser.getSelectedFile();
-		           String fileName = file.getName();
-		           openPlaylist(fileName);
-		           fileListModel.addElement(fileName);
-		           fileList.setSelectedValue(fileName, true);
-		           String path = file.getAbsolutePath();
-		           fileLocationMap.put(fileName, path);
-			 }
+			openPlaylist("Playlist");
 		}
 	}
 		
@@ -1030,6 +1084,7 @@ public class MainFrame extends JFrame {
 			if(mode.equals(MainFrame.Mode.VIDEO))
 			{
 				VideoPlayer vPlayer = (VideoPlayer)currentPlayer;
+				
 				MusicPlayer.MusicFormat[] values = MusicPlayer.MusicFormat.values();
 				
 				//create options for the joptionpane from our list of available music formats
@@ -1039,14 +1094,59 @@ public class MainFrame extends JFrame {
 				
 				options[options.length - 1] = "Cancel"; //adding cancel to the list of options
 				
+				
 				//based on which index is clicked from the options, use the corresponding format index for extraction, unless it's the cancel button
 				int formatIndex = JOptionPane.showOptionDialog(getFrame(), 
 						"What format would you like to save the audio track as?", 
 						"Save audio track as...", 
 						JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 				
-				if(formatIndex != options.length-1)
-					vPlayer.extractAudio(values[formatIndex]);
+				if(formatIndex != options.length-1 || formatIndex == JOptionPane.CLOSED_OPTION)
+				{
+					String[] choices = {"Full", "Clip", "Cancel"};
+					
+					//decide if user wants to save the entire audio track or a clip, or cancel
+					int fullOrClip = JOptionPane.showOptionDialog(getFrame(), 
+							"Save the full track or a specific time frame?", 
+							"Length Option", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
+					
+					if(fullOrClip == 0)
+					{
+						vPlayer.extractAudio(values[formatIndex]);
+					}
+					else if(fullOrClip == 1)
+					{
+						String start = JOptionPane.showInputDialog(getFrame(),
+								"Input the start time for the audio clip in the following format:", 
+								"HH:MM:SS");
+						
+						String end = JOptionPane.showInputDialog(getFrame(),
+								"Input the end time for the audio clip in the following format:",
+								"HH:MM:SS");
+						
+						if(!start.contains(":") || !end.contains(":"))
+						{
+							JOptionPane.showMessageDialog(getFrame(), "Invalid time format");
+						}
+						else
+						{
+							int startHour = Integer.parseInt(start.substring(0,2));
+							int startMinutes = Integer.parseInt(start.substring(3,5));
+							int startSeconds = Integer.parseInt(start.substring(6,8));
+
+							int startTime = (startHour * 3600) + (startMinutes * 60) + startSeconds;
+
+							int endHour = Integer.parseInt(end.substring(0,2));
+							int endMinutes = Integer.parseInt(end.substring(3,5));
+							int endSeconds = Integer.parseInt(end.substring(6,8));
+
+							int endTime = (endHour * 3600) + (endMinutes * 60) + endSeconds;
+
+							vPlayer.extractAudio(startTime, endTime, values[formatIndex]);
+						}
+						
+					}
+				}	
 			}
 		}
 	}
@@ -1062,11 +1162,11 @@ public class MainFrame extends JFrame {
 				String start = JOptionPane.showInputDialog(getFrame(),
 						"Input the start time for the video clip in the following format:", 
 						"HH:MM:SS");
-				
+
 				String end = JOptionPane.showInputDialog(getFrame(),
 						"Input the end time for the video clip in the following format:",
 						"HH:MM:SS");
-				
+
 				if(!start.contains(":") || !end.contains(":"))
 				{
 					JOptionPane.showMessageDialog(getFrame(), "Invalid time format");
@@ -1076,29 +1176,86 @@ public class MainFrame extends JFrame {
 					int startHour = Integer.parseInt(start.substring(0,2));
 					int startMinutes = Integer.parseInt(start.substring(3,5));
 					int startSeconds = Integer.parseInt(start.substring(6,8));
-					
-					int startTime = (startHour * 3600) + (startMinutes * 60) + startSeconds;
-					
-					int endHour = Integer.parseInt(end.substring(0,2));
-					int endMinutes = Integer.parseInt(start.substring(3,5));
-					int endSeconds = Integer.parseInt(start.substring(6,8));
-					
-					int endTime = (endHour * 3600) + (endMinutes * 60) + endSeconds;
-					
-					VideoPlayer vPlayer = (VideoPlayer)currentPlayer;
-					vPlayer.clipVideo(startTime, endTime);
-					
-							
-				}
-					
-			}
 
-				
-					
-			
+					int startTime = (startHour * 3600) + (startMinutes * 60) + startSeconds;
+
+					int endHour = Integer.parseInt(end.substring(0,2));
+					int endMinutes = Integer.parseInt(end.substring(3,5));
+					int endSeconds = Integer.parseInt(end.substring(6,8));
+
+					int endTime = (endHour * 3600) + (endMinutes * 60) + endSeconds;
+
+					VideoPlayer vPlayer = (VideoPlayer)currentPlayer;
+					vPlayer.clipVideo(startTime, endTime);		
+				}
+			}
 		}
 	}
 
+	//controller for creating GIF from video
+	public class gifClip implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			if(mode.equals(MainFrame.Mode.VIDEO))
+			{
+				String start = JOptionPane.showInputDialog(getFrame(),
+						"Input the start time for the gif in the following format:", 
+						"HH:MM:SS");
+
+				String end = JOptionPane.showInputDialog(getFrame(),
+						"Input the end time for the gif in the following format:",
+						"HH:MM:SS");
+
+				if(!start.contains(":") || !end.contains(":"))
+				{
+					JOptionPane.showMessageDialog(getFrame(), "Invalid time format");
+				}
+				else
+				{
+					int startHour = Integer.parseInt(start.substring(0,2));
+					int startMinutes = Integer.parseInt(start.substring(3,5));
+					int startSeconds = Integer.parseInt(start.substring(6,8));
+
+					int startTime = (startHour * 3600) + (startMinutes * 60) + startSeconds;
+
+					int endHour = Integer.parseInt(end.substring(0,2));
+					int endMinutes = Integer.parseInt(end.substring(3,5));
+					int endSeconds = Integer.parseInt(end.substring(6,8));
+
+					int endTime = (endHour * 3600) + (endMinutes * 60) + endSeconds;
+
+					VideoPlayer vPlayer = (VideoPlayer)currentPlayer;
+					vPlayer.gifClip(startTime, endTime);		
+				}
+			}
+		}
+	}
+	
+	//controller for videoing gifs
+	public class gifToVideo implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentViewer == null) {
+				JOptionPane.showMessageDialog(null, "Gif-to-Video conversion failed; an image must be open first.","Video Conversion Warning", JOptionPane.WARNING_MESSAGE);
+			}
+			
+			else {
+				boolean success = currentViewer.gifToVideo();
+				if( ! success) {
+					JOptionPane.showMessageDialog(null, "Gif-to-Video conversion failed; ensure your image is of the proper type and accessible.","Video Conversion Warning", JOptionPane.WARNING_MESSAGE);
+				}
+				
+				else {
+					JOptionPane.showMessageDialog(null, "Gif-to-Video finished; your video is in the Output folder.","Video Conversion", JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
+		}
+	}
+	
+	
 	//controller for image viewer Properties
 	public class imageProperties implements ActionListener{
 		@Override
@@ -1209,28 +1366,66 @@ public class MainFrame extends JFrame {
 		
 		
 		//returns frame created by createAndShowGUI for testing purposes
-		public JFrame createAndShowGUI() {
-	        //Create and set up the window.
-	        JFrame frame = new JFrame("UMP Controller");
-	        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		//creates gui 
+		private static void createAndShowGUI() {
 
-	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			
+			try {
+			       UIManager.setLookAndFeel("com.alee.laf.WebLookAndFeel");
+				 }
+			catch (Exception ex) {
+					ex.printStackTrace();
+				 }
+			
+			
+	        //Create and set up the window.
+	        JFrame displayFrame = new JFrame();
+	        displayFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+	        displayFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	 
 	        //Create and set up the content pane.
-	        MainFrame demo = new MainFrame(frame);
-	        mainFrame = demo;
-	        frame.setJMenuBar(demo.createTextMenuBar());
-	        frame.setContentPane(demo.createContentPane());
-	        demo.setFileList(MainFrame.createFileList(mainFrame));
-	        frame.getContentPane().add(demo.fileList, BorderLayout.WEST);
-	        frame.add(demo.createControlBar(), BorderLayout.PAGE_END);
-	        frame.add(demo.createTimeControl(), BorderLayout.SOUTH);
-	 
-	        //Display the window.
-	        frame.setSize(1600, 800);
-	        frame.setVisible(true);
+	        MainFrame demo = new MainFrame(displayFrame);
+	        displayFrame.setJMenuBar(demo.createTextMenuBar());
+	        displayFrame.setContentPane(demo.createContentPane());
 	        
-	        return frame;
+	        demo.setFileList(MainFrame.createFileList(demo));
+	        demo.scrollPane = new JScrollPane();
+	        demo.scrollPane.setPreferredSize(new Dimension(200,demo.fileList.getHeight() ));
+	        demo.scrollPane.setViewportView(demo.fileList);
+	        displayFrame.getContentPane().add(demo.scrollPane, BorderLayout.WEST);
+	        
+	        demo.setPlayListView(MainFrame.createPlayListView(demo));
+	        demo.playListScroll =  new JScrollPane();
+	        demo.playListScroll.setPreferredSize(new Dimension(200, demo.playListView.getHeight()));
+	        demo.playListScroll.setViewportView(demo.playListView);
+	        displayFrame.getContentPane().add(demo.playListScroll, BorderLayout.EAST);
+	        
+	        //displayFrame.add(demo.createTimeControl(), BorderLayout.SOUTH);
+	        displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
+	       
+
+
+	        /*
+	        StackPane stack = new StackPane();
+	        Scene scene = new Scene(stack,300,300);
+	        Text hello = new Text("Hello");
+	        
+	        scene.setFill(Color.BLACK);
+	        hello.setFill(Color.WHEAT);
+	        hello.setEffect(new Reflection());
+	        JFXPanel panel = new JFXPanel();
+	        panel.setScene(scene);
+	        stack.getChildren().add(hello);
+	        displayFrame.getContentPane().add(panel, BorderLayout.EAST);
+	        */
+	        
+	        
+	        //Display the window.
+	        displayFrame.setSize(1600, 900);
+	        displayFrame.setVisible(true);
+	        displayFrame.setMinimumSize(new Dimension(600, 400));
+
 	    }
 		
 		//returns JList from createFileList
@@ -1238,6 +1433,47 @@ public class MainFrame extends JFrame {
 	        //add list to content pane
 			return MainFrame.createFileList(mainFrame);
 		}
+		
+		//returns JList from createFileList
+		public JList<String> getFileList(MainFrame mainFrame){
+	        //add list to content pane
+			return mainFrame.fileList;
+		}
+		
+		//sets fileList to dummy contents
+		public void setFileListDefault(){
+			String[] values = new String[] {
+					"Video.mp4", "Audio.mp3", "Media.gif", "Image.png"};
+			ArrayList<String> fileNames = new ArrayList<String>();
+			
+			for(String value : values){
+				fileNames.add(value);
+			}
+			
+			mainFrame.fileList.setModel(new DefaultListModel<String>()
+			{
+				
+				
+				public ArrayList<String> getFileNames() 
+				{
+					return fileNames;
+				}
+				
+				public int getSize() 
+				{
+					return fileNames.size();
+				}
+				
+				public String getElementAt(int index) {
+					return getFileNames().get(index);
+				}
+				
+				public void addElement(String newFile){
+					getFileNames().add(newFile);
+				}
+			});
+		}
+		
 		
 		//returns an image icon from the createImageIcon 
 		 public static ImageIcon createImageIcon(String path) {
@@ -1293,6 +1529,11 @@ public class MainFrame extends JFrame {
 		 //returns the current Viewer of the mainFrame
 		 public ImageViewer getCurrentViewer(){
 			 return mainFrame.currentViewer;
+		 }
+		 
+		 //sets the volumeSlider of the mainFrame to value
+		 public void setVolume(double value){
+			 mainFrame.volumeSlider.setValue(value);
 		 }
 		 
 			 

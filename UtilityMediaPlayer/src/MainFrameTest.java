@@ -61,11 +61,14 @@ public class MainFrameTest{
 	@Test
 	public void testCreateAndShowGUI(){
 		try{
-			JFrame frame = tester.createAndShowGUI();
+			MainFrame instanceFrame = tester.createAndShowGUI();
+			tester.mainFrame = instanceFrame;
+			JFrame frame = tester.getMainFrame().getFrame();
+			
 			assertEquals("createAndShowGUI does not have function to exit on close.",  JFrame.EXIT_ON_CLOSE, frame.getDefaultCloseOperation());
 			assertTrue("createAndShowGUI frame is not visible", frame.isVisible());
-			assertEquals("createandShowGUI does not have right width", 1600 , frame.getWidth());
-			assertEquals("createandShowGUI does not have right height", 800 , frame.getHeight());
+			assertTrue("createandShowGUI does not have right width", frame.getWidth() >= 1400);
+			assertTrue("createandShowGUI does not have right height", frame.getHeight() >= 700);
 			frame.getAccessibleContext();
 		}
 		catch(Exception e){
@@ -91,9 +94,13 @@ public class MainFrameTest{
 	@Test
 	public void testcreateFileList() {
 		try{
-			JList<String> jList = tester.createFileList();
-			assertTrue("Not correct number of elements being shown",jList.getModel().getSize() == 4);
-			assertTrue("List not in single selection mode" ,jList.getSelectionMode() == ListSelectionModel.SINGLE_SELECTION);
+			MainFrame instanceFrame = tester.createAndShowGUI();
+			tester.mainFrame = instanceFrame;
+			tester.setFileListDefault();
+			JList<String> filelist = tester.getFileList(instanceFrame);
+			
+			assertTrue("Not correct number of elements being shown",filelist.getModel().getSize() == 4);
+			assertTrue("List not in single selection mode" ,filelist.getSelectionMode() == ListSelectionModel.SINGLE_SELECTION);
 		}
 		catch(Exception e){
 			fail("Unexpected exception/error: " + e.toString());
@@ -169,11 +176,13 @@ public class MainFrameTest{
 	//test backFile
 	@Test
 	public void testBackFile(){
-		try{
-			JFrame controller = tester.createAndShowGUI();
-			int listSize = tester.getFileList().getModel().getSize();
+			MainFrame instanceFrame = tester.createAndShowGUI();
+			tester.mainFrame = instanceFrame;
+			JList<String> filelist = tester.getFileList(instanceFrame);
+			
+			int listSize = filelist.getModel().getSize();
 			int endindex = listSize - 1;
-			JList<String> filelist = tester.getFileList();
+			
 			assertEquals("initial file list does not contain correct selection index" , -1, filelist.getSelectedIndex());
 			tester.backFile();
 			assertEquals("intial file list does not loop to back" , endindex ,filelist.getSelectedIndex());
@@ -183,21 +192,18 @@ public class MainFrameTest{
 			assertEquals("file list does decrement to end - 2" , endindex - 2 ,filelist.getSelectedIndex());
 			tester.backFile();
 			assertEquals("file list does decrement to end - 3" , endindex - 3 ,filelist.getSelectedIndex());
-		}
-		catch(Exception e){
-			fail("Unexpected exception/error: " + e.toString());
-		}
 	}
 	
 	//test forwardFile operations
 	@Test
 	public void testForwardfile(){
 		try{
-			JFrame controller = tester.createAndShowGUI();
-			int listSize = tester.getFileList().getModel().getSize();
+			MainFrame instanceFrame = tester.createAndShowGUI();
+			tester.mainFrame = instanceFrame;
+			JList<String> filelist = tester.getFileList(instanceFrame);
+			int listSize = filelist.getModel().getSize();
 			int endindex = listSize - 1;
 			int startindex = 0;
-			JList<String> filelist = tester.getFileList();
 			assertEquals("initial file list does not contain correct selection index" , -1, filelist.getSelectedIndex());
 			tester.forwardFile();
 			assertEquals("initial file list does not loop to front" , startindex ,filelist.getSelectedIndex());
@@ -221,7 +227,11 @@ public class MainFrameTest{
 	@Test
 	public void testPlay(){
 		try{
-			JFrame controller = tester.createAndShowGUI();
+			MainFrame instanceFrame = tester.createAndShowGUI();
+			tester.mainFrame = instanceFrame;
+			JList<String> filelist = tester.getFileList(instanceFrame);
+			
+			
 			assertEquals("file does not start in empty mode", MainFrame.Mode.EMPTY, tester.getMode());
 			assertTrue("player is incorrectly initialized to an object", tester.getCurrentPlayer() == null);
 			tester.play();
@@ -229,45 +239,39 @@ public class MainFrameTest{
 			assertTrue("player is incorrectly initialized to an object", tester.getCurrentPlayer() == null);
 			
 			
-			
-			JList<String> filelist = tester.getFileList();
 			
 			//item 1
 			filelist.setSelectedIndex(0);
 			tester.play();
-			assertEquals("file does not play Video files of mp4", MainFrame.Mode.VIDEO, tester.getMode());
-			assertTrue("player doesn't create the videoPlayer on play", tester.getCurrentPlayer() instanceof VideoPlayer);
+			assertEquals("file does not play Video files of mp3", MainFrame.Mode.AUDIO, tester.getMode());
+			assertTrue("player doesn't create the musicPlayer on play", tester.getCurrentPlayer() instanceof MusicPlayer);
 			
 			tester.play();
-			assertEquals("file does not keep same mode on play/pause", MainFrame.Mode.VIDEO, tester.getMode());
-			assertTrue("player doesn't keep a videoPlayer on play/pause", tester.getCurrentPlayer() instanceof VideoPlayer);
+			assertEquals("file does not keep same mode on play/pause", MainFrame.Mode.AUDIO, tester.getMode());
+			assertTrue("player doesn't keep a musicPlayer on play/pause", tester.getCurrentPlayer() instanceof MusicPlayer);
+			assertFalse("player does not pause music player", ((MusicPlayer)tester.getCurrentPlayer()).playing  );
 
 			//item 2
 			filelist.setSelectedIndex(1);
 			tester.play();
-			assertEquals("file does not play Audio files of mp3", MainFrame.Mode.AUDIO, tester.getMode());
-			assertTrue("player doesn't create the musicPlayer on play", tester.getCurrentPlayer() instanceof MusicPlayer);
+			assertEquals("file does not play gif files", MainFrame.Mode.IMAGE, tester.getMode());
+			assertTrue("player doesn't create the imageViewer on play", tester.getCurrentViewer() instanceof ImageViewer);
 			tester.play();
-			assertEquals("file does not keep same mode on play/pause", MainFrame.Mode.AUDIO, tester.getMode());
-			assertTrue("player doesn't keep a musicPlayer on play/pause", tester.getCurrentPlayer() instanceof MusicPlayer);
+			assertEquals("file does not keep same mode on play/pause", MainFrame.Mode.IMAGE, tester.getMode());
+			assertTrue("player doesn't keep the imageViewer on play", tester.getCurrentViewer() instanceof ImageViewer);
 			
 			//item 3
-			filelist.setSelectedIndex(2);
+			filelist.setSelectedIndex(3);
 			tester.play();
 			assertEquals("file does not play Video files", MainFrame.Mode.VIDEO, tester.getMode());
 			assertTrue("player doesn't create the videoPlayer on play", tester.getCurrentPlayer() instanceof VideoPlayer);
 			tester.play();
 			assertEquals("file does not keep same mode on play/pause", MainFrame.Mode.VIDEO, tester.getMode());
 			assertTrue("player doesn't keep a videoPlayer on play/pause", tester.getCurrentPlayer() instanceof VideoPlayer);
+			assertTrue("player does not pause music player", ((VideoPlayer)tester.getCurrentPlayer()).hasVideo()  );
 			
 			//item 4
-			filelist.setSelectedIndex(3);
-			tester.play();
-			assertEquals("file does not play Video files", MainFrame.Mode.IMAGE, tester.getMode());
-			assertTrue("player doesn't create the imageViewer on play", tester.getCurrentViewer() instanceof ImageViewer);
-			tester.play();
-			assertEquals("file does not keep same mode on play/pause", MainFrame.Mode.IMAGE, tester.getMode());
-			assertTrue("player doesn't keep the imageViewer on play", tester.getCurrentViewer() instanceof ImageViewer);
+
 		}
 		catch(Exception e){
 			fail("Unexpected exception/error: " + e.toString());

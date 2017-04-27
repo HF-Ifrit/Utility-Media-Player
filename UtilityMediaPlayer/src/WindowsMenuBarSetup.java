@@ -46,6 +46,17 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.addActionListener(mainFrame.new openFile());
         menu.add(menuItem);
         
+        //OpenFile
+        menuItem = new JMenuItem("Import File to Library",
+                KeyEvent.VK_O);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"Save the current file to the UMP library.");
+
+        menuItem.addActionListener(mainFrame.new saveFile());
+        menu.add(menuItem);
+        
         //Play option
         menuItem = new JMenuItem("Play",
                 KeyEvent.VK_1);
@@ -78,6 +89,26 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Permanently saves file to a file location");
         menuItem.addActionListener(mainFrame.new savePlaylist());
+        menu.add(menuItem);
+        
+        //Order files by type
+        menuItem = new JMenuItem("Order by Type",
+                KeyEvent.VK_S);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"Rearranges the file list in order of media types.");
+        menuItem.addActionListener(mainFrame.new orderFileListByType());
+        menu.add(menuItem);
+        
+        //Order files by name
+        menuItem = new JMenuItem("Order by Name",
+                KeyEvent.VK_S);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"Rearranges the file list in alphabetical order.");
+        menuItem.addActionListener(mainFrame.new orderFileListByName());
         menu.add(menuItem);
         
         //
@@ -204,16 +235,17 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menu.add(menuItem);
         
         //Convert to GIF
-        menuItem = new JMenuItem("Convert to GIF");
+        menuItem = new JMenuItem("Convert to GIF...");
         menuItem.setMnemonic(KeyEvent.VK_G);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
         		KeyEvent.VK_G, ActionEvent.CTRL_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Converts set portion of video from moment into a GIF");
+        menuItem.addActionListener(mainFrame.new gifClip());
         menu.add(menuItem);
         
         //Extract audio track
-        menuItem = new JMenuItem("Extract Audio Track");
+        menuItem = new JMenuItem("Extract Audio Track...");
         menuItem.setMnemonic(KeyEvent.VK_T);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
         		KeyEvent.VK_T, ActionEvent.CTRL_MASK));
@@ -222,7 +254,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menu.add(menuItem);
         
         //Clip video
-        menuItem = new JMenuItem("Clip Video");
+        menuItem = new JMenuItem("Clip Video...");
         menuItem.getAccessibleContext().setAccessibleDescription("Create a clip of the currently playing video");
         menuItem.addActionListener(mainFrame.new clipVideo());
         menu.add(menuItem);
@@ -458,6 +490,17 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.addActionListener(mainFrame.new imageProperties());
         menu.add(menuItem);
         
+        menu.addSeparator();
+        
+      	//Gif to Video
+        menuItem = new JMenuItem("Convert Gif to Video",
+                KeyEvent.VK_V);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"If a .gif file is open, convert it to a new .mp4.");
+        menuItem.addActionListener(mainFrame.new gifToVideo());
+        menu.add(menuItem);
         
         
        
