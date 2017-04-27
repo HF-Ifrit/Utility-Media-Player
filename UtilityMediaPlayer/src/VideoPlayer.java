@@ -10,6 +10,8 @@ import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
+import uk.co.caprica.vlcj.player.MediaPlayer;
+import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 
@@ -23,6 +25,7 @@ public class VideoPlayer implements Player
 	private final Integer FFMPEG_CROP_AUDIO_PARAMETERS = new Integer(10);
 	
 	private boolean hasMedia;
+	private boolean finishedPlaying;
 	private String videoPath;
 	
 	private final String workingDir = System.getProperty("user.dir");
@@ -64,7 +67,24 @@ public class VideoPlayer implements Player
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		
 		hasMedia = false;
+		finishedPlaying = false;
 		player = mediaPlayerComponent.getMediaPlayer();	
+		player.addMediaPlayerEventListener(new MediaPlayerEventAdapter()
+				{
+					@Override
+					public void finished(MediaPlayer mediaPlayer)
+					{
+						SwingUtilities.invokeLater(new Runnable()
+								{
+									@Override
+									public void run()
+									{
+										finishedPlaying = true;
+									}
+								});
+					}
+					
+				});
 	}
 
 	public VideoPlayer(String filePath)
@@ -186,7 +206,7 @@ public class VideoPlayer implements Player
 	 */
 	public void seekVideo(long time)
 	{
-		if(player.isSeekable() && time > 0.0 && time < player.getLength())
+		if(player.isSeekable() && time >= 0.0 && time <= player.getLength())
 			player.setTime(time);
 	}
 
@@ -479,6 +499,14 @@ public class VideoPlayer implements Player
 	{
 		return hasMedia;
 	}
+	
+	/**
+	 * Determine if player has finished playing a video
+	 */
+	public boolean finishedPlaying()
+	{
+		return finishedPlaying;
+	}
 
 	//Player interface implementation
 	@Override
@@ -539,7 +567,9 @@ public class VideoPlayer implements Player
 		frame.setVisible(true);
 		v.playVideo();
 		Thread.sleep(1000);
-		v.extractAudio(MusicPlayer.MusicFormat.MP3);
+		v.skipPlayback();
+		Thread.sleep(1000);		
+		System.out.println(v.finishedPlaying());
 	}
 }
 

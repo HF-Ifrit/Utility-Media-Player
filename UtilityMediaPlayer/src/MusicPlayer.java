@@ -160,7 +160,6 @@ public class MusicPlayer implements Player {
 				musicPlayer.setOnReady(new Runnable() {
 					public void run() {
 						if (player != null) {
-							player.setVolume(1.0);
 							duration = media.getDuration();
 							updateValues();
 							songLoaded = true;
@@ -375,14 +374,6 @@ public class MusicPlayer implements Player {
 	
 	/* The commented out section is used if the MusicPlayer is not implemented as an Application. However, as of release time, it will be an Application. */
 	public MusicPlayer() {
-		player = null;
-		songLoaded = false;
-		volume = null;
-		duration = null;
-		playTime = null;
-		
-		mainFrame = new JFXPanel();
-						
 		player = null;
 		songLoaded = false;
 		volume = null;

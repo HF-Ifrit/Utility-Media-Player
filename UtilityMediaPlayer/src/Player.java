@@ -9,4 +9,5 @@ public interface Player
 	public void skipPlayback();
 	public void changePosition(long playbackPosition);
 	public Component showView();
+	public boolean finishedPlaying();
 }
