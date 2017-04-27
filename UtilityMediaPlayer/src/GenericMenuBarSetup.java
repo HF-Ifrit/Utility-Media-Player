@@ -431,11 +431,18 @@ public class GenericMenuBarSetup implements MenuBarSetup{
         menuItem.addActionListener(mainFrame.new imageProperties());
         menu.add(menuItem);
         
+        menu.addSeparator();
         
-        
-       
+      	//Gif to Video
+        menuItem = new JMenuItem("Convert Gif to Video",
+                KeyEvent.VK_V);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"If a .gif file is open, convert it to a new .mp4.");
+        menuItem.addActionListener(mainFrame.new gifToVideo());
         menu.add(menuItem);
-		
+
 		return menuBar;
 	}
 	
@@ -465,6 +472,7 @@ public class GenericMenuBarSetup implements MenuBarSetup{
         		KeyEvent.VK_F1, 0));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Opens window with help document/info");
+        menuItem.addActionListener(mainframe.new openHelpMenu());
         menu.add(menuItem);
         
         menu.addSeparator();
@@ -476,6 +484,7 @@ public class GenericMenuBarSetup implements MenuBarSetup{
         		KeyEvent.VK_F1, ActionEvent.SHIFT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Opens window with information about product and creators");
+        menuItem.addActionListener(mainframe.new openAboutInfo());
         menu.add(menuItem);
         
         menu.addSeparator();

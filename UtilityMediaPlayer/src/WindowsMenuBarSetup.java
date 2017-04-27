@@ -459,6 +459,17 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.addActionListener(mainFrame.new imageProperties());
         menu.add(menuItem);
         
+        menu.addSeparator();
+        
+      	//Gif to Video
+        menuItem = new JMenuItem("Convert Gif to Video",
+                KeyEvent.VK_V);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"If a .gif file is open, convert it to a new .mp4.");
+        menuItem.addActionListener(mainFrame.new gifToVideo());
+        menu.add(menuItem);
         
         
        

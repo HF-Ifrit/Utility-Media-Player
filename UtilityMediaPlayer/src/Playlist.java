@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 public class Playlist {
 	private ArrayList<URI> tracks;
 	private MainFrame frame;
+	private String name;
 	
 	/*If this file is valid, we add its URI to the internal list of URIs. */
 	public void addTrack(String fileName) {
@@ -26,8 +27,13 @@ public class Playlist {
 	}
 	
 	public void savePlaylist(String fileName) {
+		String path = "playlists";
+		File playlists = new File(path);
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter( new File(fileName)));
+			if (!playlists.exists()) {
+				playlists.mkdirs();
+			}
+			BufferedWriter writer = new BufferedWriter(new FileWriter( new File("directories" + System.getProperty("file.separator") + fileName)));
 			for (URI track : tracks) {
 				writer.write(track.toString());
 				writer.newLine();
@@ -55,6 +61,7 @@ public class Playlist {
 					}
 				}
 			}
+			reader.close();
 			return this;
 		}
 		catch (IOException e) {
@@ -69,14 +76,16 @@ public class Playlist {
 		return tracks;
 	}
 	
-	public Playlist(ArrayList<URI> uriList, MainFrame frame) {
+	public Playlist(ArrayList<URI> uriList, MainFrame frame, String name) {
 		this.tracks = uriList;
 		this.frame = frame;
+		this.name = name;
 	}
 	
-	public Playlist(MainFrame frame) {
+	public Playlist(MainFrame frame, String name) {
 		this.frame = frame;
 		this.tracks = new ArrayList<>();
+		this.name = name;
 	}
 	
 }

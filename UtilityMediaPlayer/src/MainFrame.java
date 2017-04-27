@@ -573,7 +573,7 @@ public class MainFrame extends JFrame {
 	private void addToPlaylist(){
 		if(currentFile != null){
 			if(playlist == null){
-				new Playlist(this);
+				playlist = new Playlist(this, "untitled");
 			}
 			playlist.addTrack(currentFile);
 		}
@@ -590,7 +590,7 @@ public class MainFrame extends JFrame {
 	private void openPlaylist(String filename){
 			if(filename != null){
 				if(playlist == null){
-					playlist = new Playlist(this);
+					JOptionPane.showMessageDialog(frame, "No playlist selected.");
 				}
 				playlist.loadPlaylist(filename);
 			}
@@ -613,8 +613,9 @@ public class MainFrame extends JFrame {
 		if( ! success) {
 			return false;
 		}
+		else 
+			setupViewer();
 		
-		else setupViewer();
 		return true;
 	}
 	
@@ -834,13 +835,18 @@ public class MainFrame extends JFrame {
 	
 	//pop up help info
 	private void openHelpMenu(){
-		//TODO create a pop-up
+		String about = "New media can be imported directly by inserting it in the \"media libraries\" folder." + "\n"
+				+ "External media can be opened using File >> Open File. " + "\n"
+				+ "Double-click media to play it.";
+		JOptionPane.showMessageDialog(null, about,"About", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	//pop up about info
 	private void openAboutInfo(){
-		//TODO create a pop-up
-	}
+		String about = "Utility Media Player" + "\n"
+				+ "Prerelease Version";
+		JOptionPane.showMessageDialog(null, about,"About", JOptionPane.INFORMATION_MESSAGE);
+		}
 	
 	
 	//temporary parse file system for supported formats
@@ -923,9 +929,16 @@ public class MainFrame extends JFrame {
 	
 	//controller for adding items to playlist
 	public class addToPlaylist implements ActionListener{
+		MainFrame frame = this.frame;
 		@Override
+		
 		public void actionPerformed(ActionEvent e) 
 		{
+			if (playlist == null) {
+				String fileName = JOptionPane.showInputDialog("Please name your playlist: ");
+				playlist = new Playlist(frame, fileName);
+				savePlaylist(fileName);
+			}
 			addToPlaylist();
 		}
 	}
@@ -936,7 +949,8 @@ public class MainFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) 
 		{
 			//TODO give savePlaylist a file name
-			savePlaylist("Playlist");
+			String fileName = JOptionPane.showInputDialog("Please name your playlist: ");
+			savePlaylist(fileName);
 		}
 	}
 	
@@ -1058,6 +1072,28 @@ public class MainFrame extends JFrame {
 						vPlayer.extractAudio(startTime, endTime, values[formatIndex]);
 					}
 				}	
+			}
+		}
+	}
+	
+	//controller for videoing gifs
+	public class gifToVideo implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentViewer == null) {
+				JOptionPane.showMessageDialog(null, "Gif-to-Video conversion failed; an image must be open first.","Video Conversion Warning", JOptionPane.WARNING_MESSAGE);
+			}
+			
+			else {
+				boolean success = currentViewer.gifToVideo();
+				if( ! success) {
+					JOptionPane.showMessageDialog(null, "Gif-to-Video conversion failed; ensure your image is of the proper type and accessible.","Video Conversion Warning", JOptionPane.WARNING_MESSAGE);
+				}
+				
+				else {
+					JOptionPane.showMessageDialog(null, "Gif-to-Video finished; your video is in the Output folder.","Video Conversion", JOptionPane.INFORMATION_MESSAGE);
+				}
 			}
 		}
 	}
@@ -1226,34 +1262,95 @@ public class MainFrame extends JFrame {
 		
 		
 		//returns frame created by createAndShowGUI for testing purposes
-		public JFrame createAndShowGUI() {
-	        //Create and set up the window.
-	        JFrame frame = new JFrame("UMP Controller");
-	        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		//creates gui 
+		public static MainFrame createAndShowGUI() {
 
-	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			
+			try {
+			       UIManager.setLookAndFeel("com.alee.laf.WebLookAndFeel");
+				 }
+			catch (Exception ex) {
+					ex.printStackTrace();
+				 }
+			
+			
+	        //Create and set up the window.
+	        JFrame displayFrame = new JFrame();
+	        displayFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+	        displayFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	 
 	        //Create and set up the content pane.
-	        MainFrame demo = new MainFrame(frame);
-	        mainFrame = demo;
-	        frame.setJMenuBar(demo.createTextMenuBar());
-	        frame.setContentPane(demo.createContentPane());
-	        demo.setFileList(MainFrame.createFileList(mainFrame));
-	        frame.getContentPane().add(demo.fileList, BorderLayout.WEST);
-	        frame.add(demo.createControlBar(), BorderLayout.PAGE_END);
-	        frame.add(demo.createTimeControl(), BorderLayout.SOUTH);
-	 
-	        //Display the window.
-	        frame.setSize(1600, 800);
-	        frame.setVisible(true);
+	        MainFrame demo = new MainFrame(displayFrame);
+	        displayFrame.setJMenuBar(demo.createTextMenuBar());
+	        displayFrame.setContentPane(demo.createContentPane());
+	        demo.setFileList(MainFrame.createFileList(demo));
+	        demo.scrollPane = new JScrollPane();
+	        demo.scrollPane.setPreferredSize(new Dimension(200,demo.fileList.getHeight() ));
+	        demo.scrollPane.setViewportView(demo.fileList);
+	        displayFrame.getContentPane().add(demo.scrollPane, BorderLayout.WEST);
+	        //displayFrame.add(demo.createTimeControl(), BorderLayout.SOUTH);
+	        displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
+	       
 	        
-	        return frame;
+	        
+	        //Display the window.
+	        displayFrame.setSize(1600, 900);
+	        displayFrame.setVisible(true);
+	        displayFrame.setMinimumSize(new Dimension(600, 400));
+	        
+	        return demo;
 	    }
 		
 		//returns JList from createFileList
 		public JList<String> createFileList(){
 	        //add list to content pane
 			return MainFrame.createFileList(mainFrame);
+		}
+		
+		//returns JList from createFileList
+		public JList<String> getFileList(MainFrame mainFrame){
+	        //add list to content pane
+			return mainFrame.fileList;
+		}
+		
+		//sets fileList to dummy contents
+		public void setFileListDefault(){
+			String[] values = new String[] {
+					"Video.mp4", "Audio.mp3", "Media.gif", "Image.png"};
+			ArrayList<String> fileNames = new ArrayList<String>();
+			
+			for(String value : values){
+				fileNames.add(value);
+			}
+			
+			mainFrame.fileList.setModel(new DefaultListModel<String>()
+			{
+				
+				
+				public ArrayList<String> getFileNames() 
+				{
+					return fileNames;
+				}
+				
+				public int getSize() 
+				{
+					return fileNames.size();
+				}
+				
+				public String getElementAt(int index) {
+					return getFileNames().get(index);
+				}
+				
+				public void addElement(String newFile){
+					getFileNames().add(newFile);
+				}
+			});
+		}
+		
+		public void setFileList(JList<String> fileList)
+		{
+			
 		}
 		
 		//returns an image icon from the createImageIcon 
@@ -1310,6 +1407,11 @@ public class MainFrame extends JFrame {
 		 //returns the current Viewer of the mainFrame
 		 public ImageViewer getCurrentViewer(){
 			 return mainFrame.currentViewer;
+		 }
+		 
+		 //sets the volumeSlider of the mainFrame to value
+		 public void setVolume(double value){
+			 mainFrame.volumeSlider.setValue(value);
 		 }
 		 
 			 
