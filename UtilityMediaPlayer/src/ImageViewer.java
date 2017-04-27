@@ -109,6 +109,9 @@ public class ImageViewer {
 		iv.setImage(currentIV.getImage());
 		
 		iv.setRotate(rotation);
+		
+		double newScale = currentIV.getScaleX();
+		iv.setScaleX(newScale);
 
 		Group root = new Group();
 		Scene scene = new Scene(root);
@@ -136,6 +139,8 @@ public class ImageViewer {
 		iv.setImage(currentIV.getImage());
 		
 		iv.setScaleX(newScale);
+		
+		iv.setRotate(currentIV.getRotate());
 
 		Group root = new Group();
 		Scene scene = new Scene(root);
