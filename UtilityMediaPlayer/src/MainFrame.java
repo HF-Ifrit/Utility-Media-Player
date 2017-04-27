@@ -640,31 +640,7 @@ public class MainFrame extends JFrame {
 		return (filename.endsWith(".gif") || filename.endsWith(".png") || filename.endsWith(".jpg"));
 	}
 	
-/*	public void filterFileList(String toFind) {
-		
-		
-		int size = fileListModel.size();
-		
-		for(int i = 0; i < size; i++) {
-			String test = fileListModel.get(0);
-			if( ! test.contains(toFind)) {
-				fileListModel.removeElement(obj)
-			}
-		}
-		
-        fileListModel.addElement(filename);
-        fileList.setSelectedValue(filename, true);
-        String path = file.getAbsolutePath();
-        fileLocationMap.put(filename, path);
-		
-		fileList.getModel().
-		for(String x : fileList) {
-			
-		}
-        getFrame().remove(this.fileList);
-        
-	}
-	*/
+	
 	//helper method to streamline closing video/music player windows
 	private void updateComponent(Component newComponent){
 		if(previousComponent != null){
