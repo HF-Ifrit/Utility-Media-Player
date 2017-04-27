@@ -20,7 +20,7 @@ import javafx.scene.paint.Color;
 
 public class HBoxBuilder extends HBox{
 	private static double SPACING = 25;
-	private static double LEFT_EDGE = 125;
+	private static double LEFT_EDGE = 100;
 	private static double FIT_VALUE = 40;
 	
 	protected DoubleProperty prefTileSize = new SimpleDoubleProperty(SPACING);
@@ -140,7 +140,7 @@ public class HBoxBuilder extends HBox{
 				
 				
 				hbox.prefTileSize.set(Math.max(SPACING, hbox.getWidth()));
-				double edge = SPACING + LEFT_EDGE;
+				double edge = (SPACING + LEFT_EDGE)* (hbox.getWidth() / 800.0);
 				for (Node child : swatch.getChildrenUnmodifiable()) {
 					Control tile = (Control) child;
 					if(!(child instanceof Label)){
@@ -201,11 +201,12 @@ public class HBoxBuilder extends HBox{
 
     	//modifies button sizes and locations based on 
     	hbox.layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
-    		@Override public void changed(ObservableValue<? extends Bounds> observableValue, Bounds oldBounds, Bounds newBounds) {
+    		@Override 
+    		public void changed(ObservableValue<? extends Bounds> observableValue, Bounds oldBounds, Bounds newBounds) {
 
 
     			hbox.prefTileSize.set(Math.max(SPACING, hbox.getWidth()));
-    			double edge = SPACING + hbox.prefTileSize.get();
+    			double edge = SPACING + LEFT_EDGE;
     			for (Node child : swatch.getChildrenUnmodifiable()) {
     				Control tile = (Control) child;
     				if(!(child instanceof Label)){
