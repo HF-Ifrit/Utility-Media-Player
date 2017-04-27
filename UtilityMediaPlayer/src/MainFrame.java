@@ -211,7 +211,7 @@ public class MainFrame extends JFrame {
 		menuBar = menuBarSetup.attachVideoMenu(menuBar, this);
 		
 		//build fourth menu as Audio tab
-		menuBar = menuBarSetup.attachAudioMenu(menuBar, this);
+		//menuBar = menuBarSetup.attachAudioMenu(menuBar, this);
 		
 		//build fifth menu as Image tab
 		menuBar = menuBarSetup.attachImageMenu(menuBar, this);
@@ -767,6 +767,20 @@ public class MainFrame extends JFrame {
 
 	//controller for image viewer Properties
 	public class imageProperties implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			currentViewer.imageProperties();
+		}
+	}
+	
+	//controller to rotate the image
+	public class rotate implements ActionListener{
+		private int degrees;
+		
+		rotate(int degrees){
+			this.degrees = degrees;
+		}
+		
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			currentViewer.imageProperties();
