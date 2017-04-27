@@ -545,16 +545,20 @@ public class VideoPlayer implements Player
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	public boolean gifClip(long startTime, long endTime) throws IOException
+	public boolean gifClip(long startTime, long endTime)
 	{
 		if(!hasMedia
 				|| startTime == endTime
 				|| startTime < 0 
-				|| startTime > player.getLength() 
+				|| startTime * 1000 > player.getLength() 
 				|| endTime < 0 
-				|| endTime > player.getLength()
+				|| endTime * 1000> player.getLength()
 				|| startTime > endTime)
+		{
+			System.out.println("Invalid time input. Either not within length of video (" + (player.getLength()/1000) + "s)"
+					+ "or start and end times are equal / swapped");
 			return false;
+		}
 		else
 		{
 			//ffmpeg command for converting video to gif:

@@ -1034,7 +1034,7 @@ public class MainFrame extends JFrame {
 						"Save audio track as...", 
 						JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 				
-				if(formatIndex != options.length-1)
+				if(formatIndex != options.length-1 || formatIndex == JOptionPane.CLOSED_OPTION)
 				{
 					String[] choices = {"Full", "Clip", "Cancel"};
 					
@@ -1057,21 +1057,111 @@ public class MainFrame extends JFrame {
 								"Input the end time for the audio clip in the following format:",
 								"HH:MM:SS");
 						
-						int startHour = Integer.parseInt(start.substring(0,2));
-						int startMinutes = Integer.parseInt(start.substring(3,5));
-						int startSeconds = Integer.parseInt(start.substring(6,8));
+						if(!start.contains(":") || !end.contains(":"))
+						{
+							JOptionPane.showMessageDialog(getFrame(), "Invalid time format");
+						}
+						else
+						{
+							int startHour = Integer.parseInt(start.substring(0,2));
+							int startMinutes = Integer.parseInt(start.substring(3,5));
+							int startSeconds = Integer.parseInt(start.substring(6,8));
+
+							int startTime = (startHour * 3600) + (startMinutes * 60) + startSeconds;
+
+							int endHour = Integer.parseInt(end.substring(0,2));
+							int endMinutes = Integer.parseInt(end.substring(3,5));
+							int endSeconds = Integer.parseInt(end.substring(6,8));
+
+							int endTime = (endHour * 3600) + (endMinutes * 60) + endSeconds;
+
+							vPlayer.extractAudio(startTime, endTime, values[formatIndex]);
+						}
 						
-						int startTime = (startHour * 3600) + (startMinutes * 60) + startSeconds;
-						
-						int endHour = Integer.parseInt(end.substring(0,2));
-						int endMinutes = Integer.parseInt(end.substring(3,5));
-						int endSeconds = Integer.parseInt(end.substring(6,8));
-						
-						int endTime = (endHour * 3600) + (endMinutes * 60) + endSeconds;
-						
-						vPlayer.extractAudio(startTime, endTime, values[formatIndex]);
 					}
 				}	
+			}
+		}
+	}
+	
+	//controller for clipping videos
+	public class clipVideo implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			if(mode.equals(MainFrame.Mode.VIDEO))
+			{
+				String start = JOptionPane.showInputDialog(getFrame(),
+						"Input the start time for the video clip in the following format:", 
+						"HH:MM:SS");
+
+				String end = JOptionPane.showInputDialog(getFrame(),
+						"Input the end time for the video clip in the following format:",
+						"HH:MM:SS");
+
+				if(!start.contains(":") || !end.contains(":"))
+				{
+					JOptionPane.showMessageDialog(getFrame(), "Invalid time format");
+				}
+				else
+				{
+					int startHour = Integer.parseInt(start.substring(0,2));
+					int startMinutes = Integer.parseInt(start.substring(3,5));
+					int startSeconds = Integer.parseInt(start.substring(6,8));
+
+					int startTime = (startHour * 3600) + (startMinutes * 60) + startSeconds;
+
+					int endHour = Integer.parseInt(end.substring(0,2));
+					int endMinutes = Integer.parseInt(end.substring(3,5));
+					int endSeconds = Integer.parseInt(end.substring(6,8));
+
+					int endTime = (endHour * 3600) + (endMinutes * 60) + endSeconds;
+
+					VideoPlayer vPlayer = (VideoPlayer)currentPlayer;
+					vPlayer.clipVideo(startTime, endTime);		
+				}
+			}
+		}
+	}
+
+	//controller for creating GIF from video
+	public class gifClip implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			if(mode.equals(MainFrame.Mode.VIDEO))
+			{
+				String start = JOptionPane.showInputDialog(getFrame(),
+						"Input the start time for the gif in the following format:", 
+						"HH:MM:SS");
+
+				String end = JOptionPane.showInputDialog(getFrame(),
+						"Input the end time for the gif in the following format:",
+						"HH:MM:SS");
+
+				if(!start.contains(":") || !end.contains(":"))
+				{
+					JOptionPane.showMessageDialog(getFrame(), "Invalid time format");
+				}
+				else
+				{
+					int startHour = Integer.parseInt(start.substring(0,2));
+					int startMinutes = Integer.parseInt(start.substring(3,5));
+					int startSeconds = Integer.parseInt(start.substring(6,8));
+
+					int startTime = (startHour * 3600) + (startMinutes * 60) + startSeconds;
+
+					int endHour = Integer.parseInt(end.substring(0,2));
+					int endMinutes = Integer.parseInt(end.substring(3,5));
+					int endSeconds = Integer.parseInt(end.substring(6,8));
+
+					int endTime = (endHour * 3600) + (endMinutes * 60) + endSeconds;
+
+					VideoPlayer vPlayer = (VideoPlayer)currentPlayer;
+					vPlayer.gifClip(startTime, endTime);		
+				}
 			}
 		}
 	}
@@ -1098,60 +1188,7 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
-	//controller for clipping videos
-	public class clipVideo implements ActionListener
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			if(mode.equals(MainFrame.Mode.VIDEO))
-			{
-				String start = JOptionPane.showInputDialog(getFrame(),
-						"Input the start time for the video clip in the following format:", 
-						"HH:MM:SS");
-				
-				String end = JOptionPane.showInputDialog(getFrame(),
-						"Input the end time for the video clip in the following format:",
-						"HH:MM:SS");
-				
-				if(!start.contains(":") || !end.contains(":"))
-				{
-					JOptionPane.showMessageDialog(getFrame(), "Invalid time format");
-				}
-				else
-				{
-					int startHour = Integer.parseInt(start.substring(0,2));
-					int startMinutes = Integer.parseInt(start.substring(3,5));
-					int startSeconds = Integer.parseInt(start.substring(6,8));
-					
-					int startTime = (startHour * 3600) + (startMinutes * 60) + startSeconds;
-					
-					int endHour = Integer.parseInt(end.substring(0,2));
-					int endMinutes = Integer.parseInt(end.substring(3,5));
-					int endSeconds = Integer.parseInt(end.substring(6,8));
-					
-					int endTime = (endHour * 3600) + (endMinutes * 60) + endSeconds;
-					
-					VideoPlayer vPlayer = (VideoPlayer)currentPlayer;
-					vPlayer.clipVideo(startTime, endTime);
-					
-							
-				}
-					
-			}
 	
-		}
-	}
-
-	//controller for creating GIF
-	public class gifClip implements ActionListener
-	{
-		@Override
-		public void actionPerformed(ActionEvent e)
-		{
-			
-		}
-	}
 	//controller for image viewer Properties
 	public class imageProperties implements ActionListener{
 		@Override
