@@ -76,6 +76,7 @@ public class MainFrame extends JFrame {
     private Playlist playlist;
     
     //current index of the playlist
+    private int playlistIndex;
     
     //players/viewers
     private Player currentPlayer;
@@ -327,7 +328,7 @@ public class MainFrame extends JFrame {
 		list = new JList<String>();
 		//TODO add file names here
 		ArrayList<String> playList = new ArrayList<String>();
-		playList.add("Play Lists");
+		playList.add("Play Lists: f");
 		
 		playListModel = new DefaultListModel<String>();
 		
@@ -731,14 +732,12 @@ public class MainFrame extends JFrame {
 	public void playListStart(){
 		int selectedindex = playListView.getSelectedIndex();
 		if(selectedindex < 0){
-			mode = Mode.EMPTY;
 			return;
 		}
-		else{
-			String filename = playListView.getModel().getElementAt(selectedindex);
-		}
+		listMode = Mode.PLAYLIST;
 		ArrayList<URI> tracks = playlist.getTracks();
 		String fileToPlay = tracks.get(0).getPath();
+		playlistIndex = 0;
 		play(fileToPlay);
 	}
 	
@@ -746,7 +745,14 @@ public class MainFrame extends JFrame {
 	public void advancePlaylist(){
 		String filename = "";
 		if(listMode == Mode.PLAYLIST){
-			
+			if((playlistIndex + 1) < playListView.getModel().getSize())
+				playlistIndex+=1;
+			else
+				return;
+			//plays selected playList index if if in bounds
+			if(playlistIndex >= 0 ){
+				playListView.setSelectedIndex(playlistIndex);
+			}
 		}
 	}
 	
@@ -755,26 +761,44 @@ public class MainFrame extends JFrame {
 		String filename = "";
 		Mode tempmode = Mode.EMPTY;
 		int selectedindex = fileList.getSelectedIndex();
+		int playlistSelectedIndex = playListView.getSelectedIndex();
 		if(selectedindex < 0){
-			mode = Mode.EMPTY;
-			return;
+			if(playlistSelectedIndex >= 0){
+				listMode = Mode.PLAYLIST;
+				filename = playlist.getTracks().get(playlistSelectedIndex).getPath();
+				tempmode = parseFileType(filename);
+			}
+			else{
+				mode = Mode.EMPTY;
+				return;
+			}
 		}
 		else{
+			listMode = Mode.FILELIST;
 			filename = fileList.getModel().getElementAt(selectedindex);
 			tempmode = parseFileType(filename);
 		}
-		/**
-		 * TODO
-		 * call respective player depending on mode
-		 */
+		mode = tempmode;
+		play(filename);
+	}
+	
+	//method for playing/pausing using the play button
+	public void playPause(){
+		if(mode != Mode.EMPTY)
+			playbackExecute();
+	}
+	
+	//overload that takes in a file name
+	public void play(String filename){
+		
 		//creates a new player for new file
 		if(filename != previousFile){
-			mode = tempmode;
+			
 			if(currentPlayer != null){
 				currentPlayer.clear();
 				currentPlayer = null;
 			}
-			createViews(filename);
+			
 			
 			
 		}
@@ -782,18 +806,16 @@ public class MainFrame extends JFrame {
 		else{
 			playbackExecute();
 		}	
-	}
-	
-	//overload that takes in a file name
-	public void play(String filename){
-		Mode tempmode = parseFileType(filename);
+		
 		if(filename != previousFile){
-			mode = tempmode;
 			if(currentPlayer != null){
 				currentPlayer.clear();
 				currentPlayer = null;
 			}
-			createPlayListViews(filename);
+			if(listMode == Mode.FILELIST)
+				createViews(filename);
+			else if (listMode == Mode.PLAYLIST)
+				createPlayListViews(filename);
 			
 			
 		}
