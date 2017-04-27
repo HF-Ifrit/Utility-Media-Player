@@ -19,7 +19,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
-import javax.swing.UIManager.LookAndFeelInfo;
 
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.*;
@@ -432,31 +431,6 @@ public class MainFrame extends JFrame {
     }
     
     /**
-     * creates a time controller for the frame
-     * @return JFXPanel holding the timeStamp slider
-     */
-    private JFXPanel createTimeControl(){
-    	/**
-    	 * creates player interface panel
-    	 */
-    	JFXPanel fxPanel = new JFXPanel();
-    	
-    	fxPanel.setScene(new Scene(HBoxBuilder.newTimeStampTrackerBar(this)));
-    	
-    	return fxPanel;
-    }
-    
-    /**
-     * combine both bars
-     */
-    private JFXPanel createBothControls(){
-    	JFXPanel fxPanel = new JFXPanel();
-    	
-    	
-    	return fxPanel;
-    }
-    
-    /**
      * Getters and Setters
      */
     
@@ -561,13 +535,6 @@ public class MainFrame extends JFrame {
 	void volumeChange() {
 		if ((mode == Mode.AUDIO) || (mode == Mode.VIDEO)) {
 			currentPlayer.volumeChange(volumeSlider.getValue());
-		}
-	}
-	
-	//changes time to slider value
-	void timeStampChange(){
-		if ((mode == Mode.AUDIO) || (mode == Mode.VIDEO)) {
-			//TODO
 		}
 	}
 	
@@ -762,14 +729,13 @@ public class MainFrame extends JFrame {
 	
 	//plays the current playList
 	public void playListStart(){
-		String filename = "";
 		int selectedindex = playListView.getSelectedIndex();
 		if(selectedindex < 0){
 			mode = Mode.EMPTY;
 			return;
 		}
 		else{
-			filename = playListView.getModel().getElementAt(selectedindex);
+			String filename = playListView.getModel().getElementAt(selectedindex);
 		}
 		ArrayList<URI> tracks = playlist.getTracks();
 		String fileToPlay = tracks.get(0).getPath();
@@ -965,11 +931,8 @@ public class MainFrame extends JFrame {
 		}
 	
 	
-	//temporary parse file system for supported formats
-	/**
-	 * TODO
-	 * will be implemented in a separate file management class
-	 */
+	//Parse file system for supported formats
+	
 	public Mode parseFileType(String file){
 		
 		//checks if ending filetype is video format
@@ -1125,7 +1088,6 @@ public class MainFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) 
 		{
 			String fileName;
-			//TODO give savePlaylist a file name
 			if (MainFrame.this.playlist.getName().isEmpty()) {
 				fileName = JOptionPane.showInputDialog("Please name your playlist: ");
 			}
