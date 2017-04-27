@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -22,17 +21,11 @@ import java.util.Map;
 import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.*;
 import javax.swing.border.BevelBorder;
-import javax.swing.text.html.Option;
 
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagLayout;
@@ -40,7 +33,6 @@ import java.awt.GridBagLayout;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
-import javafx.stage.FileChooser;
 
 
 //primary GUI window that will interact and control other modules
@@ -57,11 +49,6 @@ public class MainFrame extends JFrame {
 
 	
 	private JPanel contentPane;
-	private JMenuBar menuBar;
-	private JMenu menu, submenu;
-	private JMenuItem menuItem;
-	private JRadioButtonMenuItem rbMenuItem;
-	private JCheckBoxMenuItem cbMenuItem;
 	
 	//controlled viewable items
 	private Button playButton;
@@ -107,6 +94,9 @@ public class MainFrame extends JFrame {
     //player mode that is currently loaded
     private Mode mode;
     
+    //player mode for either fileList or playList
+    private Mode listMode;
+    
     //display modes
     private boolean fullscreenMode;
     
@@ -115,7 +105,7 @@ public class MainFrame extends JFrame {
     
     //enum to determine what mode the current controller is set to
     public enum Mode{
-    	EMPTY,VIDEO,IMAGE,AUDIO
+    	EMPTY,VIDEO,IMAGE,AUDIO,PLAYLIST,FILELIST
     }
 
 	/**
@@ -143,6 +133,7 @@ public class MainFrame extends JFrame {
 		currentPlayer = null;
 		previousFile = "";
 		mode = Mode.EMPTY;
+		listMode = Mode.EMPTY;
 		jfxControl = new JFXController(this);
 		currentViewer = new ImageViewer();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -324,7 +315,6 @@ public class MainFrame extends JFrame {
 		ArrayList<String> playList = new ArrayList<String>();
 		
 		playListModel = new DefaultListModel<String>();
-		playListModel.addElement("playList");
 		
 		for(String fileName : playList){
 			playListModel.addElement(fileName);
@@ -345,6 +335,7 @@ public class MainFrame extends JFrame {
 		list.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
 		
 		return list;
 	}
