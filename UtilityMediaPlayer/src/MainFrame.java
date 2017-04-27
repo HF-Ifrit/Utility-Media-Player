@@ -611,7 +611,21 @@ public class MainFrame extends JFrame {
 	}
 	
 	public void orderFileListByName() {
+		Enumeration<String> fileListEnum = fileListModel.elements();
+		ArrayList<String> toOrder = new ArrayList<String>();
 		
+		while(fileListEnum.hasMoreElements()) {
+			String next = fileListEnum.nextElement();
+			toOrder.add(next);
+		}
+		
+		//Sort by the natural ordering; for strings, this is lexicographical order.
+		toOrder.sort(null);
+		
+		fileListModel.clear();
+		for(String s : toOrder) {
+			fileListModel.addElement(s);
+		}
 	}
 	
 	private boolean isVideo(String filename) {
