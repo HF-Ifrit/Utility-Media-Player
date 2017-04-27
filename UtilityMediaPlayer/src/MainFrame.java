@@ -613,8 +613,9 @@ public class MainFrame extends JFrame {
 		if( ! success) {
 			return false;
 		}
+		else 
+			setupViewer();
 		
-		else setupViewer();
 		return true;
 	}
 	
@@ -1182,34 +1183,95 @@ public class MainFrame extends JFrame {
 		
 		
 		//returns frame created by createAndShowGUI for testing purposes
-		public JFrame createAndShowGUI() {
-	        //Create and set up the window.
-	        JFrame frame = new JFrame("UMP Controller");
-	        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		//creates gui 
+		public static MainFrame createAndShowGUI() {
 
-	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			
+			try {
+			       UIManager.setLookAndFeel("com.alee.laf.WebLookAndFeel");
+				 }
+			catch (Exception ex) {
+					ex.printStackTrace();
+				 }
+			
+			
+	        //Create and set up the window.
+	        JFrame displayFrame = new JFrame();
+	        displayFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+	        displayFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	 
 	        //Create and set up the content pane.
-	        MainFrame demo = new MainFrame(frame);
-	        mainFrame = demo;
-	        frame.setJMenuBar(demo.createTextMenuBar());
-	        frame.setContentPane(demo.createContentPane());
-	        demo.setFileList(MainFrame.createFileList(mainFrame));
-	        frame.getContentPane().add(demo.fileList, BorderLayout.WEST);
-	        frame.add(demo.createControlBar(), BorderLayout.PAGE_END);
-	        frame.add(demo.createTimeControl(), BorderLayout.SOUTH);
-	 
-	        //Display the window.
-	        frame.setSize(1600, 800);
-	        frame.setVisible(true);
+	        MainFrame demo = new MainFrame(displayFrame);
+	        displayFrame.setJMenuBar(demo.createTextMenuBar());
+	        displayFrame.setContentPane(demo.createContentPane());
+	        demo.setFileList(MainFrame.createFileList(demo));
+	        demo.scrollPane = new JScrollPane();
+	        demo.scrollPane.setPreferredSize(new Dimension(200,demo.fileList.getHeight() ));
+	        demo.scrollPane.setViewportView(demo.fileList);
+	        displayFrame.getContentPane().add(demo.scrollPane, BorderLayout.WEST);
+	        //displayFrame.add(demo.createTimeControl(), BorderLayout.SOUTH);
+	        displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
+	       
 	        
-	        return frame;
+	        
+	        //Display the window.
+	        displayFrame.setSize(1600, 900);
+	        displayFrame.setVisible(true);
+	        displayFrame.setMinimumSize(new Dimension(600, 400));
+	        
+	        return demo;
 	    }
 		
 		//returns JList from createFileList
 		public JList<String> createFileList(){
 	        //add list to content pane
 			return MainFrame.createFileList(mainFrame);
+		}
+		
+		//returns JList from createFileList
+		public JList<String> getFileList(MainFrame mainFrame){
+	        //add list to content pane
+			return mainFrame.fileList;
+		}
+		
+		//sets fileList to dummy contents
+		public void setFileListDefault(){
+			String[] values = new String[] {
+					"Video.mp4", "Audio.mp3", "Media.gif", "Image.png"};
+			ArrayList<String> fileNames = new ArrayList<String>();
+			
+			for(String value : values){
+				fileNames.add(value);
+			}
+			
+			mainFrame.fileList.setModel(new DefaultListModel<String>()
+			{
+				
+				
+				public ArrayList<String> getFileNames() 
+				{
+					return fileNames;
+				}
+				
+				public int getSize() 
+				{
+					return fileNames.size();
+				}
+				
+				public String getElementAt(int index) {
+					return getFileNames().get(index);
+				}
+				
+				public void addElement(String newFile){
+					getFileNames().add(newFile);
+				}
+			});
+		}
+		
+		public void setFileList(JList<String> fileList)
+		{
+			
 		}
 		
 		//returns an image icon from the createImageIcon 
@@ -1266,6 +1328,11 @@ public class MainFrame extends JFrame {
 		 //returns the current Viewer of the mainFrame
 		 public ImageViewer getCurrentViewer(){
 			 return mainFrame.currentViewer;
+		 }
+		 
+		 //sets the volumeSlider of the mainFrame to value
+		 public void setVolume(double value){
+			 mainFrame.volumeSlider.setValue(value);
 		 }
 		 
 			 
