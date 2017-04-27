@@ -165,7 +165,7 @@ public class MainFrame extends JFrame {
 		
 		
         //Create and set up the window.
-        JFrame displayFrame = new JFrame();
+        JFrame displayFrame = new JFrame("Utility Media Player");
         displayFrame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         displayFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -474,13 +474,14 @@ public class MainFrame extends JFrame {
      * operations called by actionListeneers
      */
     
-	//move file selection unit forward one index
+	//move file selection unit back one index
 	void backFile(){
 		int setIndex = fileList.getModel().getSize() - 1;
 		if(fileList.getSelectedIndex() > 0)
 			fileList.setSelectedIndex(fileList.getSelectedIndex() - 1);
 		else
 			fileList.setSelectedIndex(setIndex);
+		play();
 	}
 	
 	//sets window to fullscreen
@@ -843,6 +844,8 @@ public class MainFrame extends JFrame {
 			fileList.setSelectedIndex(fileList.getSelectedIndex() + 1);
 		else
 			fileList.setSelectedIndex(setIndex);
+		
+		play();
 	}
 	
 	//pop up help info
