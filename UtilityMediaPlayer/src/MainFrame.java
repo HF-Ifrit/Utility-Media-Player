@@ -15,6 +15,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
@@ -563,6 +564,7 @@ public class MainFrame extends JFrame {
 	
 	public boolean mirrorImageVertically() {
 		boolean error = currentViewer.mirrorImageVertically();
+		
 		if(error) {
 			return false;
 		}
@@ -571,6 +573,60 @@ public class MainFrame extends JFrame {
 		return true;
 	}
 	
+	public void orderFileListByType() {
+		Enumeration<String> fileList = fileListModel.elements();
+		
+		ArrayList<String> videos = new ArrayList<String>();
+		ArrayList<String> audio = new ArrayList<String>();
+		ArrayList<String> images = new ArrayList<String>();
+		
+		while(fileList.hasMoreElements()) {
+			String next = fileList.nextElement();
+			if()
+		}
+	}
+	
+	public void orderFileListByName() {
+		
+	}
+	
+	private boolean isVideo(String filename) {
+		return (filename.endsWith(".mp4") || filename.endsWith(".webm"));
+	}
+	
+	private boolean isAudio(String filename) {
+		return (filename.endsWith(".mp3") || filename.endsWith(".flac"));
+	}
+	
+	private boolean isImage(String filename) {
+		return (filename.endsWith(".gif") || filename.endsWith(".png") || filename.endsWith(".jpg"));
+	}
+	
+/*	public void filterFileList(String toFind) {
+		
+		
+		int size = fileListModel.size();
+		
+		for(int i = 0; i < size; i++) {
+			String test = fileListModel.get(0);
+			if( ! test.contains(toFind)) {
+				fileListModel.removeElement(obj)
+			}
+		}
+		
+        fileListModel.addElement(filename);
+        fileList.setSelectedValue(filename, true);
+        String path = file.getAbsolutePath();
+        fileLocationMap.put(filename, path);
+		
+		fileList.getModel().
+		for(String x : fileList) {
+			
+		}
+        getFrame().remove(this.fileList);
+        
+	}
+	*/
 	//helper method to streamline closing video/music player windows
 	private void updateComponent(Component newComponent){
 		if(previousComponent != null){
