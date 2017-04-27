@@ -66,25 +66,18 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		KeyEvent.VK_A, ActionEvent.CTRL_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Adds current loaded files to playlist");
+        menuItem.addActionListener(mainFrame.new addToPlaylist());
         menu.add(menuItem);
         
-        
-        //SavePlayList
-        menuItem = new JMenuItem("Save Playlist",
-                KeyEvent.VK_P);
-        menuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_P, ActionEvent.CTRL_MASK));
-        menuItem.getAccessibleContext().setAccessibleDescription(
-        		"Saves playlist in a temporary cache that can be used later");
-        menu.add(menuItem);
         
         //SavePlaylistToFile
-        menuItem = new JMenuItem("Save Playlist To File",
-                KeyEvent.VK_F);
+        menuItem = new JMenuItem("Save Playlist",
+                KeyEvent.VK_S);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_F, ActionEvent.CTRL_MASK));
+        		KeyEvent.VK_S, ActionEvent.CTRL_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Permanently saves file to a file location");
+        menuItem.addActionListener(mainFrame.new savePlaylist());
         menu.add(menuItem);
         
         //
@@ -109,7 +102,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
 	/**creates the viewMenu tab and attaches it to input
 	 * @param menuBar the JMenuBar that the function will attach the view menu section to
 	 */
-	public JMenuBar attachViewMenu(JMenuBar menuBar, MainFrame mainframe){
+	public JMenuBar attachViewMenu(JMenuBar menuBar, MainFrame mainFrame){
 		//temporary loading spaces on creation
 		JMenu menu, submenu;
 		JMenuItem menuItem;
@@ -124,11 +117,12 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
  
         //ViewPlaylist
         menuItem = new JMenuItem("Open Playlist",
-                KeyEvent.VK_L);
+                KeyEvent.VK_P);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-        		KeyEvent.VK_L, ActionEvent.CTRL_MASK));
+        		KeyEvent.VK_P, ActionEvent.CTRL_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Opens a file explorer to find file location");
+        menuItem.addActionListener(mainFrame.new openPlaylist());
         menu.add(menuItem);
         
         
@@ -143,6 +137,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		KeyEvent.VK_F, ActionEvent.CTRL_MASK));
         cbMenuItem.getAccessibleContext().setAccessibleDescription(
         		"Puts GUI into a fullscreen mode");
+        cbMenuItem.addActionListener(mainFrame.new fullscreen());
         menu.add(cbMenuItem);
         
         //ShowFiles
@@ -152,6 +147,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		KeyEvent.VK_I, ActionEvent.CTRL_MASK));
         cbMenuItem.getAccessibleContext().setAccessibleDescription(
         		"Displays the available files in the left sidebar");
+        cbMenuItem.addActionListener(mainFrame.new hideItems());
         menu.add(cbMenuItem);
         
 
@@ -172,7 +168,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
 	/**creates the videoMenu tab and attaches it to input
 	 * @param menuBar the JMenuBar that the function will attach the video menu section to
 	 */
-	public JMenuBar attachVideoMenu(JMenuBar menuBar, MainFrame mainframe){
+	public JMenuBar attachVideoMenu(JMenuBar menuBar, MainFrame mainFrame){
 		//temporary loading spaces on creation
 		JMenu menu, submenu;
 		JMenuItem menuItem;
@@ -204,7 +200,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		KeyEvent.VK_2, ActionEvent.ALT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Saves an image of video screen at moment");
-        menuItem.addActionListener(mainframe.new capture());
+        menuItem.addActionListener(mainFrame.new capture());
         menu.add(menuItem);
         
         //Convert to GIF
@@ -218,8 +214,11 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         
         //Extract audio track
         menuItem = new JMenuItem("Extract Audio Track");
+        menuItem.setMnemonic(KeyEvent.VK_T);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_T, ActionEvent.CTRL_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription("Saves the audio track of the currently playing video to the output folder");
-        menuItem.addActionListener(mainframe.new extractAudio());
+        menuItem.addActionListener(mainFrame.new extractAudio());
         menu.add(menuItem);
         
         //Clip video
@@ -310,7 +309,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
 		return menuBar;
 	}
 	
-	public JMenuBar attachAudioMenu(JMenuBar menuBar, MainFrame mainframe){
+	public JMenuBar attachAudioMenu(JMenuBar menuBar, MainFrame mainFrame){
 		//temporary loading spaces on creation
 		JMenu menu, submenu;
 		JMenuItem menuItem;
@@ -473,7 +472,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
 	 * creates the helpMenu tab and attaches it to input
 	 * @param menuBar the JMenuBar that the function will attach the help menu section to
 	 */
-	public JMenuBar attachHelpMenu(JMenuBar menuBar, MainFrame mainframe){
+	public JMenuBar attachHelpMenu(JMenuBar menuBar, MainFrame mainFrame){
 		//temporary loading spaces on creation
 		JMenu menu, submenu;
 		JMenuItem menuItem;
@@ -493,6 +492,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		KeyEvent.VK_F1, 0));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Opens window with help document/info");
+        menuItem.addActionListener(mainFrame.new openHelpMenu());
         menu.add(menuItem);
         
         menu.addSeparator();
@@ -504,6 +504,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		KeyEvent.VK_F1, ActionEvent.SHIFT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Opens window with information about product and creators");
+        menuItem.addActionListener(mainFrame.new openAboutInfo());
         menu.add(menuItem);
 
 		return menuBar;
