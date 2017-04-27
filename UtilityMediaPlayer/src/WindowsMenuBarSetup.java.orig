@@ -91,17 +91,37 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.addActionListener(mainFrame.new savePlaylist());
         menu.add(menuItem);
         
+<<<<<<< HEAD
         //ViewPlaylist
         menuItem = new JMenuItem("Open Playlist",
                 KeyEvent.VK_P);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
         		KeyEvent.VK_P, ActionEvent.CTRL_MASK));
+=======
+        //Order files by type
+        menuItem = new JMenuItem("Order by Type",
+                KeyEvent.VK_M);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_M, ActionEvent.CTRL_MASK));
+>>>>>>> fee5478e9b7549647ccb71bff4463645bc9a8139
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Opens a file explorer to find file location");
         menuItem.addActionListener(mainFrame.new openPlaylist());
         menu.add(menuItem);
         
+<<<<<<< HEAD
 
+=======
+        //Order files by name
+        menuItem = new JMenuItem("Order by Name",
+                KeyEvent.VK_N);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"Rearranges the file list in alphabetical order.");
+        menuItem.addActionListener(mainFrame.new orderFileListByName());
+        menu.add(menuItem);
+>>>>>>> fee5478e9b7549647ccb71bff4463645bc9a8139
         
         //
         
@@ -274,14 +294,14 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.addActionListener(mainFrame.new clipVideo());
         menu.add(menuItem);
         //Video display options
-        //menu.addSeparator();
+        menu.addSeparator();
         
         
         
         
-/*        *//**
+        /**
          * Aspect Ratio
-         *//*
+         */
         submenu = new JMenu("Aspect Ratio");
         submenu.setMnemonic(KeyEvent.VK_R);
 
@@ -313,9 +333,9 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         //add Aspect Ratios to main view
         menu.add(submenu);
         
-        *//**
+        /**
          * Crop Ratios
-         *//*
+         */
         submenu = new JMenu("Crop");
         submenu.setMnemonic(KeyEvent.VK_C);
 
@@ -349,7 +369,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         submenu.add(rbMenuItem);
         
         //add Crop Ratios to main view
-        menu.add(submenu);*/
+        menu.add(submenu);
         
         
 		
