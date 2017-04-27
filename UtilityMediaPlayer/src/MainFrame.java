@@ -838,6 +838,8 @@ public class MainFrame extends JFrame {
 		           fileList.setSelectedValue(filename, true);
 		           String path = file.getAbsolutePath();
 		           fileLocationMap.put(filename, path);
+		           play();
+		           
 			 }
 			
 		}
