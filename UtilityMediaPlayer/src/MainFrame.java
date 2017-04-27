@@ -38,14 +38,7 @@ import java.awt.GridBagLayout;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
-import javafx.scene.effect.Reflection;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 
 
 //primary GUI window that will interact and control other modules
@@ -78,10 +71,14 @@ public class MainFrame extends JFrame {
 	
 	JTextArea output;
     JScrollPane scrollPane;
+    JScrollPane playListScroll;
     JList<String> fileList;
+    JList<String> playListView;
     
      //reference to the file Lists' model for graphics
     private static DefaultListModel<String> fileListModel;
+    //reference to the playList's model for graphics
+    private static DefaultListModel<String> playListModel;
     //mappings of external file names to locations
     private Map<String, String> fileLocationMap;
     
@@ -177,11 +174,19 @@ public class MainFrame extends JFrame {
         MainFrame demo = new MainFrame(displayFrame);
         displayFrame.setJMenuBar(demo.createTextMenuBar());
         displayFrame.setContentPane(demo.createContentPane());
+        
         demo.setFileList(createFileList(demo));
         demo.scrollPane = new JScrollPane();
         demo.scrollPane.setPreferredSize(new Dimension(200,demo.fileList.getHeight() ));
         demo.scrollPane.setViewportView(demo.fileList);
         displayFrame.getContentPane().add(demo.scrollPane, BorderLayout.WEST);
+        
+        demo.setPlayListView(createPlayListView(demo));
+        demo.playListScroll =  new JScrollPane();
+        demo.playListScroll.setPreferredSize(new Dimension(200, demo.playListView.getHeight()));
+        demo.playListScroll.setViewportView(demo.playListView);
+        displayFrame.getContentPane().add(demo.playListScroll, BorderLayout.EAST);
+        
         //displayFrame.add(demo.createTimeControl(), BorderLayout.SOUTH);
         displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
        
@@ -284,7 +289,7 @@ public class MainFrame extends JFrame {
 		fileList.removeAll(improper);
 	}
 	
-	//creates the sideView for file of lists
+	//creates the listView for file of lists
 	private static JList<String> createFileList(MainFrame mainFrame){
 		JList<String> list;
 		list = new JList<String>();
@@ -292,6 +297,7 @@ public class MainFrame extends JFrame {
 		ArrayList<String> video = MainFrame.getFolderContents(MainFrame.VIDEO_PATH);
 		ArrayList<String> images = MainFrame.getFolderContents(MainFrame.IMAGE_PATH);
 		ArrayList<String> fileList = new ArrayList<String>();
+		
 		fileList.addAll(audio);
 		fileList.addAll(video);
 		fileList.addAll(images);
@@ -304,33 +310,6 @@ public class MainFrame extends JFrame {
 		list.setModel(fileListModel);
 		
 		
-		/*
-		list.setModel(new DefaultListModel<String>()
-		{
-			String[] values = new String[] {
-					"Video.mp4", "Audio.mp3", "Media.gif", "Image.png"};
-			
-			ArrayList<String> fileNames = fileList;
-			
-			public ArrayList<String> getFileNames() 
-			{
-				return fileNames;
-			}
-			
-			public int getSize() 
-			{
-				return fileNames.size();
-			}
-			
-			public String getElementAt(int index) {
-				return getFileNames().get(index);
-			}
-			
-			public void addElement(String newFile){
-				getFileNames().add(newFile);
-			}
-		});
-		*/
 		
 		//listener for double clicks
 		list.addMouseListener(new MouseAdapter(){
@@ -342,16 +321,46 @@ public class MainFrame extends JFrame {
 		    }
 		});
 		
-		list.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		list.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		return list;
 	}
 	
+	//create the listView for playlist files
+	private static JList<String> createPlayListView(MainFrame mainFrame){
+		JList<String> list;
+		list = new JList<String>();
+		//TODO add file names here
+		ArrayList<String> playList = new ArrayList<String>();
+		
+		playListModel = new DefaultListModel<String>();
+		playListModel.addElement("playList");
+		
+		for(String fileName : playList){
+			playListModel.addElement(fileName);
+		}
+		
+		list.setModel(playListModel);
+
+		list.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		return list;
+	}
+	
+
+	
 	//sets the MainFrame's fileList variable
 	public void setFileList(JList<String> fileList){
 		this.fileList = fileList;
+	}
+	
+	//sets MainFrame's playList variable
+	public void setPlayListView(JList<String> playListView){
+		this.playListView = playListView;
 	}
 	
 	
@@ -1206,7 +1215,7 @@ public class MainFrame extends JFrame {
 		
 		//returns frame created by createAndShowGUI for testing purposes
 		//creates gui 
-		public static MainFrame createAndShowGUI() {
+		private static void createAndShowGUI() {
 
 			
 			try {
@@ -1227,22 +1236,44 @@ public class MainFrame extends JFrame {
 	        MainFrame demo = new MainFrame(displayFrame);
 	        displayFrame.setJMenuBar(demo.createTextMenuBar());
 	        displayFrame.setContentPane(demo.createContentPane());
+	        
 	        demo.setFileList(MainFrame.createFileList(demo));
 	        demo.scrollPane = new JScrollPane();
 	        demo.scrollPane.setPreferredSize(new Dimension(200,demo.fileList.getHeight() ));
 	        demo.scrollPane.setViewportView(demo.fileList);
 	        displayFrame.getContentPane().add(demo.scrollPane, BorderLayout.WEST);
+	        
+	        demo.setPlayListView(MainFrame.createPlayListView(demo));
+	        demo.playListScroll =  new JScrollPane();
+	        demo.playListScroll.setPreferredSize(new Dimension(200, demo.playListView.getHeight()));
+	        demo.playListScroll.setViewportView(demo.playListView);
+	        displayFrame.getContentPane().add(demo.playListScroll, BorderLayout.EAST);
+	        
 	        //displayFrame.add(demo.createTimeControl(), BorderLayout.SOUTH);
 	        displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
 	       
+
+
+	        /*
+	        StackPane stack = new StackPane();
+	        Scene scene = new Scene(stack,300,300);
+	        Text hello = new Text("Hello");
+	        
+	        scene.setFill(Color.BLACK);
+	        hello.setFill(Color.WHEAT);
+	        hello.setEffect(new Reflection());
+	        JFXPanel panel = new JFXPanel();
+	        panel.setScene(scene);
+	        stack.getChildren().add(hello);
+	        displayFrame.getContentPane().add(panel, BorderLayout.EAST);
+	        */
 	        
 	        
 	        //Display the window.
 	        displayFrame.setSize(1600, 900);
 	        displayFrame.setVisible(true);
 	        displayFrame.setMinimumSize(new Dimension(600, 400));
-	        
-	        return demo;
+
 	    }
 		
 		//returns JList from createFileList
@@ -1291,10 +1322,6 @@ public class MainFrame extends JFrame {
 			});
 		}
 		
-		public void setFileList(JList<String> fileList)
-		{
-			
-		}
 		
 		//returns an image icon from the createImageIcon 
 		 public static ImageIcon createImageIcon(String path) {
