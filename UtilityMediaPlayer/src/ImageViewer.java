@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import javax.swing.JOptionPane;
+
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -76,7 +78,7 @@ public class ImageViewer {
 		currentIV = iv;
 		mainScene = scene;
 		currentFile = f;
-
+		
 		return true;
 	}
 
@@ -85,13 +87,13 @@ public class ImageViewer {
 	}
 
 	boolean rotateImage(boolean clockwise) {
-
+		
 		if (openImage == false) {
 			return false;
 		}
-
+				
 		double rotation = currentIV.getRotate();
-
+		
 		if (clockwise) {
 			rotation += CLOCKWISE;
 		}
@@ -103,17 +105,21 @@ public class ImageViewer {
 		// Adjust result to be in the range [0, 360).
 		rotation = rotation % 360.0;
 
-		currentIV.setRotate(rotation);
+		ImageView iv = new ImageView();
+		iv.setImage(currentIV.getImage());
+		
+		iv.setRotate(rotation);
 
 		Group root = new Group();
 		Scene scene = new Scene(root);
-		scene.setFill(Color.WHITE);
+		scene.setFill(Color.BLACK);
 		HBox box = new HBox();
-		box.getChildren().add(currentIV);
+		box.getChildren().add(iv);
 		root.getChildren().add(box);
 
+		currentIV = iv;
 		mainScene = scene;
-
+		
 		return true;
 	}
 
@@ -125,16 +131,20 @@ public class ImageViewer {
 
 		// Keep the current X scaling, but reverse it with respect to the axis
 		double newScale = currentIV.getScaleX() * -1;
-
-		currentIV.setScaleX(newScale);
+		
+		ImageView iv = new ImageView();
+		iv.setImage(currentIV.getImage());
+		
+		iv.setScaleX(newScale);
 
 		Group root = new Group();
 		Scene scene = new Scene(root);
 		scene.setFill(Color.BLACK);
 		HBox box = new HBox();
-		box.getChildren().add(currentIV);
+		box.getChildren().add(iv);
 		root.getChildren().add(box);
 
+		currentIV = iv;
 		mainScene = scene;
 
 		return true;

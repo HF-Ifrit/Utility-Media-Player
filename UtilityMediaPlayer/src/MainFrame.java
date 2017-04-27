@@ -597,9 +597,9 @@ public class MainFrame extends JFrame {
 		}
 	
 	private boolean rotateImage(boolean clockwise) {
-		boolean error = currentViewer.rotateImage(clockwise);
+		boolean success = currentViewer.rotateImage(clockwise);
 		
-		if(error) {
+		if( ! success) {
 			return false;
 		}
 		
@@ -608,20 +608,20 @@ public class MainFrame extends JFrame {
 	}
 	
 	public boolean mirrorImage() {
-		boolean error = currentViewer.mirrorImage();
+		boolean success = currentViewer.mirrorImage();
 		
-		if(error) {
+		if( ! success) {
 			return false;
 		}
 		
-		else setupViewer();	
+		else setupViewer();
 		return true;
 	}
 	
 	public boolean mirrorImageVertically() {
-		boolean error = currentViewer.mirrorImageVertically();
+		boolean success = currentViewer.mirrorImageVertically();
 		
-		if(error) {
+		if( ! success) {
 			return false;
 		}
 		
