@@ -76,6 +76,7 @@ public class Playlist {
 	
 	public Playlist(MainFrame frame) {
 		this.frame = frame;
+		this.tracks = new ArrayList<>();
 	}
 	
 }
