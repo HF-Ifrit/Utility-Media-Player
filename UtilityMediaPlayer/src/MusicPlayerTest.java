@@ -140,7 +140,16 @@ public class MusicPlayerTest {
 	@Test
 	public void formatTimeDurationZero() {
 		Duration dur = new Duration(0);
-		System.out.println(MusicPlayer.formatTime(new Duration(7200000), dur));
-		assertTrue(MusicPlayer.formatTime(new Duration(7200), dur).equals("2:00:00"));
+		assertTrue(MusicPlayer.formatTime(new Duration(7200000), dur).equals("2:00:00"));
+		assertTrue(MusicPlayer.formatTime(new Duration(120000), dur).equals("02:00"));
+		assertTrue(MusicPlayer.formatTime(new Duration(2000), dur).equals("00:02"));
+	}
+	
+	@Test
+	public void formatTimeGoodduration() {
+		Duration dur = new Duration(7200000);
+		assertTrue(MusicPlayer.formatTime(new Duration(2000), dur).equals("0:00:02/2:00:00"));
+		assertTrue(MusicPlayer.formatTime(new Duration(120000), dur).equals("0:02:00/2:00:00"));
+		assertTrue(MusicPlayer.formatTime(new Duration(7200000), dur).equals("2:00:00/2:00:00"));
 	}
 }

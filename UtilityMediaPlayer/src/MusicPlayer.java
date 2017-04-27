@@ -243,7 +243,6 @@ public class MusicPlayer implements Player {
 		}
 		int elapsedMinutes = intElapsed / 60;
 		int elapsedSeconds = intElapsed - elapsedMinutes * 60;
-		System.out.println(elapsedSeconds);
 
 		if (duration.greaterThan(Duration.ZERO)) {
 			int intDuration = (int) Math.floor(duration.toSeconds());
@@ -252,7 +251,7 @@ public class MusicPlayer implements Player {
 				intDuration -= durationHours * 60 * 60;
 			}
 			int durationMinutes = intDuration / 60;
-			int durationSeconds = intDuration - durationHours * 60 * 60 - durationMinutes * 60;
+			int durationSeconds = intDuration - durationMinutes * 60;
 			if (durationHours > 0) {
 				return String.format("%d:%02d:%02d/%d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds,
 						durationHours, durationMinutes, durationSeconds);
