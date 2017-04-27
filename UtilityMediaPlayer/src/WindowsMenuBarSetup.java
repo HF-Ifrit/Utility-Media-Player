@@ -204,6 +204,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		KeyEvent.VK_2, ActionEvent.ALT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Saves an image of video screen at moment");
+        menuItem.addActionListener(mainframe.new capture());
         menu.add(menuItem);
         
         //Convert to GIF
@@ -215,6 +216,11 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		"Converts set portion of video from moment into a GIF");
         menu.add(menuItem);
         
+        //Extract audio track
+        menuItem = new JMenuItem("Extract Audio Track");
+        menuItem.getAccessibleContext().setAccessibleDescription("Saves the audio track of the currently playing video to the output folder");
+        menuItem.addActionListener(mainframe.new extractAudio());
+        menu.add(menuItem);
         //Video display options
         menu.addSeparator();
         
@@ -412,17 +418,22 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         submenu.setMnemonic(KeyEvent.VK_T);
         
         menuItem = new JMenuItem("Flip Horizontally");
+        menuItem.addActionListener(mainFrame.new rotate(true));
         submenu.add(menuItem);
         
         menuItem = new JMenuItem("Flip Vertically");
+        menuItem.addActionListener(mainFrame.new rotate(false));
         submenu.add(menuItem);
         
         submenu.addSeparator();
         
         menuItem = new JMenuItem("Rotate Clockwise 90°");
+        menuItem.addActionListener(mainFrame.new rotate(true));
         submenu.add(menuItem);
         
         menuItem = new JMenuItem("Rotate Counter-Clockwise 90°");
+        menuItem.addActionListener(mainFrame.new rotate(false));
+        
         submenu.add(menuItem);
         
         
@@ -488,9 +499,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Opens window with information about product and creators");
         menu.add(menuItem);
-        
-        menu.addSeparator();
-		
+
 		return menuBar;
 	}
 

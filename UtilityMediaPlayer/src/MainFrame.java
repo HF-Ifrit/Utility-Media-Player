@@ -28,6 +28,8 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.*;
 import javax.swing.border.BevelBorder;
+import javax.swing.text.html.Option;
+
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagLayout;
@@ -212,7 +214,7 @@ public class MainFrame extends JFrame {
 		menuBar = menuBarSetup.attachVideoMenu(menuBar, this);
 		
 		//build fourth menu as Audio tab
-		menuBar = menuBarSetup.attachAudioMenu(menuBar, this);
+		//menuBar = menuBarSetup.attachAudioMenu(menuBar, this);
 		
 		//build fifth menu as Image tab
 		menuBar = menuBarSetup.attachImageMenu(menuBar, this);
@@ -640,31 +642,7 @@ public class MainFrame extends JFrame {
 		return (filename.endsWith(".gif") || filename.endsWith(".png") || filename.endsWith(".jpg"));
 	}
 	
-/*	public void filterFileList(String toFind) {
-		
-		
-		int size = fileListModel.size();
-		
-		for(int i = 0; i < size; i++) {
-			String test = fileListModel.get(0);
-			if( ! test.contains(toFind)) {
-				fileListModel.removeElement(obj)
-			}
-		}
-		
-        fileListModel.addElement(filename);
-        fileList.setSelectedValue(filename, true);
-        String path = file.getAbsolutePath();
-        fileLocationMap.put(filename, path);
-		
-		fileList.getModel().
-		for(String x : fileList) {
-			
-		}
-        getFrame().remove(this.fileList);
-        
-	}
-	*/
+	
 	//helper method to streamline closing video/music player windows
 	private void updateComponent(Component newComponent){
 		if(previousComponent != null){
@@ -839,11 +817,8 @@ public class MainFrame extends JFrame {
 		           String path = file.getAbsolutePath();
 		           fileLocationMap.put(filename, path);
 		           play();
-		           
 			 }
-			
 		}
-		
 	}
 	
 	//controller for play menu option
@@ -856,12 +831,95 @@ public class MainFrame extends JFrame {
 		}
 		
 	}
+	
+	//controller for video player screen capture
+	public class capture implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			if(mode.equals(MainFrame.Mode.VIDEO))
+			{
+				VideoPlayer vPlayer = (VideoPlayer)currentPlayer;
+				vPlayer.captureScreen(ImageViewer.ImageFormat.PNG);
+			}
+		}
+	}
+	
+	//controller for video player audio track extraction
+	public class extractAudio implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			if(mode.equals(MainFrame.Mode.VIDEO))
+			{
+				VideoPlayer vPlayer = (VideoPlayer)currentPlayer;
+				MusicPlayer.MusicFormat[] values = MusicPlayer.MusicFormat.values();
+				
+				//create options for the joptionpane from our list of available music formats
+				String[] options = new String[values.length + 1];
+				for(int i = 0; i < values.length; i++)
+					options[i] = values[i].toString();
+				
+				options[options.length - 1] = "Cancel"; //adding cancel to the list of options
+				
+				//based on which index is clicked from the options, use the corresponding format index for extraction, unless it's the cancel button
+				int formatIndex = JOptionPane.showOptionDialog(getFrame(), 
+						"What format would you like to save the audio track as?", 
+						"Save audio track as...", 
+						JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+				
+				if(formatIndex != options.length-1)
+					vPlayer.extractAudio(values[formatIndex]);
+			}
+		}
+	}
 
 	//controller for image viewer Properties
 	public class imageProperties implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			currentViewer.imageProperties();
+			if(currentViewer != null)
+				currentViewer.imageProperties();
+		}
+	}
+	
+	//controller to rotate the image
+	public class rotate implements ActionListener{
+		private boolean clockwise;
+		
+		rotate(boolean clockwise){
+			this.clockwise = clockwise;
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentViewer != null)
+				currentViewer.rotateImage(true);
+			
+		}
+	}
+	
+	//controller to flip the image
+	public class flip implements ActionListener{
+		//whether to flip horizontally or not
+		private boolean direction;
+		
+		flip(boolean direction){
+			this.direction = direction;
+		}
+		
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentViewer != null){
+				if(direction)
+					currentViewer.mirrorImage();
+				else
+					currentViewer.mirrorImageVertically();
+			}
+				
+			
 		}
 	}
 	

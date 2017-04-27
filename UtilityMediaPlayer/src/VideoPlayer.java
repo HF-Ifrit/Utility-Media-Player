@@ -1,24 +1,37 @@
 import java.awt.AWTException;
+import java.awt.BorderLayout;
+import java.awt.Canvas;
 import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
-
 public class VideoPlayer implements Player
 {		
 	private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
 	private final EmbeddedMediaPlayer player;
+	private PlayerControlsPanel controlPanel;
 	
 	private final Integer FFMPEG_GIF_PARAMETERS = new Integer(12);
 	private final Integer FFMPEG_EXTRACT_AUDIO_PARAMETERS = new Integer(7);
@@ -59,6 +72,188 @@ public class VideoPlayer implements Player
 	   	 }
 	}
 
+	//Control panel for position and time sliders from 
+	//https://github.com/caprica/vlcj/blob/master/src/test/java/uk/co/caprica/vlcj/test/basic/PlayerControlsPanel.java
+	private class PlayerControlsPanel extends JPanel 
+	{
+
+		private static final long serialVersionUID = 1L;
+
+		private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+
+		private final EmbeddedMediaPlayer mediaPlayer;
+
+		private JLabel timeLabel;
+		//		    private JProgressBar positionProgressBar;
+		private JSlider positionSlider;
+
+		private boolean mousePressedPlaying = false;
+
+		public PlayerControlsPanel(EmbeddedMediaPlayer mediaPlayer) {
+			this.mediaPlayer = mediaPlayer;
+
+			createUI();
+
+			executorService.scheduleAtFixedRate(new UpdateRunnable(mediaPlayer), 0L, 1L, TimeUnit.SECONDS);
+		}
+
+		private void createUI() {
+			createControls();
+			layoutControls();
+			registerListeners();
+		}
+
+		private void createControls() {
+			timeLabel = new JLabel("hh:mm:ss");
+
+			// positionProgressBar = new JProgressBar();
+			// positionProgressBar.setMinimum(0);
+			// positionProgressBar.setMaximum(1000);
+			// positionProgressBar.setValue(0);
+			// positionProgressBar.setToolTipText("Time");
+
+			positionSlider = new JSlider();
+			positionSlider.setMinimum(0);
+			positionSlider.setMaximum(1000);
+			positionSlider.setValue(0);
+			positionSlider.setToolTipText("Position");
+
+
+		}
+
+		private void layoutControls() 
+		{
+			setBorder(new EmptyBorder(4, 4, 4, 4));
+
+			setLayout(new BorderLayout());
+
+			JPanel positionPanel = new JPanel();
+			positionPanel.setLayout(new GridLayout(1, 1));
+			// positionPanel.add(positionProgressBar);
+			positionPanel.add(positionSlider);
+
+			JPanel topPanel = new JPanel();
+			topPanel.setLayout(new BorderLayout(8, 0));
+
+			topPanel.add(timeLabel, BorderLayout.WEST);
+			topPanel.add(positionPanel, BorderLayout.CENTER);
+
+			add(topPanel, BorderLayout.NORTH);
+		}
+
+		/**
+		 * Broken out position setting, handles updating mediaPlayer
+		 */
+		private void setSliderBasedPosition() {
+			if(!mediaPlayer.isSeekable()) {
+				return;
+			}
+			float positionValue = positionSlider.getValue() / 1000.0f;
+			// Avoid end of file freeze-up
+			if(positionValue > 0.99f) {
+				positionValue = 0.99f;
+			}
+			mediaPlayer.setPosition(positionValue);
+		}
+
+		private void updateUIState() {
+			if(!mediaPlayer.isPlaying()) {
+				// Resume play or play a few frames then pause to show current position in video
+				mediaPlayer.play();
+				if(!mousePressedPlaying) {
+					try {
+						// Half a second probably gets an iframe
+						Thread.sleep(500);
+					}
+					catch(InterruptedException e) {
+						// Don't care if unblocked early
+					}
+					mediaPlayer.pause();
+				}
+			}
+			long time = mediaPlayer.getTime();
+			int position = (int)(mediaPlayer.getPosition() * 1000.0f);
+
+			updateTime(time);
+			updatePosition(position);
+		}
+
+		private void skip(int skipTime) {
+			// Only skip time if can handle time setting
+			if(mediaPlayer.getLength() > 0) {
+				mediaPlayer.skip(skipTime);
+				updateUIState();
+			}
+		}
+
+		private void registerListeners() 
+		{
+			positionSlider.addMouseListener(new MouseAdapter() 
+			{
+				@Override
+				public void mousePressed(MouseEvent e) 
+				{
+					if(mediaPlayer.isPlaying()) {
+						mousePressedPlaying = true;
+						mediaPlayer.pause();
+					}
+					else {
+						mousePressedPlaying = false;
+					}
+					setSliderBasedPosition();
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent e) 
+				{
+					setSliderBasedPosition();
+					updateUIState();
+				}
+			});
+		}
+
+		private final class UpdateRunnable implements Runnable 
+		{
+
+			private final MediaPlayer mediaPlayer;
+
+			private UpdateRunnable(MediaPlayer mediaPlayer) {
+				this.mediaPlayer = mediaPlayer;
+			}
+
+			@Override
+			public void run() 
+			{
+				final long time = mediaPlayer.getTime();
+				final int position = (int)(mediaPlayer.getPosition() * 1000.0f);
+
+
+				// Updates to user interface components must be executed on the Event
+				// Dispatch Thread
+				SwingUtilities.invokeLater(new Runnable() 
+				{
+					@Override
+					public void run() {
+						if(mediaPlayer.isPlaying()) {
+							updateTime(time);
+							updatePosition(position);
+						}
+					}
+				});
+			}
+		}
+
+		private void updateTime(long millis) {
+			String s = String.format("%02d:%02d:%02d", TimeUnit.MILLISECONDS.toHours(millis), TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)), TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis)));
+			timeLabel.setText(s);
+		}
+
+		private void updatePosition(int value) {
+			// positionProgressBar.setValue(value);
+			positionSlider.setValue(value);
+		}
+	}
+	
 	//Constructors
 	public VideoPlayer()
 	{
@@ -82,9 +277,10 @@ public class VideoPlayer implements Player
 										finishedPlaying = true;
 									}
 								});
-					}
-					
+					}	
 				});
+		controlPanel = new PlayerControlsPanel(player);
+		mediaPlayerComponent.add(controlPanel, BorderLayout.SOUTH);
 	}
 
 	public VideoPlayer(String filePath)
@@ -110,7 +306,7 @@ public class VideoPlayer implements Player
 	}
 
 	/**
-	 * Reveals the video player frame
+	 * Creates the player on a new thread
 	 */
 	private void showPlayer()
 	{	
@@ -122,6 +318,7 @@ public class VideoPlayer implements Player
 				new VideoPlayer();
 			}
 		});
+		controlPanel.setVisible(true);
 	}
 
 	/**
@@ -286,7 +483,7 @@ public class VideoPlayer implements Player
 				return false;
 			}
 			
-			if(startTime == endTime)
+			if(startTime == endTime) //Determine if we need to crop any audio for a clip or if we can leave the entire file saved
 			{
 				System.out.println("Audio extracted to " + output);
 				return (exitVal == 0);
@@ -554,7 +751,11 @@ public class VideoPlayer implements Player
 	@Override
 	public Component showView() 
 	{
-		return mediaPlayerComponent.getVideoSurface();
+		Canvas c = mediaPlayerComponent.getVideoSurface();
+		 
+		
+		return mediaPlayerComponent;
+		//return mediaPlayerComponent.getVideoSurface();
 	}
 	
 	public static void main(String[] args) throws InterruptedException, AWTException, FileNotFoundException, IOException
@@ -566,10 +767,6 @@ public class VideoPlayer implements Player
 		frame.setContentPane(v.mediaPlayerComponent);
 		frame.setVisible(true);
 		v.playVideo();
-		Thread.sleep(1000);
-		v.skipPlayback();
-		Thread.sleep(1000);		
-		System.out.println(v.finishedPlaying());
 	}
 }
 
