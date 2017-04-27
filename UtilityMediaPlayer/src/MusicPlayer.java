@@ -32,6 +32,7 @@ public class MusicPlayer implements Player {
 	boolean songLoaded;
 	boolean isPaused;
 	boolean playing;
+	boolean mediaFinished;
 	MediaPlayer player;
 	Slider volume;
 	Slider time;
@@ -63,9 +64,9 @@ public class MusicPlayer implements Player {
    	 }
     }
 	
-	/*The method that starts when the MusicPlayer is run. Used for testing purposes.
-	 * @see javafx.application.Application#start(javafx.stage.Stage)
-	 */
+//	/*The method that starts when the MusicPlayer is run. Used for testing purposes/if implementing as Application.
+//	 * @see javafx.application.Application#start(javafx.stage.Stage)
+//	 */
 	public void start(Stage primaryStage) {
 		
 		primaryStage.setTitle("Music Player");
@@ -93,9 +94,9 @@ public class MusicPlayer implements Player {
 		
 		mainScene = new Scene(grid, 300, 300);
 		
-//		songTitle = makeLabel("Title: ", 0, 0, grid);
-//		artist = makeLabel("Artist: ", 0, 1, grid);
-//		albumTitle = makeLabel("Album: ", 0, 2, grid);
+		songTitle = makeLabel("Title: ", 0, 0, 0, grid);
+		artist = makeLabel("Artist: ", 0, 1, 0, grid);
+		albumTitle = makeLabel("Album: ", 0, 2, 0, grid);
 
 		//Create the play/pause button and add its event handler.
 		Button play = makeButton("Play/Pause", 0, 8, grid);
@@ -160,11 +161,15 @@ public class MusicPlayer implements Player {
 				musicPlayer.setOnReady(new Runnable() {
 					public void run() {
 						if (player != null) {
-							player.setVolume(1.0);
 							duration = media.getDuration();
 							updateValues();
 							songLoaded = true;
 							playing = true;
+							player.setOnEndOfMedia(new Runnable() {
+								public void run() {
+									mediaFinished = true;
+								}
+							});
 							musicPlayer.play();
 	        				}
 						}
@@ -310,6 +315,10 @@ public class MusicPlayer implements Player {
 		}
 	}
 	
+	public boolean finishedMedia() {
+		return mediaFinished;
+	}
+	
 	public Component showView() {
 		return mainFrame;
 	}
@@ -380,15 +389,6 @@ public class MusicPlayer implements Player {
 		volume = null;
 		duration = null;
 		playTime = null;
-		
-		mainFrame = new JFXPanel();
-						
-		player = null;
-		songLoaded = false;
-		volume = null;
-		duration = null;
-		playTime = null;
-
 		songTitle = null;
 		albumImage = new ImageView();
 		mainFrame = new JFXPanel();
