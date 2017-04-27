@@ -46,6 +46,17 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menuItem.addActionListener(mainFrame.new openFile());
         menu.add(menuItem);
         
+        //Play option
+        menuItem = new JMenuItem("Play",
+                KeyEvent.VK_1);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_1, ActionEvent.CTRL_MASK));
+        menuItem.getAccessibleContext().setAccessibleDescription(
+        		"Opens a file explorer to find file location");
+
+        menuItem.addActionListener(mainFrame.new play());
+        menu.add(menuItem);
+        
         
         
         //AddToPlaylist

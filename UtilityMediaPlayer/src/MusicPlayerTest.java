@@ -4,11 +4,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.After;
 import org.junit.Test;
-
-import javafx.application.Application;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.media.MediaException;
-import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 

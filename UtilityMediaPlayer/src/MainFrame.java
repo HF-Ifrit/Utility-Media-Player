@@ -8,12 +8,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 
@@ -57,8 +60,11 @@ public class MainFrame extends JFrame {
 	private JMenuItem menuItem;
 	private JRadioButtonMenuItem rbMenuItem;
 	private JCheckBoxMenuItem cbMenuItem;
+	
+	//controlled viewable items
 	private Button playButton;
 	private Slider volumeSlider;
+	private Slider timeStampSlider;
 	
 	//JFX controllers
 	private JFXController jfxControl;
@@ -156,7 +162,9 @@ public class MainFrame extends JFrame {
         displayFrame.setContentPane(demo.createContentPane());
         demo.setFileList(createFileList(demo));
         displayFrame.getContentPane().add(demo.fileList, BorderLayout.WEST);
+        //displayFrame.add(demo.createTimeControl(), BorderLayout.SOUTH);
         displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
+       
 
 
         /*
@@ -372,9 +380,33 @@ public class MainFrame extends JFrame {
     	 * creates player interface panel
     	 */
     	JFXPanel fxPanel = new JFXPanel();
-    	GridPane grid = new GridPane();
     	
     	fxPanel.setScene(new Scene(HBoxBuilder.newHBoxBar(this)));
+    	
+    	return fxPanel;
+    }
+    
+    /**
+     * creates a time controller for the frame
+     * @return JFXPanel holding the timeStamp slider
+     */
+    private JFXPanel createTimeControl(){
+    	/**
+    	 * creates player interface panel
+    	 */
+    	JFXPanel fxPanel = new JFXPanel();
+    	
+    	fxPanel.setScene(new Scene(HBoxBuilder.newTimeStampTrackerBar(this)));
+    	
+    	return fxPanel;
+    }
+    
+    /**
+     * combine both bars
+     */
+    private JFXPanel createBothControls(){
+    	JFXPanel fxPanel = new JFXPanel();
+    	
     	
     	return fxPanel;
     }
@@ -461,13 +493,51 @@ public class MainFrame extends JFrame {
 		}	
 	}
 	
-	//TODO: Fix volume
+	//changes volume to slider value
 	public void volumeChange() {
 		if ((mode == Mode.AUDIO) || (mode == Mode.VIDEO)) {
 			currentPlayer.volumeChange(volumeSlider.getValue());
 		}
 	}
-
+	
+	//changes time to slider value
+	public void timeStampChange(){
+		if ((mode == Mode.AUDIO) || (mode == Mode.VIDEO)) {
+			//TODO
+		}
+	}
+	
+	public boolean saveInLibrary(File toSave) {
+		if(toSave == null) return false;
+		
+		try {
+			if(toSave.getName().endsWith(".gif") || toSave.getName().endsWith(".png") || toSave.getName().endsWith(".jpg")) {
+				String pathname = IMAGE_PATH + toSave.getName();
+				
+				Files.copy(Paths.get(toSave.getAbsolutePath()), Paths.get(pathname), StandardCopyOption.REPLACE_EXISTING);
+				return true;
+			}
+			
+			else if (toSave.getName().endsWith(".mp4") || toSave.getName().endsWith(".webm")) {
+				String pathname = VIDEO_PATH + toSave.getName();
+				
+				Files.copy(Paths.get(toSave.getAbsolutePath()), Paths.get(pathname), StandardCopyOption.REPLACE_EXISTING);
+				return true;
+			}
+			
+			else if (toSave.getName().endsWith(".mp3") || toSave.getName().endsWith(".flac")) {
+				String pathname = AUDIO_PATH + toSave.getName();
+				
+				Files.copy(Paths.get(toSave.getAbsolutePath()), Paths.get(pathname), StandardCopyOption.REPLACE_EXISTING);
+				return true;
+			}
+			
+		} catch (IOException e) {
+			return false;
+		}
+		
+		return false;
+	}
 	
 	public boolean rotateImage(boolean clockwise) {
 		boolean error = currentViewer.rotateImage(clockwise);
@@ -556,21 +626,18 @@ public class MainFrame extends JFrame {
 	private void createViews(String filename){
 		this.previousFile = filename;
 		if(mode == Mode.AUDIO){
-			//TODO testing checks
 			String tempFilename = "media libraries/audio/" + filename;
 			filename = verifyFilePath(filename, tempFilename);
 			currentPlayer = new MusicPlayer();
 			setupPlayers(filename);
 		}
 		if(mode == Mode.VIDEO){
-			//TODO testing checks
 			String tempFilename = "media libraries/video/" + filename;
 			filename = verifyFilePath(filename, tempFilename);
 			currentPlayer = new VideoPlayer();
 			setupPlayers(filename);
 		}
 		if(mode == Mode.IMAGE){
-			//TODO testing checks
 			String tempFilename = "media libraries/images/" + filename;
 			filename = verifyFilePath(filename, tempFilename);
 			currentViewer.open(filename);
@@ -645,6 +712,17 @@ public class MainFrame extends JFrame {
 		return volumeSlider;
 	}
 	
+	//sets the timestampSlider reference to the selected reference
+	public void setTimeStampSlider(Slider timeStamp){
+		this.timeStampSlider = timeStamp;
+	}
+	
+	public Slider getTimeStampSlider(){
+		return timeStampSlider;
+	}
+	
+	
+	
 	/**
 	 *TODO 
 	 *integrate actions with other components
@@ -672,6 +750,16 @@ public class MainFrame extends JFrame {
 		
 	}
 	
+	//controller for play menu option
+	public class play implements ActionListener{
+
+		@Override
+		public void actionPerformed(ActionEvent e) 
+		{
+			play();
+		}
+		
+	}
 
 	//controller for image viewer Properties
 	public class imageProperties implements ActionListener{
@@ -746,7 +834,8 @@ public class MainFrame extends JFrame {
 	        frame.setContentPane(demo.createContentPane());
 	        demo.setFileList(MainFrame.createFileList(mainFrame));
 	        frame.getContentPane().add(demo.fileList, BorderLayout.WEST);
-	        frame.add(demo.createControlBar(), BorderLayout.SOUTH);
+	        frame.add(demo.createControlBar(), BorderLayout.PAGE_END);
+	        frame.add(demo.createTimeControl(), BorderLayout.SOUTH);
 	 
 	        //Display the window.
 	        frame.setSize(1600, 800);

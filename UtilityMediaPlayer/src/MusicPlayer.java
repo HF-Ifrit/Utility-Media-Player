@@ -1,10 +1,8 @@
 import java.awt.Component;
 import java.io.*;
-
-import javax.swing.JFrame;
-
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaPlayer.Status;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.scene.media.Media;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -39,9 +37,9 @@ public class MusicPlayer implements Player {
 	Slider time;
 	Duration duration;
 	Label playTime;
-	Label songTitle;
-	Label albumTitle;
-	Label artist;
+	Text songTitle;
+	Text albumTitle;
+	Text artist;
 	ImageView albumImage;
 	Scene mainScene;
 	JFXPanel mainFrame;
@@ -95,12 +93,9 @@ public class MusicPlayer implements Player {
 		
 		mainScene = new Scene(grid, 300, 300);
 		
-		songTitle = makeLabel("Title: ", 0, 0, grid);
-		artist = makeLabel("Artist: ", 0, 1, grid);
-		albumTitle = makeLabel("Album: ", 0, 2, grid);
-		
-		//TODO
-		//set the image section here.
+//		songTitle = makeLabel("Title: ", 0, 0, grid);
+//		artist = makeLabel("Artist: ", 0, 1, grid);
+//		albumTitle = makeLabel("Album: ", 0, 2, grid);
 
 		//Create the play/pause button and add its event handler.
 		Button play = makeButton("Play/Pause", 0, 8, grid);
@@ -178,8 +173,6 @@ public class MusicPlayer implements Player {
 		}
 	}
 		
-	
-	//TODO Add album, artist, image?
 	private void setMetadata(String key, Object value) {
 		if (key.equals("title")) {
 			songTitle.setText(songTitle.getText() + value.toString());
@@ -190,7 +183,6 @@ public class MusicPlayer implements Player {
 		if (key.equals("artist")) {
 			artist.setText(artist.getText() + value.toString());
 		}
-		//TODO:
 		if (key.equals("image")) {
 			albumImage.setImage((Image)value);
 		}
@@ -370,14 +362,14 @@ public class MusicPlayer implements Player {
 		return slider;
 	}
 	
-	private Label makeLabel(String id, int column, int row, GridPane grid) {
-		Label label = new Label();
-		label.setId(id);
-		label.setText(id);
-		label.setPrefWidth(300);
-		label.setMinWidth(50);
-		grid.add(label, column, row);
-		return label;
+	private Text makeLabel(String id, int column, int row, int size, GridPane grid) {
+		Text text = new Text(id);
+		text.setText(id);
+		text.setFont(new Font(size));
+		text.prefWidth(300);
+		text.minWidth(50);
+		grid.add(text, column, row);
+		return text;
 	}
 	
 	
@@ -425,16 +417,15 @@ public class MusicPlayer implements Player {
 		grid.setVgap(10);
 		grid.setPadding(new Insets(2,25,25,25));
 			
-		mainScene = new Scene(grid, 300, 300);
+		mainScene = new Scene(grid, 400, 400);
 			
-		songTitle = makeLabel("Title: ", 0, 0, grid);
-		artist = makeLabel("Artist: ", 0, 1, grid);
-		albumTitle = makeLabel("Album: ", 0, 2, grid);
+		songTitle = makeLabel("", 1, 1, 20, grid);
+		artist = makeLabel("Artist: ", 2, 1, 15, grid);
+		albumTitle = makeLabel("Album: ", 2, 2, 15, grid);
 			
-		albumImage = new ImageView();
 		albumImage.setFitHeight(300.0);
 		albumImage.setFitWidth(300.0);
-		grid.add(albumImage, 1, 1);
+		grid.add(albumImage, 1, 0);
 			
 		//Create the time slider and add its event handler.
 //		playTime = new Label("Time :");
