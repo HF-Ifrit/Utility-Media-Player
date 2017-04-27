@@ -876,7 +876,7 @@ public class MainFrame extends JFrame {
 		if(mode == Mode.VIDEO){
 			String tempFilename = "media libraries/video/" + filename;
 			filename = verifyFilePath(filename, tempFilename);
-			currentPlayer = new VideoPlayer();
+			currentPlayer = new VideoPlayer(this);
 			currentFile = filename;
 			setupPlayers(filename);
 		}
@@ -898,7 +898,7 @@ public class MainFrame extends JFrame {
 			setupPlayers(filename);
 		}
 		if(mode == Mode.VIDEO){
-			currentPlayer = new VideoPlayer();
+			currentPlayer = new VideoPlayer(this);
 			currentFile = filename;
 			setupPlayers(filename);
 		}
