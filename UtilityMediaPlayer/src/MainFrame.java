@@ -8,12 +8,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.swing.*;
 import javax.swing.UIManager.LookAndFeelInfo;
 
@@ -503,7 +508,38 @@ public class MainFrame extends JFrame {
 			//TODO
 		}
 	}
-
+	
+	public boolean saveInLibrary(File toSave) {
+		if(toSave == null) return false;
+		
+		try {
+			if(toSave.getName().endsWith(".gif") || toSave.getName().endsWith(".png") || toSave.getName().endsWith(".jpg")) {
+				String pathname = IMAGE_PATH + toSave.getName();
+				
+				Files.copy(Paths.get(toSave.getAbsolutePath()), Paths.get(pathname), StandardCopyOption.REPLACE_EXISTING);
+				return true;
+			}
+			
+			else if (toSave.getName().endsWith(".mp4") || toSave.getName().endsWith(".webm")) {
+				String pathname = VIDEO_PATH + toSave.getName();
+				
+				Files.copy(Paths.get(toSave.getAbsolutePath()), Paths.get(pathname), StandardCopyOption.REPLACE_EXISTING);
+				return true;
+			}
+			
+			else if (toSave.getName().endsWith(".mp3") || toSave.getName().endsWith(".flac")) {
+				String pathname = AUDIO_PATH + toSave.getName();
+				
+				Files.copy(Paths.get(toSave.getAbsolutePath()), Paths.get(pathname), StandardCopyOption.REPLACE_EXISTING);
+				return true;
+			}
+			
+		} catch (IOException e) {
+			return false;
+		}
+		
+		return false;
+	}
 	
 	public boolean rotateImage(boolean clockwise) {
 		boolean error = currentViewer.rotateImage(clockwise);
