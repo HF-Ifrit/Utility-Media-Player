@@ -170,12 +170,67 @@ public class HBoxBuilder extends HBox{
     	Image currentImage;
     	ImageView imageview;
     	JFXController jfxControl = newFrame.getJFXController();
-    	
+
     	HBoxBuilder hbox = new HBoxBuilder(newFrame);
     	final GridPane swatch = new GridPane();
+    	MainFrame frame = hbox.frame;
+
     	hbox.setHeight(25);
+
+
+    	//add volume control slider
+    	final Slider timeStamp = new Slider(0, 100, 100);
+    	timeStamp .setPrefWidth(200);
+    	timeStamp .setMaxWidth(300);
+    	timeStamp .setMinWidth(100);
+    	timeStamp .setAccessibleRoleDescription("TimeTracker");
+    	frame.setTimeStampSlider(timeStamp);
+
+    	//responds to slider movements
+    	timeStamp.valueProperty().addListener(jfxControl.new timeStampSlider());
     	
+    	//add elements to the hBox
+    	swatch.getChildren().add(timeStamp);
     	
+		hbox.getChildren().addAll(swatch);
+		HBox.setHgrow(swatch, Priority.ALWAYS);
+
+    	//modifies button sizes and locations based on 
+    	hbox.layoutBoundsProperty().addListener(new ChangeListener<Bounds>() {
+    		@Override public void changed(ObservableValue<? extends Bounds> observableValue, Bounds oldBounds, Bounds newBounds) {
+
+
+    			hbox.prefTileSize.set(Math.max(SPACING, hbox.getWidth()));
+    			double edge = SPACING + LEFT_EDGE;
+    			for (Node child : swatch.getChildrenUnmodifiable()) {
+    				Control tile = (Control) child;
+    				if(!(child instanceof Label)){
+
+
+    					final double margin = ( hbox.prefTileSize.get() - LEFT_EDGE)/ swatch.getChildrenUnmodifiable().size();
+    					tile.setPrefWidth(margin - SPACING);
+
+    					GridPane.setMargin(child, new Insets(15, edge, 15, edge));
+    					edge += margin;
+
+    					if(child instanceof Slider){
+    						((Slider) child).setMinWidth(margin - SPACING);
+
+    					}
+    				}
+    				else{
+    					GridPane.setMargin(child, new Insets(15, edge, 15, edge));
+    					edge += 50;
+    				}
+    			}
+    		}
+    	});
+
+
     	return hbox;
+    }
+    
+    public static void combineBars(){
+    	
     }
 }
