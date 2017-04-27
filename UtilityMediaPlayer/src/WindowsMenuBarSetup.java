@@ -204,6 +204,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		KeyEvent.VK_2, ActionEvent.ALT_MASK));
         menuItem.getAccessibleContext().setAccessibleDescription(
         		"Saves an image of video screen at moment");
+        menuItem.addActionListener(mainframe.new capture());
         menu.add(menuItem);
         
         //Convert to GIF
@@ -215,6 +216,11 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		"Converts set portion of video from moment into a GIF");
         menu.add(menuItem);
         
+        //Extract audio track
+        menuItem = new JMenuItem("Extract Audio Track");
+        menuItem.getAccessibleContext().setAccessibleDescription("Saves the audio track of the currently playing video to the output folder");
+        menuItem.addActionListener(mainframe.new extractAudio());
+        menu.add(menuItem);
         //Video display options
         menu.addSeparator();
         

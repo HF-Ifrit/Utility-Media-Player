@@ -27,6 +27,8 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.*;
 import javax.swing.border.BevelBorder;
+import javax.swing.text.html.Option;
+
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagLayout;
@@ -744,10 +746,9 @@ public class MainFrame extends JFrame {
 		           fileList.setSelectedValue(filename, true);
 		           String path = file.getAbsolutePath();
 		           fileLocationMap.put(filename, path);
+		           play();
 			 }
-			
 		}
-		
 	}
 	
 	//controller for play menu option
@@ -759,6 +760,50 @@ public class MainFrame extends JFrame {
 			play();
 		}
 		
+	}
+	
+	//controller for video player screen capture
+	public class capture implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			if(mode.equals(MainFrame.Mode.VIDEO))
+			{
+				VideoPlayer vPlayer = (VideoPlayer)currentPlayer;
+				vPlayer.captureScreen(ImageViewer.ImageFormat.PNG);
+			}
+		}
+	}
+	
+	//controller for video player audio track extraction
+	public class extractAudio implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			if(mode.equals(MainFrame.Mode.VIDEO))
+			{
+				VideoPlayer vPlayer = (VideoPlayer)currentPlayer;
+				MusicPlayer.MusicFormat[] values = MusicPlayer.MusicFormat.values();
+				
+				//create options for the joptionpane from our list of available music formats
+				String[] options = new String[values.length + 1];
+				for(int i = 0; i < values.length; i++)
+					options[i] = values[i].toString();
+				
+				options[options.length - 1] = "Cancel"; //adding cancel to the list of options
+				
+				//based on which index is clicked from the options, use the corresponding format index for extraction, unless it's the cancel button
+				int formatIndex = JOptionPane.showOptionDialog(getFrame(), 
+						"What format would you like to save the audio track as?", 
+						"Save audio track as...", 
+						JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+				
+				if(formatIndex != options.length-1)
+					vPlayer.extractAudio(values[formatIndex]);
+			}
+		}
 	}
 
 	//controller for image viewer Properties
