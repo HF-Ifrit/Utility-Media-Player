@@ -578,15 +578,35 @@ public class MainFrame extends JFrame {
 	}
 	
 	public void orderFileListByType() {
-		Enumeration<String> fileList = fileListModel.elements();
+		Enumeration<String> fileListEnum = fileListModel.elements();
 		
 		ArrayList<String> videos = new ArrayList<String>();
 		ArrayList<String> audio = new ArrayList<String>();
 		ArrayList<String> images = new ArrayList<String>();
 		
-		while(fileList.hasMoreElements()) {
-			String next = fileList.nextElement();
-			if()
+		while(fileListEnum.hasMoreElements()) {
+			String next = fileListEnum.nextElement();
+			if(isVideo(next)) {
+				videos.add(next);
+			}
+			else if(isAudio(next)) {
+				audio.add(next);
+			}
+			else if(isImage(next)) {
+				images.add(next);
+			}
+		}
+		
+		fileListModel.clear();
+		
+		for(String s : videos) {
+			fileListModel.addElement(s);
+		}
+		for(String s : audio) {
+			fileListModel.addElement(s);
+		}
+		for(String s : images) {
+			fileListModel.addElement(s);
 		}
 	}
 	
