@@ -573,7 +573,7 @@ public class MainFrame extends JFrame {
 	private void addToPlaylist(){
 		if(currentFile != null){
 			if(playlist == null){
-				new Playlist(this);
+				playlist = new Playlist(this, "untitled");
 			}
 			playlist.addTrack(currentFile);
 		}
@@ -590,7 +590,7 @@ public class MainFrame extends JFrame {
 	private void openPlaylist(String filename){
 			if(filename != null){
 				if(playlist == null){
-					playlist = new Playlist(this);
+					JOptionPane.showMessageDialog(frame, "No playlist selected.");
 				}
 				playlist.loadPlaylist(filename);
 			}
@@ -923,9 +923,16 @@ public class MainFrame extends JFrame {
 	
 	//controller for adding items to playlist
 	public class addToPlaylist implements ActionListener{
+		MainFrame frame = this.frame;
 		@Override
+		
 		public void actionPerformed(ActionEvent e) 
 		{
+			if (playlist == null) {
+				String fileName = JOptionPane.showInputDialog("Please name your playlist: ");
+				playlist = new Playlist(frame, fileName);
+				savePlaylist(fileName);
+			}
 			addToPlaylist();
 		}
 	}
@@ -936,7 +943,8 @@ public class MainFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) 
 		{
 			//TODO give savePlaylist a file name
-			savePlaylist("Playlist");
+			String fileName = JOptionPane.showInputDialog("Please name your playlist: ");
+			savePlaylist(fileName);
 		}
 	}
 	
@@ -946,7 +954,16 @@ public class MainFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) 
 		{
 			//TODO give openPlaylist a file name
-			openPlaylist("Playlist");
+			int returnVal = fileChooser.showOpenDialog(contentPane);
+			 if (returnVal == JFileChooser.APPROVE_OPTION) {
+		           File file = fileChooser.getSelectedFile();
+		           String fileName = file.getName();
+		           openPlaylist(fileName);
+		           fileListModel.addElement(fileName);
+		           fileList.setSelectedValue(fileName, true);
+		           String path = file.getAbsolutePath();
+		           fileLocationMap.put(fileName, path);
+			 }
 		}
 	}
 		
