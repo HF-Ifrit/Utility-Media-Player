@@ -23,6 +23,8 @@ import javax.swing.*;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.*;
 import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import java.awt.Font;
 import java.awt.GraphicsDevice;
@@ -32,7 +34,6 @@ import java.awt.GridBagLayout;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
-
 
 
 //primary GUI window that will interact and control other modules
@@ -49,11 +50,6 @@ public class MainFrame extends JFrame {
 
 	
 	private JPanel contentPane;
-	private JMenuBar menuBar;
-	private JMenu menu, submenu;
-	private JMenuItem menuItem;
-	private JRadioButtonMenuItem rbMenuItem;
-	private JCheckBoxMenuItem cbMenuItem;
 	
 	//controlled viewable items
 	private Button playButton;
@@ -79,6 +75,7 @@ public class MainFrame extends JFrame {
     //PlayList we are on
     private Playlist playlist;
     
+    //current index of the playlist
     
     //players/viewers
     private Player currentPlayer;
@@ -99,6 +96,10 @@ public class MainFrame extends JFrame {
     //player mode that is currently loaded
     private Mode mode;
     
+    //player mode for either fileList or playList
+    private Mode listMode;
+    
+    
     //display modes
     private boolean fullscreenMode;
     
@@ -107,7 +108,7 @@ public class MainFrame extends JFrame {
     
     //enum to determine what mode the current controller is set to
     public enum Mode{
-    	EMPTY,VIDEO,IMAGE,AUDIO
+    	EMPTY,VIDEO,IMAGE,AUDIO,PLAYLIST,FILELIST
     }
 
 	/**
@@ -135,6 +136,7 @@ public class MainFrame extends JFrame {
 		currentPlayer = null;
 		previousFile = "";
 		mode = Mode.EMPTY;
+		listMode = Mode.FILELIST;
 		jfxControl = new JFXController(this);
 		currentViewer = new ImageViewer();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -295,10 +297,21 @@ public class MainFrame extends JFrame {
 		list.addMouseListener(new MouseAdapter(){
 		    @Override
 		    public void mouseClicked(MouseEvent e){
+		    	
 		        if(e.getClickCount()==2){
 		           mainFrame.play();
 		        }
 		    }
+		});
+		
+		list.addListSelectionListener(new ListSelectionListener(){
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if(list.getSelectedIndex() >= 0){
+					mainFrame.playListView.clearSelection();
+				}
+			}
 		});
 		
 		list.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -314,9 +327,9 @@ public class MainFrame extends JFrame {
 		list = new JList<String>();
 		//TODO add file names here
 		ArrayList<String> playList = new ArrayList<String>();
+		playList.add("Play Lists");
 		
 		playListModel = new DefaultListModel<String>();
-		playListModel.addElement("playList");
 		
 		for(String fileName : playList){
 			playListModel.addElement(fileName);
@@ -329,14 +342,25 @@ public class MainFrame extends JFrame {
 		    @Override
 		    public void mouseClicked(MouseEvent e){
 		        if(e.getClickCount()==2){
-		           mainFrame.playListStart();
+		           
 		        }
 		    }
+		});
+		
+		list.addListSelectionListener(new ListSelectionListener(){
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if(list.getSelectedIndex() >= 0){
+					mainFrame.fileList.clearSelection();
+				}
+			}
 		});
 
 		list.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
 		
 		return list;
 	}
@@ -716,6 +740,14 @@ public class MainFrame extends JFrame {
 		ArrayList<URI> tracks = playlist.getTracks();
 		String fileToPlay = tracks.get(0).getPath();
 		play(fileToPlay);
+	}
+	
+	//advances playlist to next unit
+	public void advancePlaylist(){
+		String filename = "";
+		if(listMode == Mode.PLAYLIST){
+			
+		}
 	}
 	
 	//plays current file at file selection index
