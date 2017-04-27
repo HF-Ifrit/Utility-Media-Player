@@ -32,6 +32,8 @@ import javax.swing.text.html.Option;
 
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagLayout;
 
 import javafx.scene.control.Button;
@@ -48,6 +50,8 @@ import javafx.scene.text.Text;
 
 //primary GUI window that will interact and control other modules
 public class MainFrame extends JFrame {
+	
+	static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
 
 	private JFrame frame;
 	private static final String AUDIO_PATH = "media libraries/audio/";
@@ -98,8 +102,14 @@ public class MainFrame extends JFrame {
     private Mode previousMode;
     private Component previousComponent;
     
+    //old dimensions from fullscreen
+    private Dimension oldDimensions;
+    
     //player mode that is currently loaded
     private Mode mode;
+    
+    //display modes
+    private boolean fullscreenMode;
     
     //the specific MenuBarBuilder to the OS or type
     
@@ -140,7 +150,8 @@ public class MainFrame extends JFrame {
 		setBounds(0, 0, 1040, 543);
 		fileChooser = new JFileChooser();
 		fileLocationMap = new HashMap<String, String>();
-        
+        oldDimensions = new Dimension(1040,543);
+        fullscreenMode = false;
 	}
 	
 	
@@ -167,10 +178,10 @@ public class MainFrame extends JFrame {
         displayFrame.setJMenuBar(demo.createTextMenuBar());
         displayFrame.setContentPane(demo.createContentPane());
         demo.setFileList(createFileList(demo));
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setPreferredSize(new Dimension(200,demo.fileList.getHeight() ));
-        scrollPane.setViewportView(demo.fileList);
-        displayFrame.getContentPane().add(scrollPane, BorderLayout.WEST);
+        demo.scrollPane = new JScrollPane();
+        demo.scrollPane.setPreferredSize(new Dimension(200,demo.fileList.getHeight() ));
+        demo.scrollPane.setViewportView(demo.fileList);
+        displayFrame.getContentPane().add(demo.scrollPane, BorderLayout.WEST);
         //displayFrame.add(demo.createTimeControl(), BorderLayout.SOUTH);
         displayFrame.add(demo.createControlBar(), BorderLayout.SOUTH);
        
@@ -455,7 +466,7 @@ public class MainFrame extends JFrame {
      */
     
 	//move file selection unit forward one index
-	public void backFile(){
+	void backFile(){
 		int setIndex = fileList.getModel().getSize() - 1;
 		if(fileList.getSelectedIndex() > 0)
 			fileList.setSelectedIndex(fileList.getSelectedIndex() - 1);
@@ -463,25 +474,47 @@ public class MainFrame extends JFrame {
 			fileList.setSelectedIndex(setIndex);
 	}
 	
+	//sets window to fullscreen
+	private void fullscreen(){
+		if(!fullscreenMode){
+			oldDimensions = getFrame().getSize();
+			device.setFullScreenWindow(frame);
+			fullscreenMode = true;
+		}
+		else{
+			device.setFullScreenWindow(null);
+			getFrame().setSize(oldDimensions);
+			fullscreenMode = false;
+		}
+	}
+	
+	//hides fileitems
+	private void hideItems(){
+		if(scrollPane.isVisible() ){
+			scrollPane.setVisible(false);
+		}
+		else 
+			scrollPane.setVisible(true);
+	}
+	
+	
+	
 	//creates a image properties pop-up
-	public void imageProperties(){
+	private void imageProperties(){
 		if(currentViewer != null){
 			currentViewer.imageProperties();
 		}
 	}
 	
-
-	
-	//adds the current file to the playlist
 	
 	//call to rotate image
-	public void rotate(boolean clockwise){
+	private void rotate(boolean clockwise){
 		if(currentViewer != null)
 			rotateImage(clockwise);
 	}
 	
 	//call to flip image
-	public void flip(boolean horizontal){
+	private void flip(boolean horizontal){
 		if(currentViewer != null){
 			if(horizontal)
 				mirrorImage();
@@ -491,20 +524,20 @@ public class MainFrame extends JFrame {
 	}
 	
 	//changes volume to slider value
-	public void volumeChange() {
+	void volumeChange() {
 		if ((mode == Mode.AUDIO) || (mode == Mode.VIDEO)) {
 			currentPlayer.volumeChange(volumeSlider.getValue());
 		}
 	}
 	
 	//changes time to slider value
-	public void timeStampChange(){
+	void timeStampChange(){
 		if ((mode == Mode.AUDIO) || (mode == Mode.VIDEO)) {
 			//TODO
 		}
 	}
 	
-	public boolean saveInLibrary(File toSave) {
+	private boolean saveInLibrary(File toSave) {
 		if(toSave == null) return false;
 		
 		try {
@@ -537,16 +570,33 @@ public class MainFrame extends JFrame {
 	}
 	
 	//adds current file to playlist
-	public void addToPlaylist(){
-		if(playlist == null){
-			new Playlist(this);
+	private void addToPlaylist(){
+		if(currentFile != null){
+			if(playlist == null){
+				new Playlist(this);
+			}
+			playlist.addTrack(currentFile);
 		}
-		playlist.addTrack(currentFile);
 	}
 	
 	//save playlist
+	private void savePlaylist(String filename){
+		if(playlist != null && filename != null){
+			playlist.savePlaylist(filename);
+		}
+	}
 	
-	public boolean rotateImage(boolean clockwise) {
+	//save playlist
+	private void openPlaylist(String filename){
+			if(filename != null){
+				if(playlist == null){
+					playlist = new Playlist(this);
+				}
+				playlist.loadPlaylist(filename);
+			}
+		}
+	
+	private boolean rotateImage(boolean clockwise) {
 		boolean error = currentViewer.rotateImage(clockwise);
 		
 		if(error) {
@@ -728,6 +778,7 @@ public class MainFrame extends JFrame {
 		getFrame().repaint();
 	}
 	
+	
 	//helper method to streamline creation of new video/music players
 	private void createViews(String filename){
 		this.previousFile = filename;
@@ -781,6 +832,16 @@ public class MainFrame extends JFrame {
 			fileList.setSelectedIndex(setIndex);
 	}
 	
+	//pop up help info
+	private void openHelpMenu(){
+		//TODO create a pop-up
+	}
+	
+	//pop up about info
+	private void openAboutInfo(){
+		//TODO create a pop-up
+	}
+	
 	
 	//temporary parse file system for supported formats
 	/**
@@ -832,6 +893,8 @@ public class MainFrame extends JFrame {
 	
 	
 	
+	
+	
 	/**
 	 *TODO 
 	 *integrate actions with other components
@@ -859,6 +922,34 @@ public class MainFrame extends JFrame {
 	}
 	
 	//controller for adding items to playlist
+	public class addToPlaylist implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) 
+		{
+			addToPlaylist();
+		}
+	}
+	
+	//controller for saving the playlist
+	public class savePlaylist implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) 
+		{
+			//TODO give savePlaylist a file name
+			savePlaylist("Playlist");
+		}
+	}
+	
+	//controller for opening the playlist
+	public class openPlaylist implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) 
+		{
+			//TODO give openPlaylist a file name
+			openPlaylist("Playlist");
+		}
+	}
+		
 	
 	//controller for play menu option
 	public class play implements ActionListener{
@@ -870,6 +961,24 @@ public class MainFrame extends JFrame {
 		}
 		
 	}
+	
+	//sets window to fullscreen mode
+	public class fullscreen implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) 
+		{
+			fullscreen();
+		}
+	}
+	
+	//sets window to fullscreen mode
+	public class hideItems implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) 
+		{
+			hideItems();
+		}
+	}	
 	
 	//controller for video player screen capture
 	public class capture implements ActionListener
@@ -953,6 +1062,24 @@ public class MainFrame extends JFrame {
 			flip(direction);
 				
 			
+		}
+	}
+	
+	//creates a new pop-up window with help/instructions info
+	public class openHelpMenu implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			openHelpMenu();
+
+		}
+	}
+	
+	//creates a new pop-up window with about info for version, authors, license, etc.
+	public class openAboutInfo implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			openAboutInfo();
+
 		}
 	}
 	
