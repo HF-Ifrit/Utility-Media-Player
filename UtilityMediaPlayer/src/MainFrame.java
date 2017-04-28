@@ -577,6 +577,10 @@ public class MainFrame extends JFrame {
 	private void addToPlaylist(){
 		if(currentFile != null){
 			playlist.addTrack(currentFile);
+			int start = currentFile.lastIndexOf('/');
+			int last = currentFile.indexOf('.');
+			String fileName = currentFile.substring(start + 1, last);
+			playListModel.addElement(fileName);
 		}
 	}
 	
@@ -1122,7 +1126,6 @@ public class MainFrame extends JFrame {
 			if (playlist == null) {
 				String fileName = JOptionPane.showInputDialog("Please name your playlist: ");
 				playlist = new Playlist(MainFrame.this, fileName);
-		        playListModel.addElement(fileName);
 			}
 			addToPlaylist();
 		}

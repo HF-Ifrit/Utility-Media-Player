@@ -20,7 +20,7 @@ public class Playlist {
 		if (fileName != null) {
 			URI uri = new File(fileName).toURI();
 			String name = new File(fileName).toURI().toString();
-			if (name.endsWith("mp3") || name.endsWith("mp4") || name.endsWith("webm")) {
+			if (name.endsWith("mp3") ||name.endsWith("wav")) {
 				tracks.add(uri);
 			}
 		}

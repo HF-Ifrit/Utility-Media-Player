@@ -56,6 +56,15 @@ media players, and the UMP correctly displays the length of the other test audio
 	-Track Seeking
 	  The slider to the right of the time controls playback of the track
 	  Adjusting it will cause the track to move playback to the selected value.
+	-Playlists
+	  -Play a song, and then select File -> Add to Playlist. You will be prompted
+	   to enter a name for the playlist. Do so. You can then add more tracks to
+	   the playlist. When finished, select File -> Save Playlist. It will be saved
+	   to the playlists folder in the application directory. At a later instance
+	   of the application, select File -> Open Playlist. The songs will appear on
+	   the right menu bar. Open any song, and then the playlist will auto-play. 
+  	   You may skip songs and even play media from the left bar at any time, until
+	   you resume playing the playlist.
 
    d. Video Player
 	-Seeking
@@ -71,7 +80,7 @@ media players, and the UMP correctly displays the length of the other test audio
 	
 	
 
-   e. Playlists
+   
 
 
    f. File Conversion
