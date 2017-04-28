@@ -19,6 +19,8 @@ public class VideoPlayerTest
 {
 	VideoPlayer testPlayer;
 	JFrame testFrame;
+	private MainFrame frame;
+	private static MainFrame.TestSuite tester = new MainFrame.TestSuite();
 	String video1 = "media libraries/video/singing_dove.mp4";
 	String video2 = "media libraries/video/kaius_presentation.mp4";
 	
@@ -26,9 +28,11 @@ public class VideoPlayerTest
 	public void Before() 
 	{
 		testFrame = new JFrame();
+		tester.newMainFrame();
+		frame = tester.getMainFrame();
 		testFrame.setBounds(100, 100, 400, 400);
 		testFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		testPlayer = new VideoPlayer();
+		testPlayer = new VideoPlayer(frame);
 		testFrame.setContentPane(testPlayer.getPlayerComponent());
 		testFrame.setVisible(true);
 	}

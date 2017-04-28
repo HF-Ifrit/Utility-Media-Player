@@ -328,8 +328,6 @@ public class MainFrame extends JFrame {
 		list = new JList<String>();
 		//TODO add file names here
 		ArrayList<String> playList = new ArrayList<String>();
-		playList.add("Play Lists: f");
-		
 		playListModel = new DefaultListModel<String>();
 		
 		for(String fileName : playList){
