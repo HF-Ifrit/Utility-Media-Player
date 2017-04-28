@@ -38,7 +38,8 @@ public class VideoPlayerTest
 	}
 	
 	@After
-	public void After()	{
+	public void After()	
+	{
 		testPlayer.getPlayer().release();
 		testFrame.dispose();
 		testFrame = null;
@@ -95,10 +96,10 @@ public class VideoPlayerTest
 		
 		testPlayer.playVideo();
 		
-		Thread.sleep(1500);
+		//Thread.sleep(1000);
 		testPlayer.pauseVideo();
 		
-		Thread.sleep(1000);
+		//Thread.sleep(1000);
 		assertFalse(testPlayer.getPlayer().isPlaying());
 	}
 	
@@ -279,11 +280,5 @@ public class VideoPlayerTest
 		//Saving as JPG
 		testPlayer.captureScreen(ImageViewer.ImageFormat.JPG);
 		assertTrue(outputList.contains("capture" + currTime + "_" + maxTime + "." + "jpg"));
-		
-		Thread.sleep(2000);
-		
-		//Saving as GIF
-		testPlayer.captureScreen(ImageViewer.ImageFormat.GIF);
-		assertTrue(outputList.contains("capture" + currTime + "_" + maxTime + "." + "gif"));
 	}
 }

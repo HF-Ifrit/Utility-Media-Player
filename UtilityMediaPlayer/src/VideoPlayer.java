@@ -22,11 +22,16 @@ import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
+
+import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 public class VideoPlayer implements Player
 {		
@@ -48,7 +53,7 @@ public class VideoPlayer implements Player
 	private final String fileSep = System.getProperty("file.separator");
 	private final String outputPath = workingDir + fileSep + "output";
 	private final String ffmpegPath = workingDir + fileSep + "jars" + fileSep + "ffmpeg.exe";
-
+	
 	enum VideoFormat 
 	{
 		WEBM("vp8", "vorb"),
@@ -255,13 +260,27 @@ public class VideoPlayer implements Player
 	}
 	
 	//Constructors
-	public VideoPlayer(MainFrame controller)
+	public VideoPlayer()
 	{
-		new NativeDiscovery().discover();
+		//Set location of VLC dll installation and plugins folder
+		File vlcFolder = new File("lib");
+		String pluginPath = vlcFolder.getAbsolutePath() + "\\plugins";
+		uk.co.caprica.vlcj.binding.LibC.INSTANCE._putenv("VLC_PLUGIN_PATH="+pluginPath);
+		
+		
+		System.out.println("lib folder location: " + vlcFolder.getAbsolutePath());
+		System.out.println("plugins folder location: " + pluginPath);
+		
+		
+		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), vlcFolder.getAbsolutePath());
+		
+		
+		//If previous method fails, just use native discovery with an installed version of VLC
+		//new NativeDiscovery().discover();
 		
 		
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-		this.controller = controller;
+		this.controller = null;
 		hasMedia = false;
 		finishedPlaying = false;
 		player = mediaPlayerComponent.getMediaPlayer();	
@@ -285,9 +304,22 @@ public class VideoPlayer implements Player
 		mediaPlayerComponent.add(controlPanel, BorderLayout.SOUTH);
 	}
 
+	public VideoPlayer(String filePath)
+	{
+		this();
+		loadVideo(filePath);
+	}
+	
+	public VideoPlayer(MainFrame controller)
+	{
+		this();
+		this.controller = controller;
+	}
+	
 	public VideoPlayer(MainFrame controller, String filePath)
 	{
-		this(controller);
+		this();
+		this.controller = controller;
 		loadVideo(filePath);
 	}
 
@@ -793,7 +825,12 @@ public class VideoPlayer implements Player
 	
 	public static void main(String[] args) throws InterruptedException, AWTException, FileNotFoundException, IOException
 	{
-		
+		JFrame frame = new JFrame();
+		VideoPlayer v = new VideoPlayer("media libraries/video/singing_dove.mp4");
+		frame.setContentPane(v.getPlayerComponent());
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		v.playVideo();
 	}
 
 	@Override
