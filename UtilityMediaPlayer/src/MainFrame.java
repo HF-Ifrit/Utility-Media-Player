@@ -668,6 +668,7 @@ public class MainFrame extends JFrame {
 		
 	}
 	
+	//orders the fileList by the filetype of each element
 	public void orderFileListByType() {
 		Enumeration<String> fileListEnum = fileListModel.elements();
 		
@@ -701,6 +702,7 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
+	//orders the fileList alphabetically by name for each element
 	public void orderFileListByName() {
 		Enumeration<String> fileListEnum = fileListModel.elements();
 		ArrayList<String> toOrder = new ArrayList<String>();
@@ -1007,15 +1009,18 @@ public class MainFrame extends JFrame {
 	//pop up help info
 	private void openHelpMenu(){
 		String about = "New media can be imported directly by inserting it in the \"media libraries\" folder." + "\n"
-				+ "External media can be opened using File >> Open File. " + "\n"
-				+ "Double-click media to play it.";
-		JOptionPane.showMessageDialog(null, about,"About", JOptionPane.INFORMATION_MESSAGE);
+				+ "External media can be opened using File >> Open File tab on the menu bar. " + "\n"
+				+ "Double-click media on a side bar to play it." + "\n" 
+				+ "Press Back or Forward buttons to instantly start playing the new file. Drag the Volume slider to change the volume level of a player" + "\n" 
+				+ "Press the central Play button while a player is active to pause/resume it." + "\n"
+				+ "Local ReadMe.txt includes detailed notes on the functionality of each menu bar item and each button.";
+		JOptionPane.showMessageDialog(null, about,"Help", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	//pop up about info
 	private void openAboutInfo(){
 		String about = "Utility Media Player" + "\n"
-				+ "Prerelease Version";
+				+ "Version 1.0";
 		JOptionPane.showMessageDialog(null, about,"About", JOptionPane.INFORMATION_MESSAGE);
 		}
 	
@@ -1069,12 +1074,6 @@ public class MainFrame extends JFrame {
 	
 	
 	
-	/**
-	 *TODO 
-	 *integrate actions with other components
-	 *controllers for listeners to attach to the buttons
-	 *
-	 */
 	
 	//Controller for remove files from fileList
 	public class removeFromFileList implements ActionListener{
@@ -1551,12 +1550,6 @@ public class MainFrame extends JFrame {
 	 */
 	
 	
-	/**
-	 * TODO
-	 * internal testing class
-	 * provides access to private variables and methods only for testing purposes only
-	 * remove during release
-	 */
 	public static class TestSuite{
 		/**
 		 * reference to a controlled testing instance of a MainFrame
