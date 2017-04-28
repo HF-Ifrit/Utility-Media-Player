@@ -329,20 +329,12 @@ public class VideoPlayer implements Player
 		loadVideo(fileName);
 		
 		playVideo();
-<<<<<<< HEAD
-//		try {
-//			Thread.sleep(1000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-=======
+
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
->>>>>>> branch 'master' of https://github.com/Kmr117/utility-media-player.git
 		if(player.isPlaying())
 			return true;
 		else
