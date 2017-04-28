@@ -13,6 +13,9 @@ Andrew Su
 
 TODO TODO TODO TODO TODO
 
+Note that normaltest.mp3 seems to display the wrong duration. This is apparently
+an error in the metadata of the song, as it is reproduced when opening it in other
+media players, and the UMP correctly displays the length of the other test audio.
 ---------------
 
 3. Use Instructions

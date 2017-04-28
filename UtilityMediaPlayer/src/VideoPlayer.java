@@ -300,6 +300,12 @@ public class VideoPlayer implements Player
 		loadVideo(fileName);
 		
 		playVideo();
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if(player.isPlaying())
 			return true;
 		else

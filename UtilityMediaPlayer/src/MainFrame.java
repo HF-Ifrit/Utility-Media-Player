@@ -326,10 +326,7 @@ public class MainFrame extends JFrame {
 	private static JList<String> createPlayListView(MainFrame mainFrame){
 		JList<String> list;
 		list = new JList<String>();
-		//TODO add file names here
 		ArrayList<String> playList = new ArrayList<String>();
-		playList.add("Play Lists: f");
-		
 		playListModel = new DefaultListModel<String>();
 		
 		for(String fileName : playList){
@@ -597,6 +594,7 @@ public class MainFrame extends JFrame {
 				Playlist temp = new Playlist(this);
 				playlist = temp;
 			}
+			playListModel.clear();
 			playlist = playlist.loadPlaylist(filename);
 		}
 	}
@@ -771,6 +769,7 @@ public class MainFrame extends JFrame {
 				tempmode = parseFileType(filename);
 			}
 			else{
+				listMode = Mode.EMPTY;
 				mode = Mode.EMPTY;
 				return;
 			}
