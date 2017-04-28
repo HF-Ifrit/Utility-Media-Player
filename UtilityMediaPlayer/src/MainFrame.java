@@ -343,7 +343,10 @@ public class MainFrame extends JFrame {
 		    @Override
 		    public void mouseClicked(MouseEvent e){
 		        if(e.getClickCount()==2){
-		           
+		            if(list.getSelectedIndex() >= 0){
+		            	mainFrame.playlistIndex = list.getSelectedIndex();
+		            }
+		        	mainFrame.play();
 		        }
 		    }
 		});
@@ -749,6 +752,8 @@ public class MainFrame extends JFrame {
 			//plays selected playList index if if in bounds
 			if(playlistIndex >= 0 ){
 				playListView.setSelectedIndex(playlistIndex);
+				fileList.clearSelection();
+				play();
 			}
 		}
 	}
@@ -1656,6 +1661,12 @@ public class MainFrame extends JFrame {
 		 //returns the current Viewer of the mainFrame
 		 public ImageViewer getCurrentViewer(){
 			 return mainFrame.currentViewer;
+		 }
+		 
+		 
+		 //returns volumeSlider of the mainFrame
+		 public Slider getVolumeSlider(){
+			 return mainFrame.volumeSlider;
 		 }
 		 
 		 //sets the volumeSlider of the mainFrame to value
