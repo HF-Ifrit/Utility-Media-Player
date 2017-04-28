@@ -33,7 +33,7 @@ public class Playlist {
 			if (!playlists.exists()) {
 				playlists.mkdirs();
 			}
-			BufferedWriter writer = new BufferedWriter(new FileWriter( new File("playlists" + System.getProperty("file.separator") + fileName + ".txt")));
+			BufferedWriter writer = new BufferedWriter(new FileWriter( new File("playlists" + System.getProperty("file.separator") + fileName)));
 			for (URI track : tracks) {
 				writer.write(track.toString());
 				writer.newLine();

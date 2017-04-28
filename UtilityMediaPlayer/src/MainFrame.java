@@ -327,7 +327,6 @@ public class MainFrame extends JFrame {
 		JList<String> list;
 		list = new JList<String>();
 		ArrayList<String> playList = new ArrayList<String>();
-		
 		playListModel = new DefaultListModel<String>();
 		
 		for(String fileName : playList){
@@ -577,9 +576,6 @@ public class MainFrame extends JFrame {
 	//adds current file to playlist
 	private void addToPlaylist(){
 		if(currentFile != null){
-			if(playlist == null){
-				playlist = new Playlist(this, "untitled");
-			}
 			playlist.addTrack(currentFile);
 		}
 	}
@@ -1054,11 +1050,15 @@ public class MainFrame extends JFrame {
 			 if (returnVal == JFileChooser.APPROVE_OPTION) {
 		           File file = fileChooser.getSelectedFile();
 		           String filename = file.getName();
-		           fileListModel.addElement(filename);
-		           fileList.setSelectedValue(filename, true);
-		           String path = file.getAbsolutePath();
-		           fileLocationMap.put(filename, path);
-		           play();
+		           if ((filename.endsWith("mp3") || filename.endsWith("wav")) || filename.endsWith("mp4") ||
+		        		   filename.endsWith("webm") || filename.endsWith("jpg") || filename.endsWith("gif") || filename.endsWith("png")) {
+		        	   fileListModel.addElement(filename);
+			           fileList.setSelectedValue(filename, true);
+			           String path = file.getAbsolutePath();
+			           fileLocationMap.put(filename, path);
+			           play();
+		           }
+		          
 			 }
 		}
 	}
@@ -1103,6 +1103,7 @@ public class MainFrame extends JFrame {
 			if (playlist == null) {
 				String fileName = JOptionPane.showInputDialog("Please name your playlist: ");
 				playlist = new Playlist(MainFrame.this, fileName);
+		        playListModel.addElement(fileName);
 			}
 			addToPlaylist();
 		}
@@ -1136,7 +1137,16 @@ public class MainFrame extends JFrame {
 		           File file = fileChooser.getSelectedFile();
 		           String filename = file.getName();
 		           openPlaylist(filename);
-		           playListModel.addElement(filename);
+		           ArrayList<String> trackNames = new ArrayList<>();
+		           for (URI uri : playlist.getTracks()) {
+		        	   String string = uri.toString();
+		        	   int first = string.lastIndexOf("/");
+		        	   int last = string.indexOf('.');
+		        	   String name = string.substring(first + 1, last);
+		        	   trackNames.add(name);
+			           playListModel.addElement(name);
+		           }
+		           
 			 }
 		}
 	}
@@ -1381,6 +1391,24 @@ public class MainFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			if(currentViewer != null)
 				currentViewer.imageProperties();
+		}
+	}
+	
+	//Zooms active image inwards
+	public class zoomBigger implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentViewer!= null) currentViewer.zoom(true);
+			setupViewer();
+		}
+	}
+	
+	//Zooms active image out
+	public class zoomSmaller implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentViewer!= null) currentViewer.zoom(false);
+			setupViewer();
 		}
 	}
 	

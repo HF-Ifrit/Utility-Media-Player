@@ -1,3 +1,5 @@
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -65,6 +67,17 @@ public class ImageViewer {
 		ImageView iv = new ImageView();
 		iv.setImage(image);
 
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		int syswidth = gd.getDisplayMode().getWidth();
+		int sysheight = gd.getDisplayMode().getHeight();
+		
+		double prefwidth = Math.min(syswidth * 0.75, image.getWidth());
+		double prefheight = Math.min(sysheight * 0.75, image.getHeight());
+		
+		iv.setFitWidth(prefwidth);
+		iv.setFitHeight(prefheight);
+		iv.setPreserveRatio(true);
+		
 		Group root = new Group();
 		Scene scene = new Scene(root);
 		scene.setFill(Color.BLACK);
@@ -110,6 +123,10 @@ public class ImageViewer {
 		
 		double newScale = currentIV.getScaleX();
 		iv.setScaleX(newScale);
+		
+		iv.setFitHeight(currentIV.getFitHeight());
+		iv.setFitWidth(currentIV.getFitWidth());
+		iv.setPreserveRatio(true);
 
 		Group root = new Group();
 		Scene scene = new Scene(root);
@@ -122,6 +139,44 @@ public class ImageViewer {
 		mainScene = scene;
 		
 		return true;
+	}
+	
+	boolean zoom(boolean bigger) {
+		if (openImage == false) {
+			return false;
+		}
+		
+		double multiplier;
+		
+		if(bigger) {
+			multiplier = 2.0;
+		}
+		else {
+			multiplier = 0.5;
+		}
+		
+		ImageView iv = new ImageView();
+		iv.setImage(currentIV.getImage());
+		
+		iv.setScaleX(currentIV.getScaleX());
+		iv.setRotate(currentIV.getRotate());
+		
+		iv.setFitHeight(currentIV.getFitHeight() * multiplier);
+		iv.setFitWidth(currentIV.getFitWidth() * multiplier);
+		iv.setPreserveRatio(true);
+
+		Group root = new Group();
+		Scene scene = new Scene(root);
+		scene.setFill(Color.BLACK);
+		HBox box = new HBox();
+		box.getChildren().add(iv);
+		root.getChildren().add(box);
+
+		currentIV = iv;
+		mainScene = scene;
+
+		return true;
+
 	}
 
 	boolean mirrorImage() {
@@ -139,6 +194,10 @@ public class ImageViewer {
 		iv.setScaleX(newScale);
 		
 		iv.setRotate(currentIV.getRotate());
+		
+		iv.setFitHeight(currentIV.getFitHeight());
+		iv.setFitWidth(currentIV.getFitWidth());
+		iv.setPreserveRatio(true);
 
 		Group root = new Group();
 		Scene scene = new Scene(root);

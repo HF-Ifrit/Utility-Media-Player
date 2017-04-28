@@ -12,12 +12,6 @@ import javax.swing.KeyStroke;
 //class that allows menuBars tabs to be attached to a given menuBar
 public class WindowsMenuBarSetup implements MenuBarSetup{
 	
-	/**
-	 * 
-	 * TODO
-	 * 1. create parameter to each attach function to take in a variable array of actionListeners and attach them in order to all the menu items
-	 * 2. create a validation check method for attaching actionlisteners to menu items
-	 */
 
 	/**creates the fileMenu tab and attaches it to input
 	 * @param menuBar the JMenuBar that the function will attach the file menu section to
@@ -69,7 +63,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         menu.add(menuItem);
         
         
-        /*
+   
         //AddToPlaylist
         menuItem = new JMenuItem("Add To Playlist",
                 KeyEvent.VK_A);
@@ -101,26 +95,10 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		"Opens a file explorer to find file location");
         menuItem.addActionListener(mainFrame.new openPlaylist());
         menu.add(menuItem);
-        */
-        
+ 
         
 
         
-        //
-        
-        /**
-         * TODO 
-         * IMAGE BASE
-         * 
-        menuItem = new JMenuItem("Both text and icon",
-                new ImageIcon("images/middle.gif"));
-        menuItem.setMnemonic(KeyEvent.VK_B);
-        menu.add(menuItem);
- 
-        menuItem = new JMenuItem(new ImageIcon("images/middle.gif"));
-        menuItem.setMnemonic(KeyEvent.VK_D);
-        menu.add(menuItem);
-        */
         
         return menuBar;
 	}
@@ -196,7 +174,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         cbMenuItem.addActionListener(mainFrame.new hideItems());
         menu.add(cbMenuItem);
         
-/*
+
         //ShowPlaylists Bar
         cbMenuItem = new JCheckBoxMenuItem("Playlists");
         cbMenuItem.setMnemonic(KeyEvent.VK_L);
@@ -204,7 +182,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         		KeyEvent.VK_L, ActionEvent.CTRL_MASK));
         cbMenuItem.addActionListener(mainFrame.new hidePlaylist());
         menu.add(cbMenuItem);
-        */
+
         
        
         
@@ -492,6 +470,26 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         
         submenu.add(menuItem);
         
+        submenu.addSeparator();
+        
+        menuItem = new JMenuItem("Convert Gif to Video",
+                KeyEvent.VK_V);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+        
+        menuItem = new JMenuItem("Zoom In",
+        		KeyEvent.VK_EQUALS);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_EQUALS, ActionEvent.CTRL_MASK));
+        menuItem.addActionListener(mainFrame.new zoomBigger());
+        submenu.add(menuItem);
+        
+        menuItem = new JMenuItem("Zoom Out",
+        		KeyEvent.VK_MINUS);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_MINUS, ActionEvent.CTRL_MASK));
+        menuItem.addActionListener(mainFrame.new zoomSmaller());
+        submenu.add(menuItem);
         
         menu.add(submenu);
         
