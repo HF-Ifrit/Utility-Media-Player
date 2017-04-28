@@ -833,8 +833,6 @@ public class MainFrame extends JFrame {
 		Component tempPlayer = currentPlayer.showView();
 		getFrame().add(tempPlayer, BorderLayout.CENTER);
 		getFrame().setVisible(true);
-		
-		
 		currentPlayer.open(filename);
 		currentPlayer.volumeChange(this.volumeSlider.getValue());
 		updateComponent(tempPlayer);
