@@ -300,6 +300,7 @@ public class MainFrame extends JFrame {
 		    public void mouseClicked(MouseEvent e){
 		    	
 		        if(e.getClickCount()==2){
+		        	mainFrame.listMode = Mode.FILELIST;
 		           mainFrame.play();
 		        }
 		    }
@@ -311,6 +312,7 @@ public class MainFrame extends JFrame {
 			public void valueChanged(ListSelectionEvent e) {
 				if(list.getSelectedIndex() >= 0){
 					mainFrame.playListView.clearSelection();
+					
 				}
 			}
 		});
@@ -342,6 +344,7 @@ public class MainFrame extends JFrame {
 		        if(e.getClickCount()==2){
 		            if(list.getSelectedIndex() >= 0){
 		            	mainFrame.playlistIndex = list.getSelectedIndex();
+		            	mainFrame.listMode = Mode.PLAYLIST;
 		            }
 		        	mainFrame.play();
 		        }
@@ -457,22 +460,11 @@ public class MainFrame extends JFrame {
     }
 
     
-    
-    
     /**
-     * TODO
-     * operations called by actionListeneers
+     * methods called by Action Listeners
      */
     
-	//move file selection unit back one index
-	void backFile(){
-		int setIndex = fileList.getModel().getSize() - 1;
-		if(fileList.getSelectedIndex() > 0)
-			fileList.setSelectedIndex(fileList.getSelectedIndex() - 1);
-		else
-			fileList.setSelectedIndex(setIndex);
-		play();
-	}
+
 	
 	//sets window to fullscreen
 	private void fullscreen(){
@@ -767,7 +759,7 @@ public class MainFrame extends JFrame {
 		int selectedindex = fileList.getSelectedIndex();
 		int playlistSelectedIndex = playListView.getSelectedIndex();
 		if(selectedindex < 0){
-			if(playlistSelectedIndex >= 0){
+			if(playlistSelectedIndex >= 0){ 
 				listMode = Mode.PLAYLIST;
 				filename = playlist.getTracks().get(playlistSelectedIndex).getPath();
 				tempmode = parseFileType(filename);
@@ -835,8 +827,6 @@ public class MainFrame extends JFrame {
 		Component tempPlayer = currentPlayer.showView();
 		getFrame().add(tempPlayer, BorderLayout.CENTER);
 		getFrame().setVisible(true);
-		
-		
 		currentPlayer.open(filename);
 		currentPlayer.volumeChange(this.volumeSlider.getValue());
 		updateComponent(tempPlayer);
@@ -948,16 +938,45 @@ public class MainFrame extends JFrame {
 			return internalFilePath;
 	}
 	
+	//move file selection unit back one index
+	void backFile(){
+		if(listMode == Mode.FILELIST){
+			int setIndex = fileList.getModel().getSize() - 1;
+			if(fileList.getSelectedIndex() > 0)
+				fileList.setSelectedIndex(fileList.getSelectedIndex() - 1);
+			else
+				fileList.setSelectedIndex(setIndex);
+			play();
+		}
+		else if(listMode == Mode.PLAYLIST){
+			int setIndex = playListView.getModel().getSize() - 1;
+			if(playListView.getSelectedIndex() > 0)
+				playListView.setSelectedIndex(playListView.getSelectedIndex() - 1);
+			else 
+				playListView.setSelectedIndex(setIndex);
+			play();
+		}
+	}
 	
 	//moves the file selection unit back one index
 	public void forwardFile(){
-		int setIndex = 0;
-		if(fileList.getSelectedIndex() < fileList.getModel().getSize() - 1)
-			fileList.setSelectedIndex(fileList.getSelectedIndex() + 1);
-		else
-			fileList.setSelectedIndex(setIndex);
+		if(listMode == Mode.FILELIST){
+			int setIndex = 0;
+			if(fileList.getSelectedIndex() < fileList.getModel().getSize() - 1)
+				fileList.setSelectedIndex(fileList.getSelectedIndex() + 1);
+			else
+				fileList.setSelectedIndex(setIndex);
+			play();
+		}
+		else if(listMode == Mode.PLAYLIST){
+			int setIndex = 0;
+			if(playListView.getSelectedIndex() < playListView.getModel().getSize() - 1)
+				playListView.setSelectedIndex(playListView.getSelectedIndex() + 1);
+			else 
+				playListView.setSelectedIndex(setIndex);
+		}
+			
 		
-		play();
 	}
 	
 	//pop up help info
