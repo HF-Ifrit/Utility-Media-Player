@@ -31,7 +31,7 @@ public class VideoPlayerTest
 		tester.newMainFrame();
 		frame = tester.getMainFrame();
 		testFrame.setBounds(100, 100, 400, 400);
-		testFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		testFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		testPlayer = new VideoPlayer(frame);
 		testFrame.setContentPane(testPlayer.getPlayerComponent());
 		testFrame.setVisible(true);

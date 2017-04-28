@@ -262,21 +262,16 @@ public class VideoPlayer implements Player
 	//Constructors
 	public VideoPlayer()
 	{
-		//Set location of VLC dll installation and plugins folder
-		File vlcFolder = new File("lib");
-		String pluginPath = vlcFolder.getPath() + "\\plugins";
-		uk.co.caprica.vlcj.binding.LibC.INSTANCE._putenv("VLC_PLUGIN_PATH="+vlcFolder.getPath());
-		
-		
-		System.out.println("lib folder location: " + vlcFolder.getPath());
-		System.out.println("plugins folder location: " + pluginPath);
-		
-		
-		NativeLibrary.addSearchPath("libvlc", vlcFolder.getPath());
+		//Set location of VLC dll installation and plugins folder directly
+//		File vlcFolder = new File("lib/");
+//		String pluginPath = vlcFolder.getAbsolutePath() + "\\plugins";
+//		uk.co.caprica.vlcj.binding.LibC.INSTANCE._putenv("VLC_PLUGIN_PATH="+vlcFolder.getPath());
+//		
+//		NativeLibrary.addSearchPath("libvlc", vlcFolder.getAbsolutePath());
 		
 		
 		//If previous method fails, just use native discovery with an installed version of VLC
-		//new NativeDiscovery().discover();
+		new NativeDiscovery().discover();
 		
 		
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
@@ -295,7 +290,8 @@ public class VideoPlayer implements Player
 									@Override
 									public void run()
 									{
-										controller.forwardFile();
+										if(controller != null)
+											controller.forwardFile();
 									}
 								});
 					}	
@@ -333,12 +329,12 @@ public class VideoPlayer implements Player
 		loadVideo(fileName);
 		
 		playVideo();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			Thread.sleep(1000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		if(player.isPlaying())
 			return true;
 		else
