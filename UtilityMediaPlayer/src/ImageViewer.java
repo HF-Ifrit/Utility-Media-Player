@@ -6,8 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.swing.JOptionPane;
-
-import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -170,7 +168,7 @@ public class ImageViewer {
 		scene.setFill(Color.BLACK);
 		HBox box = new HBox();
 		box.getChildren().add(iv);
-		root.getChildren().add(box);
+		root.getChildren().add(box);	
 
 		currentIV = iv;
 		mainScene = scene;
