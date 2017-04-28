@@ -1394,6 +1394,24 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
+	//Zooms active image inwards
+	public class zoomBigger implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentViewer!= null) currentViewer.zoom(true);
+			setupViewer();
+		}
+	}
+	
+	//Zooms active image out
+	public class zoomSmaller implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentViewer!= null) currentViewer.zoom(false);
+			setupViewer();
+		}
+	}
+	
 	//controller to rotate the image
 	public class rotate implements ActionListener{
 		private boolean clockwise;
