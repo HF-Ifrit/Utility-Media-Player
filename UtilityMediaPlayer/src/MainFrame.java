@@ -300,6 +300,7 @@ public class MainFrame extends JFrame {
 		    public void mouseClicked(MouseEvent e){
 		    	
 		        if(e.getClickCount()==2){
+		        	mainFrame.listMode = Mode.FILELIST;
 		           mainFrame.play();
 		        }
 		    }
@@ -311,6 +312,7 @@ public class MainFrame extends JFrame {
 			public void valueChanged(ListSelectionEvent e) {
 				if(list.getSelectedIndex() >= 0){
 					mainFrame.playListView.clearSelection();
+					
 				}
 			}
 		});
@@ -342,6 +344,7 @@ public class MainFrame extends JFrame {
 		        if(e.getClickCount()==2){
 		            if(list.getSelectedIndex() >= 0){
 		            	mainFrame.playlistIndex = list.getSelectedIndex();
+		            	mainFrame.listMode = Mode.PLAYLIST;
 		            }
 		        	mainFrame.play();
 		        }
@@ -762,7 +765,7 @@ public class MainFrame extends JFrame {
 		int selectedindex = fileList.getSelectedIndex();
 		int playlistSelectedIndex = playListView.getSelectedIndex();
 		if(selectedindex < 0){
-			if(playlistSelectedIndex >= 0){
+			if(playlistSelectedIndex >= 0){ 
 				listMode = Mode.PLAYLIST;
 				filename = playlist.getTracks().get(playlistSelectedIndex).getPath();
 				tempmode = parseFileType(filename);
