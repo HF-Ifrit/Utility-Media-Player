@@ -140,6 +140,44 @@ public class ImageViewer {
 		
 		return true;
 	}
+	
+	boolean zoom(boolean bigger) {
+		if (openImage == false) {
+			return false;
+		}
+		
+		double multiplier;
+		
+		if(bigger) {
+			multiplier = 2.0;
+		}
+		else {
+			multiplier = 0.5;
+		}
+		
+		ImageView iv = new ImageView();
+		iv.setImage(currentIV.getImage());
+		
+		iv.setScaleX(currentIV.getScaleX());
+		iv.setRotate(currentIV.getRotate());
+		
+		iv.setFitHeight(currentIV.getFitHeight() * multiplier);
+		iv.setFitWidth(currentIV.getFitWidth() * multiplier);
+		iv.setPreserveRatio(true);
+
+		Group root = new Group();
+		Scene scene = new Scene(root);
+		scene.setFill(Color.BLACK);
+		HBox box = new HBox();
+		box.getChildren().add(iv);
+		root.getChildren().add(box);
+
+		currentIV = iv;
+		mainScene = scene;
+
+		return true;
+
+	}
 
 	boolean mirrorImage() {
 

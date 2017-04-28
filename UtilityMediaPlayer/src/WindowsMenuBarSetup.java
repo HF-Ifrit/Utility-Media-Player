@@ -470,6 +470,26 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
         
         submenu.add(menuItem);
         
+        submenu.addSeparator();
+        
+        menuItem = new JMenuItem("Convert Gif to Video",
+                KeyEvent.VK_V);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+        
+        menuItem = new JMenuItem("Zoom In",
+        		KeyEvent.VK_EQUALS);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_EQUALS, ActionEvent.CTRL_MASK));
+        menuItem.addActionListener(mainFrame.new zoomBigger());
+        submenu.add(menuItem);
+        
+        menuItem = new JMenuItem("Zoom Out",
+        		KeyEvent.VK_MINUS);
+        menuItem.setAccelerator(KeyStroke.getKeyStroke(
+        		KeyEvent.VK_MINUS, ActionEvent.CTRL_MASK));
+        menuItem.addActionListener(mainFrame.new zoomSmaller());
+        submenu.add(menuItem);
         
         menu.add(submenu);
         
