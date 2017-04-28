@@ -169,10 +169,6 @@ public class HBoxBuilder extends HBox{
     
     //helper method to create a time-stamp tracker
     public static HBox newTimeStampTrackerBar(MainFrame newFrame){
-    	Button currentButton;
-    	Image currentImage;
-    	ImageView imageview;
-    	JFXController jfxControl = newFrame.getJFXController();
 
     	HBoxBuilder hbox = new HBoxBuilder(newFrame);
     	final GridPane swatch = new GridPane();

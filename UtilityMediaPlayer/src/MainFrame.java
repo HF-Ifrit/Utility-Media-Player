@@ -88,7 +88,6 @@ public class MainFrame extends JFrame {
     
     //previous file that was played
     private String previousFile;
-    private Mode previousMode;
     private Component previousComponent;
     
     //old dimensions from fullscreen
@@ -174,13 +173,13 @@ public class MainFrame extends JFrame {
         
         demo.setFileList(createFileList(demo));
         demo.scrollPane = new JScrollPane();
-        demo.scrollPane.setPreferredSize(new Dimension(200,demo.fileList.getHeight() ));
+        demo.scrollPane.setPreferredSize(new Dimension(150,demo.fileList.getHeight() ));
         demo.scrollPane.setViewportView(demo.fileList);
         displayFrame.getContentPane().add(demo.scrollPane, BorderLayout.WEST);
         
         demo.setPlayListView(createPlayListView(demo));
         demo.playListScroll =  new JScrollPane();
-        demo.playListScroll.setPreferredSize(new Dimension(200, demo.playListView.getHeight()));
+        demo.playListScroll.setPreferredSize(new Dimension(150, demo.playListView.getHeight()));
         demo.playListScroll.setViewportView(demo.playListView);
         displayFrame.getContentPane().add(demo.playListScroll, BorderLayout.EAST);
         
@@ -389,16 +388,6 @@ public class MainFrame extends JFrame {
         //Create the content-pane-to-be.
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setOpaque(false);
- 
-        //Create a scrolled text area.
-//        output = new JTextArea(5, 30);
-//        output.setEditable(false);
-//        scrollPane = new JScrollPane(output);
-//        scrollPane.setVisible(true);
-       
- 
-        //Add the text area to the content pane.
-       // contentPane.add(scrollPane, BorderLayout.CENTER);
         
         contentPane.setVisible(true);
  
@@ -496,15 +485,6 @@ public class MainFrame extends JFrame {
 		}
 		else 
 			playListScroll.setVisible(true);
-	}
-	
-	
-	
-	//creates a image properties pop-up
-	private void imageProperties(){
-		if(currentViewer != null){
-			currentViewer.imageProperties();
-		}
 	}
 	
 	
@@ -668,6 +648,7 @@ public class MainFrame extends JFrame {
 		
 	}
 	
+	//orders the fileList by the filetype of each element
 	public void orderFileListByType() {
 		Enumeration<String> fileListEnum = fileListModel.elements();
 		
@@ -701,6 +682,7 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
+	//orders the fileList alphabetically by name for each element
 	public void orderFileListByName() {
 		Enumeration<String> fileListEnum = fileListModel.elements();
 		ArrayList<String> toOrder = new ArrayList<String>();
@@ -762,7 +744,6 @@ public class MainFrame extends JFrame {
 	
 	//advances playlist to next unit
 	public void advancePlaylist(){
-		String filename = "";
 		if(listMode == Mode.PLAYLIST){
 			if((playlistIndex + 1) < playListView.getModel().getSize())
 				playlistIndex+=1;
@@ -1007,15 +988,18 @@ public class MainFrame extends JFrame {
 	//pop up help info
 	private void openHelpMenu(){
 		String about = "New media can be imported directly by inserting it in the \"media libraries\" folder." + "\n"
-				+ "External media can be opened using File >> Open File. " + "\n"
-				+ "Double-click media to play it.";
-		JOptionPane.showMessageDialog(null, about,"About", JOptionPane.INFORMATION_MESSAGE);
+				+ "External media can be opened using File >> Open File tab on the menu bar. " + "\n"
+				+ "Double-click media on a side bar to play it." + "\n" 
+				+ "Press Back or Forward buttons to instantly start playing the new file. Drag the Volume slider to change the volume level of a player" + "\n" 
+				+ "Press the central Play button while a player is active to pause/resume it." + "\n"
+				+ "Local ReadMe.txt includes detailed notes on the functionality of each menu bar item and each button.";
+		JOptionPane.showMessageDialog(null, about,"Help", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	//pop up about info
 	private void openAboutInfo(){
 		String about = "Utility Media Player" + "\n"
-				+ "Prerelease Version";
+				+ "Version 1.0";
 		JOptionPane.showMessageDialog(null, about,"About", JOptionPane.INFORMATION_MESSAGE);
 		}
 	
@@ -1195,7 +1179,7 @@ public class MainFrame extends JFrame {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 		           File file = fileChooser.getSelectedFile();
 		           String filename = file.getName();
-		           Playlist newPlayList = openPlaylist(filename);
+		           openPlaylist(filename);
 		           
 		           
 		           
@@ -1540,12 +1524,6 @@ public class MainFrame extends JFrame {
 	 */
 	
 	
-	/**
-	 * TODO
-	 * internal testing class
-	 * provides access to private variables and methods only for testing purposes only
-	 * remove during release
-	 */
 	public static class TestSuite{
 		/**
 		 * reference to a controlled testing instance of a MainFrame
@@ -1590,13 +1568,13 @@ public class MainFrame extends JFrame {
 	        
 	        demo.setFileList(MainFrame.createFileList(demo));
 	        demo.scrollPane = new JScrollPane();
-	        demo.scrollPane.setPreferredSize(new Dimension(200,demo.fileList.getHeight() ));
+	        demo.scrollPane.setPreferredSize(new Dimension(125,demo.fileList.getHeight() ));
 	        demo.scrollPane.setViewportView(demo.fileList);
 	        displayFrame.getContentPane().add(demo.scrollPane, BorderLayout.WEST);
 	        
 	        demo.setPlayListView(MainFrame.createPlayListView(demo));
 	        demo.playListScroll =  new JScrollPane();
-	        demo.playListScroll.setPreferredSize(new Dimension(200, demo.playListView.getHeight()));
+	        demo.playListScroll.setPreferredSize(new Dimension(125, demo.playListView.getHeight()));
 	        demo.playListScroll.setViewportView(demo.playListView);
 	        displayFrame.getContentPane().add(demo.playListScroll, BorderLayout.EAST);
 	        
