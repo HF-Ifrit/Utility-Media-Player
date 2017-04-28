@@ -174,13 +174,13 @@ public class MainFrame extends JFrame {
         
         demo.setFileList(createFileList(demo));
         demo.scrollPane = new JScrollPane();
-        demo.scrollPane.setPreferredSize(new Dimension(200,demo.fileList.getHeight() ));
+        demo.scrollPane.setPreferredSize(new Dimension(150,demo.fileList.getHeight() ));
         demo.scrollPane.setViewportView(demo.fileList);
         displayFrame.getContentPane().add(demo.scrollPane, BorderLayout.WEST);
         
         demo.setPlayListView(createPlayListView(demo));
         demo.playListScroll =  new JScrollPane();
-        demo.playListScroll.setPreferredSize(new Dimension(200, demo.playListView.getHeight()));
+        demo.playListScroll.setPreferredSize(new Dimension(150, demo.playListView.getHeight()));
         demo.playListScroll.setViewportView(demo.playListView);
         displayFrame.getContentPane().add(demo.playListScroll, BorderLayout.EAST);
         
@@ -1589,13 +1589,13 @@ public class MainFrame extends JFrame {
 	        
 	        demo.setFileList(MainFrame.createFileList(demo));
 	        demo.scrollPane = new JScrollPane();
-	        demo.scrollPane.setPreferredSize(new Dimension(200,demo.fileList.getHeight() ));
+	        demo.scrollPane.setPreferredSize(new Dimension(125,demo.fileList.getHeight() ));
 	        demo.scrollPane.setViewportView(demo.fileList);
 	        displayFrame.getContentPane().add(demo.scrollPane, BorderLayout.WEST);
 	        
 	        demo.setPlayListView(MainFrame.createPlayListView(demo));
 	        demo.playListScroll =  new JScrollPane();
-	        demo.playListScroll.setPreferredSize(new Dimension(200, demo.playListView.getHeight()));
+	        demo.playListScroll.setPreferredSize(new Dimension(125, demo.playListView.getHeight()));
 	        demo.playListScroll.setViewportView(demo.playListView);
 	        displayFrame.getContentPane().add(demo.playListScroll, BorderLayout.EAST);
 	        
