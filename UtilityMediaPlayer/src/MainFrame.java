@@ -582,19 +582,44 @@ public class MainFrame extends JFrame {
 			playlist.savePlaylist(filename);
 		}
 	}
-	
+
 	//save playlist
-	private void openPlaylist(String filename){
+	private Playlist openPlaylist(String filename){
+		Playlist tempPlayList = null;
 		if(filename != null){
-			if (playlist == null) {
-				Playlist temp = new Playlist(this);
-				playlist = temp;
+				playlist = new Playlist(this);
+			tempPlayList = playlist.loadPlaylist(filename);
+			ArrayList<String> trackNames = new ArrayList<String>();
+			DefaultListModel<String> tempModel = new DefaultListModel<String>();
+			for (URI uri : playlist.getTracks()) {
+				String string = uri.toString();
+				int first = string.lastIndexOf("/");
+				int last = string.indexOf('.');
+				String name = string.substring(first + 1, last);
+				trackNames.add(name);
+				tempModel.addElement(name);
 			}
+			playlist = tempPlayList;
 			playListModel.clear();
-			playlist = playlist.loadPlaylist(filename);
+			playListModel = tempModel;
+			playListView.setModel(playListModel);
+			
+			getFrame().getContentPane().remove(playListScroll);
+			
+			playListScroll =  new JScrollPane();
+	        playListScroll.setPreferredSize(new Dimension(200, playListView.getHeight()));
+	        playListScroll.setViewportView(playListView);
+	        
+	        getFrame().getContentPane().add(playListScroll, BorderLayout.EAST);
+	        getFrame().validate();		
+			getFrame().repaint();
+	        
 		}
+		
+		
+		return tempPlayList;
 	}
-	
+
 	private boolean rotateImage(boolean clockwise) {
 		boolean success = currentViewer.rotateImage(clockwise);
 		
@@ -1174,19 +1199,16 @@ public class MainFrame extends JFrame {
 			File dir = new File(System.getProperty("user.dir"));
 			fileChooser.setCurrentDirectory(dir);
 			int returnVal = fileChooser.showOpenDialog(contentPane);
-			 if (returnVal == JFileChooser.APPROVE_OPTION) {
+			
+			
+	
+			
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
 		           File file = fileChooser.getSelectedFile();
 		           String filename = file.getName();
-		           openPlaylist(filename);
-		           ArrayList<String> trackNames = new ArrayList<>();
-		           for (URI uri : playlist.getTracks()) {
-		        	   String string = uri.toString();
-		        	   int first = string.lastIndexOf("/");
-		        	   int last = string.indexOf('.');
-		        	   String name = string.substring(first + 1, last);
-		        	   trackNames.add(name);
-			           playListModel.addElement(name);
-		           }
+		           Playlist newPlayList = openPlaylist(filename);
+		           
+		           
 		           
 			 }
 		}
