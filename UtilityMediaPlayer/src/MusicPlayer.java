@@ -431,12 +431,17 @@ public class MusicPlayer implements Player {
 		grid.add(playTime, 1, 5);
 		mainFrame.setScene(mainScene);
 	}
-	
+		
 	public static void main(String[] args) {
 		Application.launch();
 	}
 	
 	MediaPlayer getPlayer() {
 		return this.player;
+	}
+
+	@Override
+	public boolean openFullFilePath(String fileName) {
+		return open(fileName);
 	}
 }

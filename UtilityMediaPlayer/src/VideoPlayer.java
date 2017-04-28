@@ -795,5 +795,11 @@ public class VideoPlayer implements Player
 	{
 		
 	}
+
+	@Override
+	public boolean openFullFilePath(String fileName) {
+		
+		return false;
+	}
 }
 
