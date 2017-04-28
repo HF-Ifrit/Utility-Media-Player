@@ -372,7 +372,7 @@ public class MusicPlayer implements Player {
 	
 	/* The commented out section is used if the MusicPlayer is not implemented as an Application. However, as of release time, it will be an Application. */
 	public MusicPlayer(MainFrame frame) {
-		this.frame = null;
+		this.frame = frame;
 		player = null;
 		songLoaded = false;
 		volume = null;

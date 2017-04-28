@@ -283,7 +283,9 @@ public class MainFrameTest{
 	@Test
 	public void testVolumeControl(){
 		try{
-			fail("not implemented yet");
+			MainFrame instanceFrame = tester.createAndShowGUI();
+			tester.mainFrame = instanceFrame;
+			
 		}
 		catch(Exception e){
 			fail("Unexpected exception/error: " + e.toString());
