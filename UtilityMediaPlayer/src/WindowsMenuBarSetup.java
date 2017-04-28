@@ -18,7 +18,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
 	 */
 	public JMenuBar attachFileMenu(JMenuBar menuBar, MainFrame mainFrame){
 		//temporary loading spaces on creation
-		JMenu menu, submenu;
+		JMenu menu;
 		JMenuItem menuItem;
 		
 		
@@ -108,7 +108,7 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
 	 */
 	public JMenuBar attachViewMenu(JMenuBar menuBar, MainFrame mainFrame){
 		//temporary loading spaces on creation
-		JMenu menu, submenu;
+		JMenu menu;
 		JMenuItem menuItem;
 		JCheckBoxMenuItem cbMenuItem;
 		
@@ -196,10 +196,8 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
 	 */
 	public JMenuBar attachVideoMenu(JMenuBar menuBar, MainFrame mainFrame){
 		//temporary loading spaces on creation
-		JMenu menu, submenu;
+		JMenu menu;
 		JMenuItem menuItem;
-		JCheckBoxMenuItem cbMenuItem;
-		JRadioButtonMenuItem rbMenuItem;
 		
 		//Video Tab
         menu = new JMenu("Video");
@@ -435,8 +433,6 @@ public class WindowsMenuBarSetup implements MenuBarSetup{
 		//temporary loading spaces on creation
 		JMenu menu, submenu;
 		JMenuItem menuItem;
-		JCheckBoxMenuItem cbMenuItem;
-		JRadioButtonMenuItem rbMenuItem;
 		
 		
 		

@@ -88,7 +88,6 @@ public class MainFrame extends JFrame {
     
     //previous file that was played
     private String previousFile;
-    private Mode previousMode;
     private Component previousComponent;
     
     //old dimensions from fullscreen
@@ -389,16 +388,6 @@ public class MainFrame extends JFrame {
         //Create the content-pane-to-be.
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.setOpaque(false);
- 
-        //Create a scrolled text area.
-//        output = new JTextArea(5, 30);
-//        output.setEditable(false);
-//        scrollPane = new JScrollPane(output);
-//        scrollPane.setVisible(true);
-       
- 
-        //Add the text area to the content pane.
-       // contentPane.add(scrollPane, BorderLayout.CENTER);
         
         contentPane.setVisible(true);
  
@@ -496,15 +485,6 @@ public class MainFrame extends JFrame {
 		}
 		else 
 			playListScroll.setVisible(true);
-	}
-	
-	
-	
-	//creates a image properties pop-up
-	private void imageProperties(){
-		if(currentViewer != null){
-			currentViewer.imageProperties();
-		}
 	}
 	
 	
@@ -764,7 +744,6 @@ public class MainFrame extends JFrame {
 	
 	//advances playlist to next unit
 	public void advancePlaylist(){
-		String filename = "";
 		if(listMode == Mode.PLAYLIST){
 			if((playlistIndex + 1) < playListView.getModel().getSize())
 				playlistIndex+=1;
@@ -1200,7 +1179,7 @@ public class MainFrame extends JFrame {
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 		           File file = fileChooser.getSelectedFile();
 		           String filename = file.getName();
-		           Playlist newPlayList = openPlaylist(filename);
+		           openPlaylist(filename);
 		           
 		           
 		           
