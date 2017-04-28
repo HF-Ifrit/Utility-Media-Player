@@ -1040,17 +1040,6 @@ public class MainFrame extends JFrame {
 		return timeStampSlider;
 	}
 	
-	
-	
-	
-	
-	/**
-	 *TODO 
-	 *integrate actions with other components
-	 *controllers for listeners to attach to the buttons
-	 *
-	 */
-	
 	//Controller for remove files from fileList
 	public class removeFromFileList implements ActionListener{
 		@Override

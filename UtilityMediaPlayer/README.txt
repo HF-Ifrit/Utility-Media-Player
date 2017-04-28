@@ -13,6 +13,9 @@ Andrew Su
 
 TODO TODO TODO TODO TODO
 
+Note that "testplay1" is a sample playlist that is empty. It is not a mistake that opening
+it does not add any tracks to the right bar.
+
 Note that normaltest.mp3 seems to display the wrong duration. This is apparently
 an error in the metadata of the song, as it is reproduced when opening it in other
 media players, and the UMP correctly displays the length of the other test audio.
@@ -50,6 +53,8 @@ media players, and the UMP correctly displays the length of the other test audio
 	-Properties
 	  Clicking Image -> Image Properties opens a dialog box that lists the path
 	  to this image, as well as its dimensions.
+	-Zoom
+	  Clicking Image -> Transform will also allow zoom functionality.
 	
 
    c. Music Player
@@ -59,7 +64,8 @@ media players, and the UMP correctly displays the length of the other test audio
 	-Playlists
 	  -Play a song, and then select File -> Add to Playlist. You will be prompted
 	   to enter a name for the playlist. Do so. You can then add more tracks to
-	   the playlist. When finished, select File -> Save Playlist. It will be saved
+	   the playlist, which will also appear on the right menu.
+	   When finished, select File -> Save Playlist. It will be saved
 	   to the playlists folder in the application directory. At a later instance
 	   of the application, select File -> Open Playlist. The songs will appear on
 	   the right menu bar. Open any song, and then the playlist will auto-play. 
@@ -78,12 +84,7 @@ media players, and the UMP correctly displays the length of the other test audio
 	  to make, using the start time and then the end time. The output clip will
 	  be saved in the application's output folder.
 	
-	
-
-   
-
-
-   f. File Conversion
+   e. File Conversion
 	-GIF to Video 
 	  Click Image -> Convert GIF to Video. The new video will be saved in the 
 	  application's output folder.
