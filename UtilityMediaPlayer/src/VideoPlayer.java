@@ -278,6 +278,7 @@ public class VideoPlayer implements Player
 		//If previous method fails, just use native discovery with an installed version of VLC
 		//new NativeDiscovery().discover();
 		
+		
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		this.controller = null;
 		hasMedia = false;
@@ -830,6 +831,12 @@ public class VideoPlayer implements Player
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		v.playVideo();
+	}
+
+	@Override
+	public boolean openFullFilePath(String fileName) {
+		
+		return false;
 	}
 }
 

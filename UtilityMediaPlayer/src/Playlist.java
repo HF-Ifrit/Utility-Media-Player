@@ -20,7 +20,7 @@ public class Playlist {
 		if (fileName != null) {
 			URI uri = new File(fileName).toURI();
 			String name = new File(fileName).toURI().toString();
-			if (name.endsWith("mp3") || name.endsWith("mp4") || name.endsWith("webm")) {
+			if (name.endsWith("mp3") ||name.endsWith("wav")) {
 				tracks.add(uri);
 			}
 		}
@@ -33,7 +33,7 @@ public class Playlist {
 			if (!playlists.exists()) {
 				playlists.mkdirs();
 			}
-			BufferedWriter writer = new BufferedWriter(new FileWriter( new File("playlists" + System.getProperty("file.separator") + fileName + ".txt")));
+			BufferedWriter writer = new BufferedWriter(new FileWriter( new File("playlists" + System.getProperty("file.separator") + fileName)));
 			for (URI track : tracks) {
 				writer.write(track.toString());
 				writer.newLine();

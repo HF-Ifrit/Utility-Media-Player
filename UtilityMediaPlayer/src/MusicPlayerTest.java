@@ -4,12 +4,18 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.After;
 import org.junit.Test;
+
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 
 
 public class MusicPlayerTest {
 	MusicPlayer testPlayer;	
+	private MainFrame frame;
+	private static MainFrame.TestSuite tester = new MainFrame.TestSuite();
+
 	Stage mainStage;
 	String workingDir = System.getProperty("user.dir");
 	String fileSep = System.getProperty("file.separator");
@@ -22,7 +28,9 @@ public class MusicPlayerTest {
 	@Before
 	public void before() {
 		mainStage = new Stage();
-		testPlayer = new MusicPlayer();
+		tester.newMainFrame();
+		frame = tester.getMainFrame();
+		testPlayer = new MusicPlayer(frame);
 		testPlayer.start(mainStage);
 	}
 	
@@ -108,5 +116,40 @@ public class MusicPlayerTest {
 		testPlayer.open(testSong1);
 		testPlayer.testButton.fire();
 		assertTrue(testPlayer.clear());		
+	}
+	
+	@Test
+	public void changePositionOutsideBounds() {
+		testPlayer.open(testSong1);
+		testPlayer.testButton.fire();
+		testPlayer.changePosition(new Long(-50));
+		MediaPlayer mp = testPlayer.getPlayer();
+		assertTrue(mp.getCurrentTime().toSeconds() < 1.0);
+		testPlayer.changePosition(new Long(50000000));
+		testPlayer.changePosition(new Long(50));
+	}
+	
+	@Test
+	public void skipPlayback() {
+		testPlayer.open(testSong1);
+		testPlayer.testButton.fire();
+		testPlayer.skipPlayback();
+		assertTrue(testPlayer.songLoaded);
+	}
+	
+	@Test
+	public void formatTimeDurationZero() {
+		Duration dur = new Duration(0);
+		assertTrue(MusicPlayer.formatTime(new Duration(7200000), dur).equals("2:00:00"));
+		assertTrue(MusicPlayer.formatTime(new Duration(120000), dur).equals("02:00"));
+		assertTrue(MusicPlayer.formatTime(new Duration(2000), dur).equals("00:02"));
+	}
+	
+	@Test
+	public void formatTimeGoodduration() {
+		Duration dur = new Duration(7200000);
+		assertTrue(MusicPlayer.formatTime(new Duration(2000), dur).equals("0:00:02/2:00:00"));
+		assertTrue(MusicPlayer.formatTime(new Duration(120000), dur).equals("0:02:00/2:00:00"));
+		assertTrue(MusicPlayer.formatTime(new Duration(7200000), dur).equals("2:00:00/2:00:00"));
 	}
 }

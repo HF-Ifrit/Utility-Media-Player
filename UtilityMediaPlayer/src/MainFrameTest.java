@@ -268,7 +268,7 @@ public class MainFrameTest{
 			tester.play();
 			assertEquals("file does not keep same mode on play/pause", MainFrame.Mode.VIDEO, tester.getMode());
 			assertTrue("player doesn't keep a videoPlayer on play/pause", tester.getCurrentPlayer() instanceof VideoPlayer);
-			assertTrue("player does not pause music player", ((VideoPlayer)tester.getCurrentPlayer()).hasVideo()  );
+			assertTrue("player does not keep video on play", ((VideoPlayer)tester.getCurrentPlayer()).hasVideo()  );
 			
 			//item 4
 
@@ -282,8 +282,20 @@ public class MainFrameTest{
 	//test the volume operations
 	@Test
 	public void testVolumeControl(){
-		try{
-			fail("not implemented yet");
+		
+			MainFrame instanceFrame = tester.createAndShowGUI();
+			tester.mainFrame = instanceFrame;
+			JList<String> filelist = tester.getFileList(instanceFrame);
+			Slider volumeSlider = tester.getVolumeSlider();
+			assertTrue("player doesn't initialize the volume at right setting" , volumeSlider.getValue() >= 99);
+			
+			filelist.setSelectedIndex(0);
+			tester.play();
+			tester.setVolume(50);
+			assertTrue("volume slider does not stay changed", 50 == volumeSlider.getValue());
+			
+			
+			try{
 		}
 		catch(Exception e){
 			fail("Unexpected exception/error: " + e.toString());

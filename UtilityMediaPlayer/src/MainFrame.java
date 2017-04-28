@@ -14,25 +14,19 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.*;
-import javax.swing.UIManager.LookAndFeelInfo;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.embed.swing.JFXPanel;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.*;
 import javax.swing.border.BevelBorder;
-import javax.swing.text.html.Option;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagLayout;
@@ -40,7 +34,6 @@ import java.awt.GridBagLayout;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
-import javafx.stage.FileChooser;
 
 
 //primary GUI window that will interact and control other modules
@@ -57,11 +50,6 @@ public class MainFrame extends JFrame {
 
 	
 	private JPanel contentPane;
-	private JMenuBar menuBar;
-	private JMenu menu, submenu;
-	private JMenuItem menuItem;
-	private JRadioButtonMenuItem rbMenuItem;
-	private JCheckBoxMenuItem cbMenuItem;
 	
 	//controlled viewable items
 	private Button playButton;
@@ -87,6 +75,8 @@ public class MainFrame extends JFrame {
     //PlayList we are on
     private Playlist playlist;
     
+    //current index of the playlist
+    private int playlistIndex;
     
     //players/viewers
     private Player currentPlayer;
@@ -107,6 +97,10 @@ public class MainFrame extends JFrame {
     //player mode that is currently loaded
     private Mode mode;
     
+    //player mode for either fileList or playList
+    private Mode listMode;
+    
+    
     //display modes
     private boolean fullscreenMode;
     
@@ -115,7 +109,7 @@ public class MainFrame extends JFrame {
     
     //enum to determine what mode the current controller is set to
     public enum Mode{
-    	EMPTY,VIDEO,IMAGE,AUDIO
+    	EMPTY,VIDEO,IMAGE,AUDIO,PLAYLIST,FILELIST
     }
 
 	/**
@@ -143,6 +137,7 @@ public class MainFrame extends JFrame {
 		currentPlayer = null;
 		previousFile = "";
 		mode = Mode.EMPTY;
+		listMode = Mode.FILELIST;
 		jfxControl = new JFXController(this);
 		currentViewer = new ImageViewer();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -303,10 +298,23 @@ public class MainFrame extends JFrame {
 		list.addMouseListener(new MouseAdapter(){
 		    @Override
 		    public void mouseClicked(MouseEvent e){
+		    	
 		        if(e.getClickCount()==2){
+		        	mainFrame.listMode = Mode.FILELIST;
 		           mainFrame.play();
 		        }
 		    }
+		});
+		
+		list.addListSelectionListener(new ListSelectionListener(){
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if(list.getSelectedIndex() >= 0){
+					mainFrame.playListView.clearSelection();
+					
+				}
+			}
 		});
 		
 		list.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -320,11 +328,8 @@ public class MainFrame extends JFrame {
 	private static JList<String> createPlayListView(MainFrame mainFrame){
 		JList<String> list;
 		list = new JList<String>();
-		//TODO add file names here
 		ArrayList<String> playList = new ArrayList<String>();
-		
 		playListModel = new DefaultListModel<String>();
-		playListModel.addElement("playList");
 		
 		for(String fileName : playList){
 			playListModel.addElement(fileName);
@@ -337,14 +342,29 @@ public class MainFrame extends JFrame {
 		    @Override
 		    public void mouseClicked(MouseEvent e){
 		        if(e.getClickCount()==2){
-		           mainFrame.playListStart();
+		            if(list.getSelectedIndex() >= 0){
+		            	mainFrame.playlistIndex = list.getSelectedIndex();
+		            	mainFrame.listMode = Mode.PLAYLIST;
+		            }
+		        	mainFrame.play();
 		        }
 		    }
+		});
+		
+		list.addListSelectionListener(new ListSelectionListener(){
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				if(list.getSelectedIndex() >= 0){
+					mainFrame.fileList.clearSelection();
+				}
+			}
 		});
 
 		list.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		list.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
 		
 		return list;
 	}
@@ -415,31 +435,6 @@ public class MainFrame extends JFrame {
     }
     
     /**
-     * creates a time controller for the frame
-     * @return JFXPanel holding the timeStamp slider
-     */
-    private JFXPanel createTimeControl(){
-    	/**
-    	 * creates player interface panel
-    	 */
-    	JFXPanel fxPanel = new JFXPanel();
-    	
-    	fxPanel.setScene(new Scene(HBoxBuilder.newTimeStampTrackerBar(this)));
-    	
-    	return fxPanel;
-    }
-    
-    /**
-     * combine both bars
-     */
-    private JFXPanel createBothControls(){
-    	JFXPanel fxPanel = new JFXPanel();
-    	
-    	
-    	return fxPanel;
-    }
-    
-    /**
      * Getters and Setters
      */
     
@@ -465,22 +460,11 @@ public class MainFrame extends JFrame {
     }
 
     
-    
-    
     /**
-     * TODO
-     * operations called by actionListeneers
+     * methods called by Action Listeners
      */
     
-	//move file selection unit back one index
-	void backFile(){
-		int setIndex = fileList.getModel().getSize() - 1;
-		if(fileList.getSelectedIndex() > 0)
-			fileList.setSelectedIndex(fileList.getSelectedIndex() - 1);
-		else
-			fileList.setSelectedIndex(setIndex);
-		play();
-	}
+
 	
 	//sets window to fullscreen
 	private void fullscreen(){
@@ -547,13 +531,6 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
-	//changes time to slider value
-	void timeStampChange(){
-		if ((mode == Mode.AUDIO) || (mode == Mode.VIDEO)) {
-			//TODO
-		}
-	}
-	
 	private boolean saveInLibrary(File toSave) {
 		if(toSave == null) return false;
 		
@@ -591,10 +568,11 @@ public class MainFrame extends JFrame {
 	//adds current file to playlist
 	private void addToPlaylist(){
 		if(currentFile != null){
-			if(playlist == null){
-				playlist = new Playlist(this, "untitled");
-			}
 			playlist.addTrack(currentFile);
+			int start = currentFile.lastIndexOf('/');
+			int last = currentFile.indexOf('.');
+			String fileName = currentFile.substring(start + 1, last);
+			playListModel.addElement(fileName);
 		}
 	}
 	
@@ -612,6 +590,7 @@ public class MainFrame extends JFrame {
 				Playlist temp = new Playlist(this);
 				playlist = temp;
 			}
+			playListModel.clear();
 			playlist = playlist.loadPlaylist(filename);
 		}
 	}
@@ -745,18 +724,32 @@ public class MainFrame extends JFrame {
 	
 	//plays the current playList
 	public void playListStart(){
-		String filename = "";
 		int selectedindex = playListView.getSelectedIndex();
 		if(selectedindex < 0){
-			mode = Mode.EMPTY;
 			return;
 		}
-		else{
-			filename = playListView.getModel().getElementAt(selectedindex);
-		}
+		listMode = Mode.PLAYLIST;
 		ArrayList<URI> tracks = playlist.getTracks();
 		String fileToPlay = tracks.get(0).getPath();
+		playlistIndex = 0;
 		play(fileToPlay);
+	}
+	
+	//advances playlist to next unit
+	public void advancePlaylist(){
+		String filename = "";
+		if(listMode == Mode.PLAYLIST){
+			if((playlistIndex + 1) < playListView.getModel().getSize())
+				playlistIndex+=1;
+			else
+				return;
+			//plays selected playList index if if in bounds
+			if(playlistIndex >= 0 ){
+				playListView.setSelectedIndex(playlistIndex);
+				fileList.clearSelection();
+				play();
+			}
+		}
 	}
 	
 	//plays current file at file selection index
@@ -764,26 +757,45 @@ public class MainFrame extends JFrame {
 		String filename = "";
 		Mode tempmode = Mode.EMPTY;
 		int selectedindex = fileList.getSelectedIndex();
+		int playlistSelectedIndex = playListView.getSelectedIndex();
 		if(selectedindex < 0){
-			mode = Mode.EMPTY;
-			return;
+			if(playlistSelectedIndex >= 0){ 
+				listMode = Mode.PLAYLIST;
+				filename = playlist.getTracks().get(playlistSelectedIndex).getPath();
+				tempmode = parseFileType(filename);
+			}
+			else{
+				listMode = Mode.EMPTY;
+				mode = Mode.EMPTY;
+				return;
+			}
 		}
 		else{
+			listMode = Mode.FILELIST;
 			filename = fileList.getModel().getElementAt(selectedindex);
 			tempmode = parseFileType(filename);
 		}
-		/**
-		 * TODO
-		 * call respective player depending on mode
-		 */
+		mode = tempmode;
+		play(filename);
+	}
+	
+	//method for playing/pausing using the play button
+	public void playPause(){
+		if(mode != Mode.EMPTY)
+			playbackExecute();
+	}
+	
+	//overload that takes in a file name
+	public void play(String filename){
+		
 		//creates a new player for new file
 		if(filename != previousFile){
-			mode = tempmode;
+			
 			if(currentPlayer != null){
 				currentPlayer.clear();
 				currentPlayer = null;
 			}
-			createViews(filename);
+			
 			
 			
 		}
@@ -791,18 +803,16 @@ public class MainFrame extends JFrame {
 		else{
 			playbackExecute();
 		}	
-	}
-	
-	//overload that takes in a file name
-	public void play(String filename){
-		Mode tempmode = parseFileType(filename);
+		
 		if(filename != previousFile){
-			mode = tempmode;
 			if(currentPlayer != null){
 				currentPlayer.clear();
 				currentPlayer = null;
 			}
-			createPlayListViews(filename);
+			if(listMode == Mode.FILELIST)
+				createViews(filename);
+			else if (listMode == Mode.PLAYLIST)
+				createPlayListViews(filename);
 			
 			
 		}
@@ -817,8 +827,6 @@ public class MainFrame extends JFrame {
 		Component tempPlayer = currentPlayer.showView();
 		getFrame().add(tempPlayer, BorderLayout.CENTER);
 		getFrame().setVisible(true);
-		
-		
 		currentPlayer.open(filename);
 		currentPlayer.volumeChange(this.volumeSlider.getValue());
 		updateComponent(tempPlayer);
@@ -843,9 +851,27 @@ public class MainFrame extends JFrame {
 		updateComponent(panel);
 		updateComponent(fixedPanel);
 		updateComponent(scroll);
+
 		getFrame().setVisible(true);
-		getFrame().validate();		
+		getFrame().validate();
 		getFrame().repaint();
+		
+		//Repaint the frame again in a short while, to account for delays in image loading.
+        Thread t1 = new Thread(new Runnable() {
+        	public void run() {
+        		try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					;
+				} finally {
+					getFrame().setVisible(true);
+	        		getFrame().validate();
+	        		getFrame().repaint();	
+				}
+        	}
+        });
+        t1.start();
+		
 	}
 	
 	
@@ -912,16 +938,45 @@ public class MainFrame extends JFrame {
 			return internalFilePath;
 	}
 	
+	//move file selection unit back one index
+	void backFile(){
+		if(listMode == Mode.FILELIST){
+			int setIndex = fileList.getModel().getSize() - 1;
+			if(fileList.getSelectedIndex() > 0)
+				fileList.setSelectedIndex(fileList.getSelectedIndex() - 1);
+			else
+				fileList.setSelectedIndex(setIndex);
+			play();
+		}
+		else if(listMode == Mode.PLAYLIST){
+			int setIndex = playListView.getModel().getSize() - 1;
+			if(playListView.getSelectedIndex() > 0)
+				playListView.setSelectedIndex(playListView.getSelectedIndex() - 1);
+			else 
+				playListView.setSelectedIndex(setIndex);
+			play();
+		}
+	}
 	
 	//moves the file selection unit back one index
 	public void forwardFile(){
-		int setIndex = 0;
-		if(fileList.getSelectedIndex() < fileList.getModel().getSize() - 1)
-			fileList.setSelectedIndex(fileList.getSelectedIndex() + 1);
-		else
-			fileList.setSelectedIndex(setIndex);
+		if(listMode == Mode.FILELIST){
+			int setIndex = 0;
+			if(fileList.getSelectedIndex() < fileList.getModel().getSize() - 1)
+				fileList.setSelectedIndex(fileList.getSelectedIndex() + 1);
+			else
+				fileList.setSelectedIndex(setIndex);
+			play();
+		}
+		else if(listMode == Mode.PLAYLIST){
+			int setIndex = 0;
+			if(playListView.getSelectedIndex() < playListView.getModel().getSize() - 1)
+				playListView.setSelectedIndex(playListView.getSelectedIndex() + 1);
+			else 
+				playListView.setSelectedIndex(setIndex);
+		}
+			
 		
-		play();
 	}
 	
 	//pop up help info
@@ -940,11 +995,8 @@ public class MainFrame extends JFrame {
 		}
 	
 	
-	//temporary parse file system for supported formats
-	/**
-	 * TODO
-	 * will be implemented in a separate file management class
-	 */
+	//Parse file system for supported formats
+	
 	public Mode parseFileType(String file){
 		
 		//checks if ending filetype is video format
@@ -1040,11 +1092,15 @@ public class MainFrame extends JFrame {
 			 if (returnVal == JFileChooser.APPROVE_OPTION) {
 		           File file = fileChooser.getSelectedFile();
 		           String filename = file.getName();
-		           fileListModel.addElement(filename);
-		           fileList.setSelectedValue(filename, true);
-		           String path = file.getAbsolutePath();
-		           fileLocationMap.put(filename, path);
-		           play();
+		           if ((filename.endsWith("mp3") || filename.endsWith("wav")) || filename.endsWith("mp4") ||
+		        		   filename.endsWith("webm") || filename.endsWith("jpg") || filename.endsWith("gif") || filename.endsWith("png")) {
+		        	   fileListModel.addElement(filename);
+			           fileList.setSelectedValue(filename, true);
+			           String path = file.getAbsolutePath();
+			           fileLocationMap.put(filename, path);
+			           play();
+		           }
+		          
 			 }
 		}
 	}
@@ -1100,7 +1156,6 @@ public class MainFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) 
 		{
 			String fileName;
-			//TODO give savePlaylist a file name
 			if (MainFrame.this.playlist.getName().isEmpty()) {
 				fileName = JOptionPane.showInputDialog("Please name your playlist: ");
 			}
@@ -1123,7 +1178,16 @@ public class MainFrame extends JFrame {
 		           File file = fileChooser.getSelectedFile();
 		           String filename = file.getName();
 		           openPlaylist(filename);
-		           playListModel.addElement(filename);
+		           ArrayList<String> trackNames = new ArrayList<>();
+		           for (URI uri : playlist.getTracks()) {
+		        	   String string = uri.toString();
+		        	   int first = string.lastIndexOf("/");
+		        	   int last = string.indexOf('.');
+		        	   String name = string.substring(first + 1, last);
+		        	   trackNames.add(name);
+			           playListModel.addElement(name);
+		           }
+		           
 			 }
 		}
 	}
@@ -1368,6 +1432,24 @@ public class MainFrame extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			if(currentViewer != null)
 				currentViewer.imageProperties();
+		}
+	}
+	
+	//Zooms active image inwards
+	public class zoomBigger implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentViewer!= null) currentViewer.zoom(true);
+			setupViewer();
+		}
+	}
+	
+	//Zooms active image out
+	public class zoomSmaller implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if(currentViewer!= null) currentViewer.zoom(false);
+			setupViewer();
 		}
 	}
 	
@@ -1636,6 +1718,12 @@ public class MainFrame extends JFrame {
 		 //returns the current Viewer of the mainFrame
 		 public ImageViewer getCurrentViewer(){
 			 return mainFrame.currentViewer;
+		 }
+		 
+		 
+		 //returns volumeSlider of the mainFrame
+		 public Slider getVolumeSlider(){
+			 return mainFrame.volumeSlider;
 		 }
 		 
 		 //sets the volumeSlider of the mainFrame to value

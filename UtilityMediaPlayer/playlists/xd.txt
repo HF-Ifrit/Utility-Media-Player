@@ -1,2 +1,0 @@
-file:/C:/Users/isuyo_000/Documents/CWRU/Spring%202017/ENGR%20393/Collab/utility-media-player/UtilityMediaPlayer/media%20libraries/video/singing_dove.mp4
-file:/C:/Users/isuyo_000/Documents/CWRU/Spring%202017/ENGR%20393/Collab/utility-media-player/UtilityMediaPlayer/media%20libraries/audio/normaltest.mp3

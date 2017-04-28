@@ -27,7 +27,7 @@ public class JFXController {
 
 		@Override
 		public void handle(javafx.event.ActionEvent event) {
-			stage.play();
+			stage.playPause();
 		}
 
 	}
@@ -39,16 +39,6 @@ public class JFXController {
 		public void invalidated(Observable ov) {
 			if (stage.getVolumeSlider().isValueChanging()) {
 				stage.volumeChange();
-			}
-		}
-	}
-	
-	//Controller for the timeStep slider
-	public class timeStampSlider implements InvalidationListener{
-		@Override
-		public void invalidated(Observable ov) {
-			if (stage.getVolumeSlider().isValueChanging()) {
-				stage.timeStampChange();
 			}
 		}
 	}
