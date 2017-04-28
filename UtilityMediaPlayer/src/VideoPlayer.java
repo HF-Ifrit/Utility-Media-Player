@@ -804,6 +804,7 @@ public class VideoPlayer implements Player
 	public boolean clear() 
 	{
 		stopVideo();
+		mediaPlayerComponent.remove(controlPanel);
 		player.release();
 		hasMedia = false;
 		return hasMedia;

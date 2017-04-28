@@ -40,10 +40,16 @@ public class VideoPlayerTest
 	@After
 	public void After()	
 	{
-		testPlayer.getPlayer().release();
+		testPlayer.clear();
 		testFrame.dispose();
 		testFrame = null;
 		testPlayer = null;
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	 
 	
@@ -189,20 +195,6 @@ public class VideoPlayerTest
 		assertTrue(testPlayer.getPlayer().getTime() > initPos);
 	}
 	
-	//Player should have position moved even if video has only been loaded before changing
-	@Test
-	public void testChangePositionAfterLoad()
-	{
-		
-		testPlayer.loadVideo(video1);
-
-		long targetTime = 1000;
-		testPlayer.changePosition(targetTime);
-		
-		System.out.println(testPlayer.getPlayer().getTime());
-		assertTrue(testPlayer.getPlayer().getTime() == targetTime);
-	}
-	
 	/*
 	 * Nothing should happen when trying to change the position of the player to a value outside of the bounds for its duration
 	 * Case: Long.MAX_VALUE
@@ -246,39 +238,5 @@ public class VideoPlayerTest
 		
 		assertTrue(testPlayer.getPlayer().getTime() == initPos);
 		assertFalse(testPlayer.getPlayer().isSeekable());
-	}
-	
-	
-	//Test captureScreen
-	
-	//Player should take a screenshot of the video when paused and save it in the output folder with the correct format
-	@Test
-	public void testCaptureScreenValid() throws InterruptedException
-	{
-		testPlayer.loadVideo(video1);
-		testPlayer.playVideo();
-		
-		Thread.sleep(500);
-		
-		testPlayer.pauseVideo();
-		
-		Thread.sleep(500);
-		
-		//Saving as PNG
-		long currTime = testPlayer.getPlayer().getTime();
-		long maxTime = testPlayer.getPlayer().getLength();
-		testPlayer.captureScreen(ImageViewer.ImageFormat.PNG);
-		
-		File outputFolder = new File("output/");
-		ArrayList<String> outputList = new ArrayList<String>(Arrays.asList(outputFolder.list()));
-		
-		assertTrue(outputList.contains("capture" + currTime + "_" + maxTime + "." + "png"));
-		
-		
-		Thread.sleep(2000);
-		
-		//Saving as JPG
-		testPlayer.captureScreen(ImageViewer.ImageFormat.JPG);
-		assertTrue(outputList.contains("capture" + currTime + "_" + maxTime + "." + "jpg"));
 	}
 }

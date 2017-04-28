@@ -11,7 +11,9 @@ Andrew Su
 
 2. Compilation 
 
-TODO TODO TODO TODO TODO
+Required: Must download and install VLC in order to gain access to the required .dll libraries that vlcj API uses. Was unable to specifically reference the .dll files and plugin files
+for the API to use. Specifically must use 64-bit version of VLC
+Install at http://download.cnet.com/VLC-Media-Player-64-bit/3000-13632_4-75761094.html
 
 Note that "testplay1" is a sample playlist that is empty. It is not a mistake that opening
 it does not add any tracks to the right bar.
