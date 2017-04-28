@@ -259,6 +259,7 @@ public class VideoPlayer implements Player
 	{
 		new NativeDiscovery().discover();
 		
+		
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		this.controller = controller;
 		hasMedia = false;
