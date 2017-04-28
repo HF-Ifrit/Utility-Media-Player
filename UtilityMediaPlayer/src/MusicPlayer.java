@@ -169,7 +169,7 @@ public class MusicPlayer implements Player {
 							playing = true;
 							player.setOnEndOfMedia(new Runnable() {
 								public void run() {
-									frame.advancePlaylist();
+									frame.forwardFile();
 								}
 							});
 							musicPlayer.play();
