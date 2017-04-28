@@ -1070,11 +1070,6 @@ public class MainFrame extends JFrame {
 		return timeStampSlider;
 	}
 	
-	
-	
-	
-	
-	
 	//Controller for remove files from fileList
 	public class removeFromFileList implements ActionListener{
 		@Override

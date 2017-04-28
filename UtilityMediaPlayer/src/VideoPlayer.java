@@ -264,15 +264,15 @@ public class VideoPlayer implements Player
 	{
 		//Set location of VLC dll installation and plugins folder
 		File vlcFolder = new File("lib");
-		String pluginPath = vlcFolder.getAbsolutePath() + "\\plugins";
-		uk.co.caprica.vlcj.binding.LibC.INSTANCE._putenv("VLC_PLUGIN_PATH="+pluginPath);
+		String pluginPath = vlcFolder.getPath() + "\\plugins";
+		uk.co.caprica.vlcj.binding.LibC.INSTANCE._putenv("VLC_PLUGIN_PATH="+vlcFolder.getPath());
 		
 		
-		System.out.println("lib folder location: " + vlcFolder.getAbsolutePath());
+		System.out.println("lib folder location: " + vlcFolder.getPath());
 		System.out.println("plugins folder location: " + pluginPath);
 		
 		
-		NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), vlcFolder.getAbsolutePath());
+		NativeLibrary.addSearchPath("libvlc", vlcFolder.getPath());
 		
 		
 		//If previous method fails, just use native discovery with an installed version of VLC
@@ -336,7 +336,6 @@ public class VideoPlayer implements Player
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		if(player.isPlaying())

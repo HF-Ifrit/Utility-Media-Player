@@ -300,6 +300,7 @@ public class MainFrame extends JFrame {
 		    public void mouseClicked(MouseEvent e){
 		    	
 		        if(e.getClickCount()==2){
+		        	mainFrame.listMode = Mode.FILELIST;
 		           mainFrame.play();
 		        }
 		    }
@@ -311,6 +312,7 @@ public class MainFrame extends JFrame {
 			public void valueChanged(ListSelectionEvent e) {
 				if(list.getSelectedIndex() >= 0){
 					mainFrame.playListView.clearSelection();
+					
 				}
 			}
 		});
@@ -327,10 +329,6 @@ public class MainFrame extends JFrame {
 		JList<String> list;
 		list = new JList<String>();
 		ArrayList<String> playList = new ArrayList<String>();
-<<<<<<< HEAD
-		
-=======
->>>>>>> 7408d98bc91e3ac28182ea7350f21db522c2a17a
 		playListModel = new DefaultListModel<String>();
 		
 		for(String fileName : playList){
@@ -346,6 +344,7 @@ public class MainFrame extends JFrame {
 		        if(e.getClickCount()==2){
 		            if(list.getSelectedIndex() >= 0){
 		            	mainFrame.playlistIndex = list.getSelectedIndex();
+		            	mainFrame.listMode = Mode.PLAYLIST;
 		            }
 		        	mainFrame.play();
 		        }
@@ -461,22 +460,11 @@ public class MainFrame extends JFrame {
     }
 
     
-    
-    
     /**
-     * TODO
-     * operations called by actionListeneers
+     * methods called by Action Listeners
      */
     
-	//move file selection unit back one index
-	void backFile(){
-		int setIndex = fileList.getModel().getSize() - 1;
-		if(fileList.getSelectedIndex() > 0)
-			fileList.setSelectedIndex(fileList.getSelectedIndex() - 1);
-		else
-			fileList.setSelectedIndex(setIndex);
-		play();
-	}
+
 	
 	//sets window to fullscreen
 	private void fullscreen(){
@@ -581,6 +569,10 @@ public class MainFrame extends JFrame {
 	private void addToPlaylist(){
 		if(currentFile != null){
 			playlist.addTrack(currentFile);
+			int start = currentFile.lastIndexOf('/');
+			int last = currentFile.indexOf('.');
+			String fileName = currentFile.substring(start + 1, last);
+			playListModel.addElement(fileName);
 		}
 	}
 	
@@ -590,18 +582,44 @@ public class MainFrame extends JFrame {
 			playlist.savePlaylist(filename);
 		}
 	}
-	
+
 	//save playlist
-	private void openPlaylist(String filename){
+	private Playlist openPlaylist(String filename){
+		Playlist tempPlayList = null;
 		if(filename != null){
-			if (playlist == null) {
-				Playlist temp = new Playlist(this);
-				playlist = temp;
+				playlist = new Playlist(this);
+			tempPlayList = playlist.loadPlaylist(filename);
+			ArrayList<String> trackNames = new ArrayList<String>();
+			DefaultListModel<String> tempModel = new DefaultListModel<String>();
+			for (URI uri : playlist.getTracks()) {
+				String string = uri.toString();
+				int first = string.lastIndexOf("/");
+				int last = string.indexOf('.');
+				String name = string.substring(first + 1, last);
+				trackNames.add(name);
+				tempModel.addElement(name);
 			}
-			playlist = playlist.loadPlaylist(filename);
+			playlist = tempPlayList;
+			playListModel.clear();
+			playListModel = tempModel;
+			playListView.setModel(playListModel);
+			
+			getFrame().getContentPane().remove(playListScroll);
+			
+			playListScroll =  new JScrollPane();
+	        playListScroll.setPreferredSize(new Dimension(200, playListView.getHeight()));
+	        playListScroll.setViewportView(playListView);
+	        
+	        getFrame().getContentPane().add(playListScroll, BorderLayout.EAST);
+	        getFrame().validate();		
+			getFrame().repaint();
+	        
 		}
+		
+		
+		return tempPlayList;
 	}
-	
+
 	private boolean rotateImage(boolean clockwise) {
 		boolean success = currentViewer.rotateImage(clockwise);
 		
@@ -650,6 +668,7 @@ public class MainFrame extends JFrame {
 		
 	}
 	
+	//orders the fileList by the filetype of each element
 	public void orderFileListByType() {
 		Enumeration<String> fileListEnum = fileListModel.elements();
 		
@@ -683,6 +702,7 @@ public class MainFrame extends JFrame {
 		}
 	}
 	
+	//orders the fileList alphabetically by name for each element
 	public void orderFileListByName() {
 		Enumeration<String> fileListEnum = fileListModel.elements();
 		ArrayList<String> toOrder = new ArrayList<String>();
@@ -766,7 +786,7 @@ public class MainFrame extends JFrame {
 		int selectedindex = fileList.getSelectedIndex();
 		int playlistSelectedIndex = playListView.getSelectedIndex();
 		if(selectedindex < 0){
-			if(playlistSelectedIndex >= 0){
+			if(playlistSelectedIndex >= 0){ 
 				listMode = Mode.PLAYLIST;
 				filename = playlist.getTracks().get(playlistSelectedIndex).getPath();
 				tempmode = parseFileType(filename);
@@ -834,8 +854,6 @@ public class MainFrame extends JFrame {
 		Component tempPlayer = currentPlayer.showView();
 		getFrame().add(tempPlayer, BorderLayout.CENTER);
 		getFrame().setVisible(true);
-		
-		
 		currentPlayer.open(filename);
 		currentPlayer.volumeChange(this.volumeSlider.getValue());
 		updateComponent(tempPlayer);
@@ -860,9 +878,27 @@ public class MainFrame extends JFrame {
 		updateComponent(panel);
 		updateComponent(fixedPanel);
 		updateComponent(scroll);
+
 		getFrame().setVisible(true);
-		getFrame().validate();		
+		getFrame().validate();
 		getFrame().repaint();
+		
+		//Repaint the frame again in a short while, to account for delays in image loading.
+        Thread t1 = new Thread(new Runnable() {
+        	public void run() {
+        		try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					;
+				} finally {
+					getFrame().setVisible(true);
+	        		getFrame().validate();
+	        		getFrame().repaint();	
+				}
+        	}
+        });
+        t1.start();
+		
 	}
 	
 	
@@ -929,30 +965,62 @@ public class MainFrame extends JFrame {
 			return internalFilePath;
 	}
 	
+	//move file selection unit back one index
+	void backFile(){
+		if(listMode == Mode.FILELIST){
+			int setIndex = fileList.getModel().getSize() - 1;
+			if(fileList.getSelectedIndex() > 0)
+				fileList.setSelectedIndex(fileList.getSelectedIndex() - 1);
+			else
+				fileList.setSelectedIndex(setIndex);
+			play();
+		}
+		else if(listMode == Mode.PLAYLIST){
+			int setIndex = playListView.getModel().getSize() - 1;
+			if(playListView.getSelectedIndex() > 0)
+				playListView.setSelectedIndex(playListView.getSelectedIndex() - 1);
+			else 
+				playListView.setSelectedIndex(setIndex);
+			play();
+		}
+	}
 	
 	//moves the file selection unit back one index
 	public void forwardFile(){
-		int setIndex = 0;
-		if(fileList.getSelectedIndex() < fileList.getModel().getSize() - 1)
-			fileList.setSelectedIndex(fileList.getSelectedIndex() + 1);
-		else
-			fileList.setSelectedIndex(setIndex);
+		if(listMode == Mode.FILELIST){
+			int setIndex = 0;
+			if(fileList.getSelectedIndex() < fileList.getModel().getSize() - 1)
+				fileList.setSelectedIndex(fileList.getSelectedIndex() + 1);
+			else
+				fileList.setSelectedIndex(setIndex);
+			play();
+		}
+		else if(listMode == Mode.PLAYLIST){
+			int setIndex = 0;
+			if(playListView.getSelectedIndex() < playListView.getModel().getSize() - 1)
+				playListView.setSelectedIndex(playListView.getSelectedIndex() + 1);
+			else 
+				playListView.setSelectedIndex(setIndex);
+		}
+			
 		
-		play();
 	}
 	
 	//pop up help info
 	private void openHelpMenu(){
 		String about = "New media can be imported directly by inserting it in the \"media libraries\" folder." + "\n"
-				+ "External media can be opened using File >> Open File. " + "\n"
-				+ "Double-click media to play it.";
-		JOptionPane.showMessageDialog(null, about,"About", JOptionPane.INFORMATION_MESSAGE);
+				+ "External media can be opened using File >> Open File tab on the menu bar. " + "\n"
+				+ "Double-click media on a side bar to play it." + "\n" 
+				+ "Press Back or Forward buttons to instantly start playing the new file. Drag the Volume slider to change the volume level of a player" + "\n" 
+				+ "Press the central Play button while a player is active to pause/resume it." + "\n"
+				+ "Local ReadMe.txt includes detailed notes on the functionality of each menu bar item and each button.";
+		JOptionPane.showMessageDialog(null, about,"Help", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	//pop up about info
 	private void openAboutInfo(){
 		String about = "Utility Media Player" + "\n"
-				+ "Prerelease Version";
+				+ "Version 1.0";
 		JOptionPane.showMessageDialog(null, about,"About", JOptionPane.INFORMATION_MESSAGE);
 		}
 	
@@ -1002,17 +1070,14 @@ public class MainFrame extends JFrame {
 		return timeStampSlider;
 	}
 	
+<<<<<<< HEAD
 	
 	
 	
 	
-	/**
-	 *TODO 
-	 *integrate actions with other components
-	 *controllers for listeners to attach to the buttons
-	 *
-	 */
 	
+=======
+>>>>>>> a302505be10aedefbe45fa2df77a0bb7ddebe32e
 	//Controller for remove files from fileList
 	public class removeFromFileList implements ActionListener{
 		@Override
@@ -1107,7 +1172,6 @@ public class MainFrame extends JFrame {
 			if (playlist == null) {
 				String fileName = JOptionPane.showInputDialog("Please name your playlist: ");
 				playlist = new Playlist(MainFrame.this, fileName);
-		        playListModel.addElement(fileName);
 			}
 			addToPlaylist();
 		}
@@ -1137,19 +1201,16 @@ public class MainFrame extends JFrame {
 			File dir = new File(System.getProperty("user.dir"));
 			fileChooser.setCurrentDirectory(dir);
 			int returnVal = fileChooser.showOpenDialog(contentPane);
-			 if (returnVal == JFileChooser.APPROVE_OPTION) {
+			
+			
+	
+			
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
 		           File file = fileChooser.getSelectedFile();
 		           String filename = file.getName();
-		           openPlaylist(filename);
-		           ArrayList<String> trackNames = new ArrayList<>();
-		           for (URI uri : playlist.getTracks()) {
-		        	   String string = uri.toString();
-		        	   int first = string.lastIndexOf("/");
-		        	   int last = string.indexOf('.');
-		        	   String name = string.substring(first + 1, last);
-		        	   trackNames.add(name);
-			           playListModel.addElement(name);
-		           }
+		           Playlist newPlayList = openPlaylist(filename);
+		           
+		           
 		           
 			 }
 		}
@@ -1492,12 +1553,6 @@ public class MainFrame extends JFrame {
 	 */
 	
 	
-	/**
-	 * TODO
-	 * internal testing class
-	 * provides access to private variables and methods only for testing purposes only
-	 * remove during release
-	 */
 	public static class TestSuite{
 		/**
 		 * reference to a controlled testing instance of a MainFrame
