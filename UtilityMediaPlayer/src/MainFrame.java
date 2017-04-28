@@ -597,6 +597,7 @@ public class MainFrame extends JFrame {
 				Playlist temp = new Playlist(this);
 				playlist = temp;
 			}
+			playListModel.clear();
 			playlist = playlist.loadPlaylist(filename);
 		}
 	}
@@ -857,9 +858,27 @@ public class MainFrame extends JFrame {
 		updateComponent(panel);
 		updateComponent(fixedPanel);
 		updateComponent(scroll);
+
 		getFrame().setVisible(true);
-		getFrame().validate();		
+		getFrame().validate();
 		getFrame().repaint();
+		
+		//Repaint the frame again in a short while, to account for delays in image loading.
+        Thread t1 = new Thread(new Runnable() {
+        	public void run() {
+        		try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					;
+				} finally {
+					getFrame().setVisible(true);
+	        		getFrame().validate();
+	        		getFrame().repaint();	
+				}
+        	}
+        });
+        t1.start();
+		
 	}
 	
 	

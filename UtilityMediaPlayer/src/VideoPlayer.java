@@ -259,6 +259,7 @@ public class VideoPlayer implements Player
 	{
 		new NativeDiscovery().discover();
 		
+		
 		mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
 		this.controller = controller;
 		hasMedia = false;
@@ -793,6 +794,12 @@ public class VideoPlayer implements Player
 	public static void main(String[] args) throws InterruptedException, AWTException, FileNotFoundException, IOException
 	{
 		
+	}
+
+	@Override
+	public boolean openFullFilePath(String fileName) {
+		
+		return false;
 	}
 }
 
