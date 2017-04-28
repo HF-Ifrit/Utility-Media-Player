@@ -1,0 +1,2 @@
+file:/C:/Users/Danny/git/utility-media-player/UtilityMediaPlayer/media%20libraries/audio/normaltest.mp3
+file:/C:/Users/Danny/git/utility-media-player/UtilityMediaPlayer/media%20libraries/video/kaius_presentation.mp4
