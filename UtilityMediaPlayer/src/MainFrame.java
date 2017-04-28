@@ -595,6 +595,7 @@ public class MainFrame extends JFrame {
 				Playlist temp = new Playlist(this);
 				playlist = temp;
 			}
+			playListModel.clear();
 			playlist = playlist.loadPlaylist(filename);
 		}
 	}
